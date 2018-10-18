@@ -27,10 +27,13 @@ def main():
     parser.add_argument("--link", help="link protein to transcript",
                         action="store_true")
 
+    parser.add_argument("--parse", help="parse reference content",
+                        action="store_true")
+
     args = parser.parse_args()
 
-    if args.sizeoff:
-        print(retrieve(args.reference, not args.sizeoff))
+    if args.sizeoff or args.parse:
+        print(retrieve(args.reference, not args.sizeoff, args.parse))
 
     if args.link:
         print(link_reference(args.reference))
