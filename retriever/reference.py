@@ -388,36 +388,41 @@ class Locus(object):
 
     def __len__(self):
         """
-        Get the sequence length. We assume that positions are positive and
+        Get the locus length. We assume that positions are positive and
         that start < end. Orientation could be implemented in future.
 
-        :return: The sequence length.
+        :return: The locus sequence length.
         """
         # TODO: Check if negative positions or orientation is provided.
         if None not in [self._end.position, self._start.position]:
             return self._end - self._start + 1
         else:
-            raise Exception('None limits present in sequence.')
+            raise Exception('None limits present in locus.')
 
     def __str__(self):
         """
-        Simple sequence information string representation.
+        Simple locus information string representation.
         """
-        output = ''
-        # if self.get_qualifier(self.config['key']):
-        #     output += 'sequence key: %s\n' % self.qualifiers[self.config['key']]
-        output += 'start: %s\n' % str(self._start)
-        output += 'end: %s\n' % str(self._end)
-        output += json.dumps(self.get_parts_string())
-        output += '\nstrand: %s\n' % self.get_strand()
+        if self._locus_type:
+            feature_location = '{:10}{}..{}\n'.\
+                format(self._locus_type, self._start, self._end)
+        else:
+            feature_location = '  {}..{}\n'.format(self._start, self._end)
+        qualifiers = '\n'.join('  {:15}: {}'.
+                               format(k, v) for k,v in self.qualifiers.items())
+        parts = self.get_parts_string()
+        output = '{} qualifiers:\n{}\n strand: {}\n'.format(
+            feature_location, qualifiers, self.get_strand())
+        if parts != '':
+            output += ' parts:\n{}'.format(parts)
         return output
 
     def to_dict(self):
         """
-        Converts the sequence into a dictionary. It includes the children as
+        Converts the locus into a dictionary. It includes the children as
         well. Called in principle to help jsonify the record.
 
-        :return: The sequence as a dictionary.
+        :return: The locus as a dictionary.
         """
         values = dict(start=str(self.start),
                       end=str(self.end),
@@ -446,9 +451,9 @@ class Locus(object):
     def fuzzy_position_inside(self):
         """
         To detect whether a fuzzy position is present in the start/stop
-        positions of the sequence, as well as in any start/stop positions of
+        positions of the locus, as well as in any start/stop positions of
         its composing parts.
-        :return: True if fuzzy position found in sequence, False otherwise.
+        :return: True if fuzzy position found in locus, False otherwise.
         """
         if self.start.is_fuzzy():
             return True
@@ -528,7 +533,7 @@ class Locus(object):
     def add_child(self, seq):
         """
         Adds a child to the children list.
-        :param seq: child sequence to be added.
+        :param seq: child locus to be added.
         """
         if seq.locus_type in self.children:
             self.children[seq.locus_type].append(seq)
@@ -562,7 +567,7 @@ class Locus(object):
         if isinstance(part, Locus):
             self._parts.append(part)
         else:
-            raise Exception('Part to be appended is not a sequence.')
+            raise Exception('Part to be appended is not a locus.')
 
     def get_parts_string(self):
         """
@@ -570,14 +575,11 @@ class Locus(object):
 
         :return: Dictionary with start and end positions as string values.
         """
-        starts = ''
-        ends = ''
-        delimiter = ''
+        output = ''
+        delimiter = '\n'
         for part in self._parts:
-            starts += delimiter + str(part.start)
-            ends += delimiter + str(part.end)
-            delimiter = ','
-        return {'start_positions': starts, 'end_positions': ends}
+            output += '  {}..{}{}'.format(part.start, part.end, delimiter)
+        return output
 
     def get_key_type_and_value(self):
         """
@@ -590,14 +592,14 @@ class Locus(object):
 
 class Reference:
     """
-    Structured container of all the features in a genbank file.
+    Structured container of all the features in a reference file.
     """
     def __init__(self, start=None, end=None,
                  reference=None, cfg=None):
-        # All the features present in the input file.
-        self.features = {}
 
-        self.loci = []
+        self.source = {}
+
+        self.loci = {}
 
         # All the parents in a tree with feature types as keys.
         self._parents_dict = {}
@@ -620,522 +622,6 @@ class Reference:
         if reference and cfg:
             self.create_record(reference, cfg)
 
-    def child_of_type(self, feature):
-        """
-        Finds the parent type of the provided feature.
-        :param feature: a configuration feature dictionary.
-        :return:
-        """
-        if 'parent' in feature:
-            if isinstance(feature['parent'], dict):
-                if 'type' in feature['parent']:
-                    return feature['parent']['type']
-            else:
-                return feature['parent']
-
-    def child_of_key(self, feature):
-        """
-        Get the parent key with which the child should be added to the parent.
-        :return: The parent key or None.
-        """
-        if 'parent' in feature:
-            if isinstance(feature['parent'], dict):
-                if 'key' in feature['parent']:
-                    return feature['parent']['key']
-
-    def create_parents_dict(self):
-        """
-        Initializes the parents dictionary with the keys from the configuration.
-        :param features: dictionary with input fields according to the
-                         configuration format.
-        """
-        if 'features' in self.config:
-            features = self.config['features']
-            for feature in features:
-                parent_type = self.child_of_type(features[feature])
-                parent_key = self.child_of_key(features[feature])
-                if parent_type:
-                    self._parents_dict[parent_type] = {} if parent_key else []
-        # The record is added also among the parents.
-        # This should be always performed.
-        self._parents_dict['record'] = [self]
-
-    def add_to_parent_with_key(self, child):
-        """
-        Tries to add a child sequence to a parent.
-
-        :param child: The sequence to be added to the parent.
-        :return True if addition performed and False otherwise.
-        """
-        parent_type = self.child_of_type(child.config)
-        if parent_type and parent_type not in self._parents_dict:
-            return
-        parent_key = child.get_qualifier(self.child_of_key(child.config))
-
-        if self.child_of_type(child.config) in self._parents_dict:
-            parent_type = self.child_of_type(child.config)
-            if parent_type and parent_type in self._parents_dict:
-                if parent_key:
-                    parent = self._parents_dict[parent_type][parent_key]
-                    parent.add_child(child)
-                    child.parent = parent
-                    return True
-        return False
-
-    def add_to_parents_dict(self, seq):
-        """
-
-        :param seq:
-        """
-        parent_node = self._parents_dict.get(seq.locus_type)
-        if isinstance(parent_node, dict):
-            parent_type = self.child_of_key(seq.config)
-            key_type = seq.config['key']
-            key = seq.get_qualifier(key_type)
-            parent_node[key] = seq
-        if isinstance(parent_node, list):
-            parent_node.append(seq)
-
-    def extract_features(self, input_record):
-        """
-        Loops over the biopython record features and extracts the ones
-        specified in the configuration file. The extracted feature is
-        converted into a Locus instance.
-
-        The Loci tree is formed at the same time, with parents being
-        added to the parents_dict, if found, and children linked
-
-        :param input_record: A biopython record.
-        """
-        for feature in self.config['features']:
-            self._features[feature] = []
-        for feature in input_record.features:
-            # Check if the feature is in the configuration features.
-            if feature.type in self.config['features']:
-                seq = Locus()
-                # Extracting the configuration for the sequence.
-                configuration = self.config['features'][feature.type]
-                # Transform the biopython feature into a Locus instance.
-                seq.convert_biopython_feature(feature, configuration)
-                # Check is the sequence contains fuzzy positions.
-                if seq.fuzzy_position_inside():
-                    self._fuzzy_sequences += 1
-                # Finding if a sequence has a key with a value.
-                key, value = seq.get_key_type_and_value()
-                # We disregard the keyless sequences but we keep track of
-                # their number, which is added to the log file later.
-                if key and not value:
-                    self._keyless_sequences.append(seq)
-                else:
-                    self._features[feature.type].append(seq)
-                    # Try to add it to the _parents_dict.
-                    self.add_to_parents_dict(seq)
-                    # If sequence is a child then we add it to the parent.
-                    parent = self.child_of_type(self.config['features'][feature.type])
-                    if parent:
-                        # We do not forget to add the record children.
-                        if parent == 'record':
-                            self.add_child(seq)
-                        else:
-                            # It seems that either the parent was not added yet
-                            # (best case) or there is no parent.
-                            if not self.add_to_parent_with_key(seq):
-                                self._unattached.append(seq)
-
-    def extract_annotations(self, input_record):
-        """
-        Extract the annotations fields from the record, according to the
-        provided configuration.
-
-        :param input_record: A biopython record.
-        """
-        for annotation in input_record.annotations:
-            # Check if the feature is in the configuration features.
-            if annotation in self.config['annotations']:
-                self._annotations[annotation] = input_record.annotations[annotation]
-
-    def attach_the_unattached(self):
-        """
-        Attaches all the remaining unattached sequence to their parents.
-        Used primarily after running the extract_features method.
-        """
-        still_unattached = []
-        for seq in self._unattached:
-            if self.add_to_parent_with_key(seq):
-                still_unattached.append(seq)
-        self._unattached = still_unattached
-        if len(still_unattached) > 0:
-            logging.info('Still %s children unattached.', len(still_unattached))
-        else:
-            logging.info('All children attached.')
-
-    def perform_linking(self):
-        """
-        Call any linking functions that appear in the configuration.
-        """
-        if self.config.get('link') is None:
-            return
-        logging.info('Link started.')
-        for link in self.config['link']:
-            link_main_function = 'link_' + link
-            if self.__getattribute__(link_main_function):
-                self.__getattribute__(link_main_function)(self.config['link'][link])
-            else:
-                logging.info('No %s function implemented.', link_main_function)
-        logging.info('Link ended.')
-
-    def link_mrna_with_cds(self, cfg):
-        """
-        Calls the corresponding function to perform the actual linking of an
-        mrna sequence to a cds sequence. Such a function should exist. All
-        these should be actually placed in a separate file.
-
-        :param cfg: the configuration (should contain the link function type
-                    should be present).
-        """
-        for link_function_type in cfg:
-            link_function = 'link_' + link_function_type
-            if self.__getattribute__(link_function):
-                self.__getattribute__(link_function)(cfg[link_function_type])
-
-    def link_by_ncbi_file_website(self, cfg):
-        """
-        Link the gene transcripts with proteins via the ncbi website.
-        The corresponding .gb file of the transcript is downloaded and the
-        protein_id is searched in the CDS feature of the record file.
-
-        :param cfg:
-        """
-        for gene in self._parents_dict['gene']:
-            mrnas = self._parents_dict['gene'][gene].children.get('mRNA')
-            cdss = self._parents_dict['gene'][gene].children.get('CDS')
-            if mrnas:
-                for mrna in mrnas:
-                    transcript_id = mrna.get_qualifier('transcript_id')
-                    # logging.info('Linking transcript id %s', str(transcript_id))
-                    # try:
-                    #     p_accession = transcript_to_protein2(
-                    #         transcript_id, cfg['options']['save_file'])
-                    # except Exception as exception:
-                    #     logging.info('Error during transcript to protein link:'
-                    #                  ' "%s" Transcript id: "%s"',
-                    #                  str(exception), str(transcript_id))
-                    # else:
-                    #     mrna.update_qualifier('protein_id_link', p_accession)
-                    #     if isinstance(cdss, list):
-                    #         for cds in cdss:
-                    #             if p_accession == cds.get_qualifier('protein_id'):
-                    #                 mrna.link = cds
-                    #                 cds.link = mrna
-                    #                 cds.update_qualifier('transcript_id_link',
-                    #                                      transcript_id)
-                    #                 mrna.update_qualifier('cds_start',
-                    #                                       str(cds.start))
-                    #                 mrna.update_qualifier('cds_end',
-                    #                                       str(cds.end))
-                    #                 mrna.update_qualifier('locus_tag',
-                    #                                       cds.qualifiers.get('locus_tag'))
-                    #                 mrna.update_qualifier('codon_start',
-                    #                                       cds.qualifiers.get('codon_start'))
-                    #                 # mrna.update_qualifier('cds_parts', cds.parts)
-
-    def link_by_mapping_file(self, cfg):
-        """
-        Link gene transcripts with proteins via a provided mapping file.
-        The content of the file should utilize the following format:
-
-            accession.version, accession.version
-
-        with the first "accession.version" begin for the transcript, and the
-        second one for the protein.
-
-        Configuration dictionary fields:
-        - path: the path of the file
-
-        :param cfg: Provided function configuration.
-        :return:
-        """
-        logging.info('Linking by mapping file.')
-        # Load the file
-        mapping_file = cfg['path']
-        if os.path.isfile(mapping_file):
-            logging.info('Path to mapping file: %s', mapping_file)
-            mappings = {}
-            with open(mapping_file, 'r') as mapping_file:
-                for line in mapping_file.readlines():
-                    transcript_id = line.strip().split(',')[0]
-                    protein_id = line.strip().split(',')[1].strip()
-                    mappings[transcript_id] = protein_id
-        else:
-            logging.info('No mapping file found.')
-            return
-        unlinked = 0
-        for gene in self._parents_dict['gene']:
-            mrnas = self._parents_dict['gene'][gene].children.get('mRNA')
-            cdss = self._parents_dict['gene'][gene].children.get('CDS')
-            if mrnas:
-                for mrna in mrnas:
-                    linked = False
-                    transcript_id = mrna.get_qualifier('transcript_id')
-                    protein_id = mappings.get(str(transcript_id))
-                    if protein_id:
-                        mrna.update_qualifier('protein_id_link', protein_id)
-                        if isinstance(cdss, list):
-                            for cds in cdss:
-                                if protein_id == cds.get_qualifier('protein_id'):
-                                    mrna.link = cds
-                                    cds.link = mrna
-                                    cds.update_qualifier('transcript_id_link',
-                                                         transcript_id)
-                                    mrna.update_qualifier('cds_start',
-                                                          str(cds.start))
-                                    mrna.update_qualifier('locus_tag',
-                                                          cds.qualifiers.get('locus_tag'))
-                                    mrna.update_qualifier('codon_start',
-                                                          cds.qualifiers.get('codon_start'))
-                                    # mrna.update_qualifier('cds_parts', cds.parts)
-                                    linked = True
-                    else:
-                        logging.info('No protein_id found in mapping file for'
-                                     'transcript_id %s', transcript_id)
-                    if not linked:
-                        # print('\nunlinked')
-                        unlinked += 1
-        logging.info('Unlinked transcripts: %s', unlinked)
-
-    def get_biopython_record(self, reference):
-        """
-        Transforms the reference into a biopython record and adds the checksum
-        to the qualifiers dictionary.
-
-        :param reference: accession.version or file path.
-        """
-        if os.path.isfile(reference):
-            logging.info('The reference is a file.')
-            hash_md5 = hashlib.md5()
-            content = ''
-            with open(reference, 'r') as file:
-                for line in file:
-                    hash_md5.update(line.strip().encode('utf-8'))
-                    content += line
-            checksum_reference = hash_md5.hexdigest()
-        else:
-            logging.info('Reference is in the format accession.version - retrieve from NCBI.')
-            # try:
-            #     content, checksum_reference = get_reference(reference)
-            # except Exception as exception:
-            #     logging.info('Reference %s not retrieved due to error %s',
-            #                  reference, str(exception))
-        self._input_record = content
-        self.qualifiers['checksum_reference'] = checksum_reference
-        input_record = io.StringIO(content)
-        try:
-            biopython_record = SeqIO.read(input_record, 'genbank')
-        except:
-            logging.info('Content for reference %s could not be read by biopython.', reference)
-            return None
-        else:
-            return biopython_record
-
-    def write_json(self, dir_path):
-        """
-        Writes the json formatted record inside the provided directory path.
-        The file name is 'accession_version.json'.
-
-        :param dir_path: Directory in which the record is saved.
-        """
-        output_path = dir_path + '/' + self.get_accession_version() + '.json'
-        try:
-            record_json = json.loads(self.to_json())
-        except Exception as exception:
-            logging.debug('Record load to json failed with %s', str(exception))
-            return
-        try:
-            with open(output_path, 'w') as output_file:
-                output_file.write(json.dumps(record_json, indent=2))
-        except Exception as exception:
-            logging.debug('Reference %s Json file writing error: %s',
-                          self.reference, str(exception))
-        else:
-            logging.info('Json saved to: %s', output_path)
-
-    def write_input(self, dir_path):
-        """
-        Writes the record input to a file
-        :param dir_path:
-        """
-        output_path = dir_path + '/' + self.get_accession_version() + '.gb'
-        try:
-            with open(output_path, 'w') as output_file:
-                output_file.write(self._input_record)
-        except Exception as exception:
-            logging.debug('Write input to file failed with: %s', str(exception))
-        else:
-            logging.info('Input saved to: %s', output_path)
-
-    def write_sequence(self, dir_path):
-        checksum_sequence = self.qualifiers.get('checksum_sequence')
-        if checksum_sequence is None:
-            logging.info('Locus without checksum - not saved.')
-            return
-
-        output_path = dir_path + '/' + checksum_sequence + '.sequence'
-        try:
-            output_file = open(output_path, 'w')
-        except IOError as exception:
-            logging.debug('Locus write to file failed with %s', str(exception))
-        else:
-            output_file.write(self.sequence)
-            logging.info('Locus saved to: %s', output_path)
-
-    def save_output(self):
-        """
-        If required (mentioned in the configuration), it saves the output to
-        the files specified in the configuration. This may include the record
-        in json format, the input genbank file (from which the record was
-        extracted), and the actual sequence.
-        """
-        if self.config.get('output') is None:
-            return
-
-        cfg_output = self.config['output']
-        if not isinstance(cfg_output, dict):
-            logging.info('Provided output configuration not a dictionary.')
-            return
-        dir_path = cfg_output.get('path')
-        if not dir_path:
-            logging.info('No output path in configuration.')
-            return
-        save_list = cfg_output.get('save')
-        if not save_list or not isinstance(save_list, list):
-            return
-        if 'json' in save_list:
-            self.write_json(dir_path)
-        if 'input' in save_list:
-            self.write_input(dir_path)
-        if 'sequence' in save_list:
-            self.write_sequence(dir_path)
-
-    def create_record(self, reference, cfg):
-        """
-        Creates a gbparser record from a genbank reference file according to
-        the provided configuration.
-
-        The biopython record is first obtained.
-
-        :param reference: The reference (file path or only 'accession[.version]').
-        :param cfg: The configuration based on which the record is created.
-        """
-        input_record = self.get_biopython_record(reference)
-        # A provided input_record must be an instance of BioPython SeqRecord.
-        if not isinstance(input_record, SeqRecord.SeqRecord):
-            logging.info('Record_input not of BioPython SeqRecord type.')
-            raise Exception('Record_input not of BioPython SeqRecord type.')
-        # The provided input_record must contain some features, otherwise
-        # we can stop.
-        if not input_record.features:
-            return
-
-        self.config = cfg
-        self.create_parents_dict()
-        if self.config['features']:
-            self.extract_features(input_record)
-        if self.config['annotations']:
-            self.extract_annotations(input_record)
-        self.attach_the_unattached()
-        self.perform_linking()
-        # Extract the sequence, compute its checksum, and add it to qualifiers.
-        self.sequence = str(input_record.seq)
-        checksum_sequence = hashlib.md5(self.sequence.encode('utf-8')).hexdigest()
-        self.qualifiers['checksum_sequence'] = checksum_sequence
-        self.qualifiers.update(self.get_from_source())
-        self.save_output()
-        self.qualifiers['transl_table'] = ''
-        self.qualifiers['source'] = 'NCBI eutils'
-
-    def link_transcript_with_protein(self):
-        """
-        Tries to link all the record transcripts with the proteins.
-        """
-        for mrna in self._sequences['mRNA']:
-            transcript_id = mrna.get_qualifier('transcript_id')[0]
-            accession = str(transcript_id).split('.')[0]
-            print(transcript_id, end='\r')
-            # try:
-            #     p_accession = transcript_to_protein2(transcript_id)
-            # except Exception as exception:
-            #     print('Error during transcript to protein link:\n ',
-            #           str(exception), 'Transcript id: ' + transcript_id)
-            # else:
-            #     mrna.update_qualifier('protein_id_link', p_accession)
-
-    def get_accession(self):
-        """
-        Retrieves the record accession present in the annotations.
-
-        :return: record accession as string.
-        """
-        if self._annotations and 'accessions' in self._annotations:
-            if isinstance(self._annotations['accessions'], list) and \
-                            len(self._annotations) > 0:
-                return str(self._annotations['accessions'][0])
-
-    def get_version(self):
-        """
-        Retrieves the record version number present in the annotations.
-
-        :return: record version number as string.
-        """
-        if self._annotations and 'sequence_version' in self._annotations:
-            return str(self._annotations['sequence_version'])
-
-    def get_accession_version(self):
-        """
-        Retrieves both record accession and version number from the annotations.
-        :return: record 'accession.version' as string.
-        """
-        accession = self.get_accession()
-        version = self.get_version()
-        if accession and version:
-            return str(accession) + '.' + str(version)
-
-    def get_transcripts(self):
-        """
-        Yields all the transcripts in order to be added to the DB.
-
-        :return:
-        """
-        pass
-
-    def get_details(self):
-        source = self.children.get('source')[0]
-        if source:
-            details = {'accession': self.get_accession(),
-                       'version': self.get_version(),
-                       'mol_type': source.get_qualifier('mol_type'),
-                       'start': str(source.start),
-                       'stop': str(source.end),
-                       'organism': source.get_qualifier('organism')}
-            return details
-
-    def get_from_source(self):
-        source = self.children.get('source')[0]
-        if source:
-            return {
-                'accession': self.get_accession(),
-                'version': self.get_version(),
-                'date_annotation': self._annotations.get('date'),
-                'length': int(source.end - source.start + 1),
-                'mol_type': source.get_qualifier('mol_type'),
-            }
-
-    def get_from_cds(self):
-        cds = self.children.get('gene').get('cds')[0]
-        if cds:
-            return {
-                'transl_table': cds.get_qualifier('transl_table'),
-            }
-
     def to_json(self):
         """
         Converts the record into JSON.
@@ -1155,5 +641,7 @@ class Reference:
         """
         Simple record string representation.
         """
-        return 'Total loci: {}'.format(len(self.loci))
+        # print(self.loci.values())
+        loci = '\n'.join(map(str, self.loci.values()))
+        return '{}\nTotal loci: {}'.format(loci, len(self.loci))
         # return json.dumps(self._annotations)

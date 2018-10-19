@@ -20,7 +20,7 @@ class NoLinkError(Exception):
     pass
 
 
-def length(reference_id):
+def length(reference_id, db='nuccore'):
     """
     Retrieves the sequence length.
 
@@ -29,16 +29,19 @@ def length(reference_id):
     :rtype: int
     """
     try:
-        net_handle = Entrez.esummary(db='nuccore', id=reference_id)
+        net_handle = Entrez.esummary(db=db, id=reference_id)
         record = Entrez.read(net_handle)
         net_handle.close()
     except (IOError, HTTPError, HTTPException) as e:
-        print('-1, INFO, Error connecting to Entrez nuccore database: {}.'
-              .format(e))
+        print('-1, INFO, Error connecting to Entrez {} database: {}.'
+              .format(db, e))
         print('4, ERETR, Could not retrieve record length for {}.'
               .format(reference_id))
         return None
-
+    except RuntimeError as e:
+        # TODO: Extract the db name from the error:
+        # Otherdb uid="131889391" db="protein" term="131889391"
+        return length(reference_id, db='protein')
     return int(record[0]['Length'])
 
 
