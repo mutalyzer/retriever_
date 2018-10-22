@@ -1,3 +1,13 @@
+"""
+Genbank file parser.
+
+Creates a reference model based on genbank file.
+
+Additionaly it should also provide some checks:
+- what features do not contain the the configuration qualifiers.
+- what features were not linked.
+- what features do not have a key.
+"""
 import hashlib
 import io
 import os
@@ -33,7 +43,7 @@ KEY_FEATURES = {
                 'gene',
                 'gene_synonym'
             },
-        'key': 'transcript_id'
+            'key': 'transcript_id'
         }
     )),
     'CDS': {
@@ -56,6 +66,13 @@ SOURCE_FEATURES = {
         'chromosome',
         'organelle'
     }
+}
+
+ANNOTATIONS = {
+    'accessions',
+    'sequence_version',
+    'molecule_type',
+    'date'
 }
 
 
@@ -82,7 +99,27 @@ def parse(content):
 
     extract_features(reference, record)
 
+    reference.info.update(extract_annotations(record))
+
+    reference.type = 'genbank'
+
     return reference
+
+
+def extract_annotations(record):
+    """
+    Extract record annotations.
+
+    :arg SeqRecord record: A biopython record.
+    :return: Annotations as a dictionary.
+    :rtype: dict
+    """
+    annotations = {}
+    for annotation in record.annotations:
+        if annotation in ANNOTATIONS:
+            annotations[annotation] = record.annotations[annotation]
+
+    return annotations
 
 
 def extract_features(reference, record):
@@ -92,6 +129,7 @@ def extract_features(reference, record):
     :arg Reference reference: The actual reference.
     :arg SeqRecord record: A biopython record.
     """
+
     for feature in record.features:
         if feature.type == 'source':
             reference.source = convert_biopython_feature(feature,
@@ -100,7 +138,10 @@ def extract_features(reference, record):
             config = KEY_FEATURES[feature.type]
             locus = convert_biopython_feature(feature, config)
             key = config.get('key')
-            reference.loci[locus.qualifiers[key]] = locus
+            if key:
+                reference.loci[locus.qualifiers[key]] = locus
+            else:
+                reference.keyless_loci.append(locus)
 
 
 def convert_biopython_feature(biopython_feature, config=None):
@@ -116,7 +157,6 @@ def convert_biopython_feature(biopython_feature, config=None):
     Locus information is to be extracted.
     :arg dict config: Configuration dictionary for the extraction process.
     """
-    # TODO: Could be converted into a static method or a separate package.
     if not isinstance(biopython_feature, SeqFeature.SeqFeature):
         return
     if config is None:

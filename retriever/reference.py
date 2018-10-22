@@ -597,18 +597,22 @@ class Reference:
     def __init__(self, start=None, end=None,
                  reference=None, cfg=None):
 
+        self.type = None
+
+        self.info = {}
+
         self.source = {}
 
         self.loci = {}
+
+        # All the locis without the key present in the qualifiers.
+        self.keyless_loci = []
 
         # All the parents in a tree with feature types as keys.
         self._parents_dict = {}
 
         # All the sequences unattached to the record tree.
         self._unattached = []
-
-        # All the sequence without the key present in the qualifiers.
-        self._keyless_sequences = []
 
         # The number of sequences with fuzzy positions.
         self._fuzzy_sequences = 0
@@ -642,6 +646,10 @@ class Reference:
         Simple record string representation.
         """
         # print(self.loci.values())
+        info = '\n'.join([' {:17}: {}'.
+                         format(k, v) for k, v in self.info.items()])
         loci = '\n'.join(map(str, self.loci.values()))
-        return '{}\nTotal loci: {}'.format(loci, len(self.loci))
+
+        return '\nReference info:\n{}\n{}\nTotal loci: {}'.format(
+            info, loci, len(self.loci))
         # return json.dumps(self._annotations)
