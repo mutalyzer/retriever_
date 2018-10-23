@@ -1,4 +1,5 @@
 from http.client import HTTPException
+from http.client import HTTPException
 from urllib.error import HTTPError
 
 from Bio import Entrez
@@ -131,7 +132,6 @@ def _get_link_from_ncbi(source_db, target_db, match_link_name,
         return fail_or_retry()
     finally:
         handle.close()
-
     try:
         source_gi = result['IdList'][0]
     except IndexError:
@@ -270,10 +270,11 @@ def link_reference(reference_id):
     except NoLinkError:
         pass
     else:
-        return compose_reference(link_accession, link_version)
+        if link_accession:
+            return compose_reference(link_accession, link_version)
 
     try:
-        link_accession, link_version = protein_to_transcript(
+        link_accession, link_version = transcript_to_protein(
             accession, version, match_version)
     except NoLinkError:
         pass
@@ -287,6 +288,7 @@ def compose_reference(accession, version=None):
     """
     Get the accession[.version] of a reference.
     """
+    print(accession, version)
     if accession is None:
         return None
     if version is None:
