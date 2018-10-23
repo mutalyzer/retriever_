@@ -411,10 +411,14 @@ class Locus(object):
         qualifiers = '\n'.join('  {:15}: {}'.
                                format(k, v) for k,v in self.qualifiers.items())
         parts = self.get_parts_string()
-        output = '{} qualifiers:\n{}\n strand: {}\n'.format(
+        output = '{} qualifiers:\n{}\n strand: {}'.format(
             feature_location, qualifiers, self.get_strand())
         if parts != '':
-            output += ' parts:\n{}'.format(parts)
+            output += '\n parts:{}'.format(parts)
+        if self.children:
+            output += ' children:\n'
+            for child in self.children:
+                output += '{}'.format(child.locus_type)
         return output
 
     def to_dict(self):
@@ -578,7 +582,7 @@ class Locus(object):
         output = ''
         delimiter = '\n'
         for part in self._parts:
-            output += '  {}..{}{}'.format(part.start, part.end, delimiter)
+            output += '{}  {}..{}'.format(delimiter, part.start, part.end)
         return output
 
     def get_key_type_and_value(self):

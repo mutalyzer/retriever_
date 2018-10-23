@@ -11,9 +11,11 @@ Additionaly it should also provide some checks:
 import hashlib
 import io
 import os
+import json
 
 from Bio import SeqIO, SeqRecord, SeqFeature
 from ..reference import Position, Locus, Reference
+from ..ncbi import link_reference
 
 KEY_FEATURES = {
     'gene': {
@@ -97,29 +99,17 @@ def parse(content):
 
     reference = Reference()
 
-    extract_features(reference, record)
+    loci = extract_features(reference, record)
+
+    construct_dependencies(loci)
+
+    loci_to_json_model(loci)
 
     reference.info.update(extract_annotations(record))
 
     reference.type = 'genbank'
 
     return reference
-
-
-def extract_annotations(record):
-    """
-    Extract record annotations.
-
-    :arg SeqRecord record: A biopython record.
-    :return: Annotations as a dictionary.
-    :rtype: dict
-    """
-    annotations = {}
-    for annotation in record.annotations:
-        if annotation in ANNOTATIONS:
-            annotations[annotation] = record.annotations[annotation]
-
-    return annotations
 
 
 def extract_features(reference, record):
@@ -130,6 +120,9 @@ def extract_features(reference, record):
     :arg SeqRecord record: A biopython record.
     """
 
+    loci = {}
+    keyless_loci = []
+
     for feature in record.features:
         if feature.type == 'source':
             reference.source = convert_biopython_feature(feature,
@@ -138,10 +131,15 @@ def extract_features(reference, record):
             config = KEY_FEATURES[feature.type]
             locus = convert_biopython_feature(feature, config)
             key = config.get('key')
-            if key:
+            if key and locus.qualifiers.get(key):
+                if feature.type not in loci:
+                    loci[feature.type] = {}
+                loci[feature.type][locus.qualifiers[key]] = locus
                 reference.loci[locus.qualifiers[key]] = locus
             else:
                 reference.keyless_loci.append(locus)
+                keyless_loci.append(locus)
+    return loci
 
 
 def convert_biopython_feature(biopython_feature, config=None):
@@ -239,3 +237,69 @@ def extract_dbxref_qualifiers(biopython_qualifier):
         elif 'GeneID' in sub_qualifier:
             qualifiers['GeneID'] = sub_qualifier.rsplit(':', 1)[1]
     return qualifiers
+
+
+def extract_annotations(record):
+    """
+    Extract record annotations.
+
+    :arg SeqRecord record: A biopython record.
+    :return: Annotations as a dictionary.
+    :rtype: dict
+    """
+    annotations = {}
+    for annotation in record.annotations:
+        if annotation in ANNOTATIONS:
+            annotations[annotation] = record.annotations[annotation]
+
+    return annotations
+
+
+def construct_dependencies(loci):
+    """
+    Add loci to their parents (e.g., mRNAs to genes) and link them to their
+    pairs (e.g., mRNAs to CDSs).
+
+    :arg dict loci: Loci dictionary.
+    """
+    if loci.get('gene') and loci.get('mRNA') and loci.get('CDS'):
+        for mrna in loci['mRNA']:
+            cds_link = link_reference(mrna)
+            if cds_link and cds_link in loci['CDS']:
+                loci['CDS'][cds_link].link = loci['mRNA'][mrna]
+                loci['mRNA'][mrna].link = loci['CDS'][cds_link]
+            mrna_gene = loci['mRNA'][mrna].qualifiers.get('gene')
+            if mrna_gene and mrna_gene in loci['gene']:
+                loci['gene'][mrna_gene].add_child(loci['mRNA'][mrna])
+        for cds in loci['CDS']:
+            cds_gene = loci['CDS'][cds].qualifiers.get('gene')
+            if cds_gene and cds_gene in loci['gene']:
+                loci['gene'][cds_gene].add_child(loci['CDS'][cds])
+
+
+def print_loci(loci):
+    for gene in loci['gene']:
+        print('{}:'.format(loci['gene'][gene].qualifiers.get('gene')))
+        if 'mRNA' in loci['gene'][gene].children:
+            for child in loci['gene'][gene].children['mRNA']:
+                print(' {} - {}'.format(
+                    child.qualifiers.get('transcript_id'),
+                    child.link.qualifiers.get('protein_id')))
+
+
+def loci_to_json_model(loci):
+    """
+    Convert a loci into the json model. Only initial step
+
+    :arg dict loci:
+    """
+    loci_json = []
+    for gene in loci['gene']:
+        if 'mRNA' in loci['gene'][gene].children:
+            for child in loci['gene'][gene].children['mRNA']:
+                locus_json = {
+                    'transcript_id': child.qualifiers.get('transcript_id'),
+                    'protein_id': child.link.qualifiers.get('protein_id'),
+                    'gene': gene}
+                loci_json.append(locus_json)
+    print(json.dumps(loci_json, indent=2))

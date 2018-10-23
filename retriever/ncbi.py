@@ -288,7 +288,6 @@ def compose_reference(accession, version=None):
     """
     Get the accession[.version] of a reference.
     """
-    print(accession, version)
     if accession is None:
         return None
     if version is None:

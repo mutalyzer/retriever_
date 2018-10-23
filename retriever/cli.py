@@ -33,7 +33,7 @@ def main():
     args = parser.parse_args()
 
     if args.sizeoff or args.parse:
-        print(retrieve(args.reference, not args.sizeoff, args.parse))
+        retrieve(args.reference, not args.sizeoff, args.parse)
 
     if args.link:
         print(link_reference(args.reference))
