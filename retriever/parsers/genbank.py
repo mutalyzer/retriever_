@@ -101,6 +101,8 @@ def parse(content):
 
     loci = extract_features(reference, record)
 
+    print("-- Features extracted.")
+
     construct_dependencies(loci)
 
     loci_to_json_model(loci)
@@ -300,6 +302,7 @@ def loci_to_json_model(loci):
                 locus_json = {
                     'transcript_id': child.qualifiers.get('transcript_id'),
                     'protein_id': child.link.qualifiers.get('protein_id'),
+                    'HGNC': child.link.qualifiers.get('HGNC'),
                     'gene': gene}
                 loci_json.append(locus_json)
     print(json.dumps(loci_json, indent=2))
