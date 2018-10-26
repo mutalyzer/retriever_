@@ -1,8 +1,9 @@
 from http.client import HTTPException
 from http.client import HTTPException
 from urllib.error import HTTPError
+import io
 
-from Bio import Entrez
+from Bio import Entrez, SeqIO
 import redis
 
 # Maximum size for uploaded and downloaded files (in bytes).
@@ -315,6 +316,32 @@ def _cache_link(forward_key, reverse_key, source_accession, target_accession,
                   '%s.%d' % (source_accession, source_version))
 
 
+def link_transcript_to_protein_by_file(reference_id):
+    """
+    Try to find the transcript link to a protein by downloading and using the
+    corresponding genbank file.
+
+    :arg str reference_id: The reference for which we try to get the link.
+    :return: `accession[.version]` link reference.
+    """
+    try:
+        content = fetch_ncbi(reference_id)
+    except Exception as e:
+        raise
+    else:
+        try:
+            record = SeqIO.read(io.StringIO(content), 'genbank')
+        except ValueError:
+            raise
+        else:
+            for feature in record.features:
+                if feature.type == 'CDS':
+                    protein_id = feature.qualifiers['protein_id'][0]
+                    return (protein_id.split('.')[0],
+                            int(protein_id.split('.')[1]))
+    return NoLinkError
+
+
 def link_reference(reference_id):
     """
     Make the appropriate calls to return the protein/transcript link.
@@ -371,6 +398,21 @@ def link_reference(reference_id):
                     target_accession=link_accession,
                     target_version=link_version)
         return compose_reference(link_accession, link_version)
+
+    if version:
+        try:
+            link_accession, link_version = link_transcript_to_protein_by_file(
+                reference_id)
+        except NoLinkError:
+            pass
+        else:
+            _cache_link(forward_key='ncbi:transcript-to-protein:%s',
+                        reverse_key='ncbi:protein-to-transcript:%s',
+                        source_accession=accession,
+                        source_version=version,
+                        target_accession=link_accession,
+                        target_version=link_version)
+            return compose_reference(link_accession, link_version)
 
     return None
 
