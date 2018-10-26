@@ -155,7 +155,6 @@ def _get_transcripts(section):
         transcript.parts = exons
 
         # Get the CDS of the transcript and store them in a position list.
-        cds_parts = []
         for cds_id, source_cds in enumerate(
                 tdata.getElementsByTagName("coding_region")):
             if cds_id > 0:
@@ -168,7 +167,6 @@ def _get_transcripts(section):
             cds.start = Position(coordinates['start'])
             cds.end = Position(coordinates['end'])
             cds.qualifiers['protein_id'] = cds_name
-            # cds_parts.append(Locus(start=start, end=end, orientation=1))
 
         # Note: Not all the transcripts contain a coding_region.
         if tdata.getElementsByTagName('coding_region'):
@@ -211,7 +209,7 @@ def parse(content):
     Parses an LRG <xml> formatted string and calls the appropriate methods to
     create and return the defined reference model.
 
-    :arg byte str data: Content of LRG file
+    :arg bytes content: Content of LRG file
 
     :return: Corresponding reference instance.
     :rtype: Reference
