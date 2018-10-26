@@ -32,7 +32,8 @@ KEY_FEATURES = {
             'locus_tag',
             'product',
             'gene',
-            'gene_synonym'
+            'gene_synonym',
+            'db_xref'
         },
         'key': 'transcript_id'
     },
@@ -43,7 +44,8 @@ KEY_FEATURES = {
                 'locus_tag',
                 'product',
                 'gene',
-                'gene_synonym'
+                'gene_synonym',
+                'db_xref'
             },
             'key': 'transcript_id'
         }
@@ -80,7 +82,7 @@ ANNOTATIONS = {
 
 def parse(content):
     """
-    Parses a genbank file and returns the defined model.
+    Parses a genbank string and returns the defined reference model.
 
     :arg str content: Genbank file content.
     :return: The corresponding reference instance.
@@ -99,22 +101,20 @@ def parse(content):
 
     reference = Reference()
 
-    loci = extract_features(reference, record)
+    loci = _extract_features(reference, record)
 
-    print("-- Features extracted.")
+    _construct_dependencies(loci)
 
-    construct_dependencies(loci)
+    reference.loci = loci
 
-    loci_to_json_model(loci)
-
-    reference.info.update(extract_annotations(record))
+    reference.info.update(_extract_annotations(record))
 
     reference.type = 'genbank'
 
     return reference
 
 
-def extract_features(reference, record):
+def _extract_features(reference, record):
     """
     Loops over the record features and extracts them into Locus instances.
 
@@ -127,11 +127,11 @@ def extract_features(reference, record):
 
     for feature in record.features:
         if feature.type == 'source':
-            reference.source = convert_biopython_feature(feature,
-                                                         SOURCE_FEATURES)
+            reference.source = _convert_biopython_feature(feature,
+                                                          SOURCE_FEATURES)
         elif feature.type in KEY_FEATURES:
             config = KEY_FEATURES[feature.type]
-            locus = convert_biopython_feature(feature, config)
+            locus = _convert_biopython_feature(feature, config)
             key = config.get('key')
             if key and locus.qualifiers.get(key):
                 if feature.type not in loci:
@@ -144,7 +144,7 @@ def extract_features(reference, record):
     return loci
 
 
-def convert_biopython_feature(biopython_feature, config=None):
+def _convert_biopython_feature(biopython_feature, config=None):
     """
     Gathers all the relevant information from a BioPython feature instance
     and populates the Locus attributes based on the provided
@@ -175,7 +175,7 @@ def convert_biopython_feature(biopython_feature, config=None):
     locus_type = biopython_feature.type
     orientation = biopython_feature.strand
 
-    qualifiers = extract_qualifiers(biopython_feature.qualifiers, config)
+    qualifiers = _extract_qualifiers(biopython_feature.qualifiers, config)
 
     parts = None
     # Check if it is a compound sequence.
@@ -196,7 +196,7 @@ def convert_biopython_feature(biopython_feature, config=None):
     return locus
 
 
-def extract_qualifiers(biopython_qualifiers, config):
+def _extract_qualifiers(biopython_qualifiers, config):
     """
     Extracts the biopython qualifiers mentioned in the configuration.
 
@@ -211,13 +211,13 @@ def extract_qualifiers(biopython_qualifiers, config):
         if k in config['qualifiers']:
             if k == 'db_xref':
                 qualifiers.update(
-                    extract_dbxref_qualifiers(biopython_qualifiers[k]))
+                    _extract_dbxref_qualifiers(biopython_qualifiers[k]))
             else:
                 qualifiers[k] = biopython_qualifiers[k][0]
     return qualifiers
 
 
-def extract_dbxref_qualifiers(biopython_qualifier):
+def _extract_dbxref_qualifiers(biopython_qualifier):
     """
     Extracts qualifiers which can be part of the same biopython feature, as
     for example the "dbxref" which can be as follows:
@@ -241,7 +241,7 @@ def extract_dbxref_qualifiers(biopython_qualifier):
     return qualifiers
 
 
-def extract_annotations(record):
+def _extract_annotations(record):
     """
     Extract record annotations.
 
@@ -257,7 +257,7 @@ def extract_annotations(record):
     return annotations
 
 
-def construct_dependencies(loci):
+def _construct_dependencies(loci):
     """
     Add loci to their parents (e.g., mRNAs to genes) and link them to their
     pairs (e.g., mRNAs to CDSs).
@@ -280,6 +280,11 @@ def construct_dependencies(loci):
 
 
 def print_loci(loci):
+    """
+    Simple loci print for debug purposes.
+
+    :param loci: Loci reference model instance.
+    """
     for gene in loci['gene']:
         print('{}:'.format(loci['gene'][gene].qualifiers.get('gene')))
         if 'mRNA' in loci['gene'][gene].children:
@@ -289,20 +294,3 @@ def print_loci(loci):
                     child.link.qualifiers.get('protein_id')))
 
 
-def loci_to_json_model(loci):
-    """
-    Convert a loci into the json model. Only initial step
-
-    :arg dict loci:
-    """
-    loci_json = []
-    for gene in loci['gene']:
-        if 'mRNA' in loci['gene'][gene].children:
-            for child in loci['gene'][gene].children['mRNA']:
-                locus_json = {
-                    'transcript_id': child.qualifiers.get('transcript_id'),
-                    'protein_id': child.link.qualifiers.get('protein_id'),
-                    'HGNC': child.link.qualifiers.get('HGNC'),
-                    'gene': gene}
-                loci_json.append(locus_json)
-    print(json.dumps(loci_json, indent=2))

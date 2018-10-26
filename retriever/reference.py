@@ -534,15 +534,15 @@ class Locus(object):
         if self._orientation == 1:
             return '+'
 
-    def add_child(self, seq):
+    def add_child(self, locus):
         """
         Adds a child to the children list.
-        :param seq: child locus to be added.
+        :param locus: child locus to be added.
         """
-        if seq.locus_type in self.children:
-            self.children[seq.locus_type].append(seq)
+        if locus.locus_type in self.children:
+            self.children[locus.locus_type].append(locus)
         else:
-            self.children[seq.locus_type] = [seq]
+            self.children[locus.locus_type] = [locus]
 
     def get_child(self, feature_type, q_k, q_v):
         """
@@ -644,6 +644,25 @@ class Reference:
                 if child_type == child.locus_type:
                     output['features'][child_type].append(child.to_dict())
         return json.dumps(output, indent=2)
+
+    def loci_to_json_model(self):
+        """
+        Draft loci object serializer.
+
+        :arg dict loci:
+        """
+        loci_json = []
+        for gene in self.loci['gene']:
+            if 'mRNA' in self.loci['gene'][gene].children:
+                for child in self.loci['gene'][gene].children['mRNA']:
+                    locus_json = {
+                        'transcript_id': child.qualifiers.get('transcript_id'),
+                        'protein_id': child.link.qualifiers.get('protein_id')
+                        if child.link else None,
+                        'HGNC': self.loci['gene'][gene].qualifiers.get('HGNC'),
+                        'gene': gene}
+                    loci_json.append(locus_json)
+        print(json.dumps(loci_json, indent=2))
 
     def __str__(self):
         """

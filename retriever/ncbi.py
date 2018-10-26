@@ -337,6 +337,7 @@ def link_reference(reference_id):
             link_accession, link_version = _get_link_from_cache(
                 accession, version, match_version)
         except NoLinkError:
+            print('Linked not cached:', accession, version)
             pass
         else:
             if link_accession:

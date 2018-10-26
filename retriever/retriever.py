@@ -1,6 +1,6 @@
 from .lrg import fetch_lrg
 from .ncbi import fetch_ncbi
-from .parsers import genbank
+from .parsers import genbank, lrg
 
 from pathlib import Path
 
@@ -25,16 +25,27 @@ def retrieve(reference_id, size_on=True, parse=False):
         if path.is_file():
             with path.open() as f:
                 content = f.read()
+    if 'LRG' in reference_id:
+        reference_type = 'lrg'
+    else:
+        reference_type = 'genbank'
+
     if content is None:
-        if 'LRG' in reference_id:
+        if reference_type == 'lrg':
             content = fetch_lrg(reference_id, size_on)
-        else:
+        elif reference_type == 'genbank':
             content = fetch_ncbi(reference_id, size_on)
 
     if parse:
-        reference = genbank.parse(content)
-        if reference and CACHE:
-            path = Path(CACHE_PATH) / reference_id
-            with path.open('w') as f: f.write(content)
-        return reference
+        if reference_type == 'lrg':
+            reference = lrg.parse(content)
+        elif reference_type == 'genbank':
+            reference = genbank.parse(content)
+            if reference and CACHE:
+                path = Path(CACHE_PATH) / reference_id
+                with path.open('w') as f:
+                    f.write(content)
 
+        reference.loci_to_json_model()
+
+        return reference
