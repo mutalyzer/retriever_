@@ -1,5 +1,5 @@
 from .lrg import fetch_lrg
-from .ncbi import fetch_ncbi
+from .ncbi import fetch_ncbi, get_reference_summary
 from .parsers import genbank, lrg
 
 from pathlib import Path
@@ -19,22 +19,35 @@ def retrieve(reference_id, size_on=True, parse=False):
     :return: The reference raw content or its equivalent parse tree serialized.
     :rtype: str
     """
+    checks = {
+        'ncbi': False,
+        'lrg': False
+    }
+
     content = None
     if CACHE:
         path = Path(CACHE_PATH) / reference_id
         if path.is_file():
             with path.open() as f:
                 content = f.read()
-    if 'LRG' in reference_id:
-        reference_type = 'lrg'
-    else:
-        reference_type = 'genbank'
 
-    if content is None:
-        if reference_type == 'lrg':
-            content = fetch_lrg(reference_id, size_on)
-        elif reference_type == 'genbank':
-            content = fetch_ncbi(reference_id, size_on)
+    if 'LRG' in reference_id:
+        content = fetch_lrg(reference_id, size_on)
+        checks['lrg'] = True
+        reference_type = 'lrg' if content else None
+    else:
+        content, check = fetch_ncbi(reference_id, size_on)
+        if check:
+            checks['ncbi'] = True
+        reference_type = 'genbank_ncbi' if content else None
+
+    if (content is None) and (not checks['lrg']):
+        content = fetch_lrg(reference_id, size_on)
+        checks['lrg'] = True
+    if (content is None) and (not checks['ncbi']):
+        content, check = fetch_ncbi(reference_id, size_on)
+
+    print(content)
 
     if parse:
         if reference_type == 'lrg':

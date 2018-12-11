@@ -37,3 +37,5 @@ def main():
 
     if args.link:
         print(link_reference(args.reference))
+
+    retrieve(args.reference)

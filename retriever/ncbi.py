@@ -30,29 +30,96 @@ class NoLinkError(Exception):
     pass
 
 
-def length(reference_id, db='nuccore'):
+class NcbiConnectionError(Exception):
     """
-    Retrieves the sequence length.
+    Raised when there is some NCBI connection error.
+    """
+    pass
+
+
+class NoNcbiReference(Exception):
+    """
+    Raised when reference not found on NCBI.
+    """
+    pass
+
+
+def get_ncbi_databases(reference_id):
+    """
+    Queries NCBI to identify in what databases a specific reference appears.
+
+    Note:
+    Whenever a reference without the most recent version is employed it seems
+    that not all the databases are returned (including the most important ones
+    for us, i.e., nuccore and protein). Hence, we always strip the reference
+    and employ the accession only. Example:
+    https://eutils.ncbi.nlm.nih.gov/gquery?term=NC_000001.10&retmode=xml
+    versus:
+    https://eutils.ncbi.nlm.nih.gov/gquery?term=NC_000001&retmode=xml
+    Strange enough, but this works:
+    https://www.ncbi.nlm.nih.gov/search/all/?term=NC_000001.10
+    I was not able to find any additional parameter that would expand the
+    search.
 
     :arg str reference_id: The id of the reference.
-    :returns: Sequence length.
+    :returns: Set with NCBI databases.
+    :rtype: set
+    """
+    if '.' in reference_id:
+        reference_id = reference_id.rsplit('.')[0]
+    try:
+        handle = Entrez.egquery(term=reference_id)
+    except (IOError, HTTPError, HTTPException) as e:
+        raise NcbiConnectionError
+
+    result = Entrez.read(handle)
+    databases = set()
+    for item in result['eGQueryResult']:
+        if item['Status'].upper() == 'OK' and int(item['Count']) >= 1:
+            databases.add(item['DbName'])
+    return databases
+
+
+def get_reference_summary(reference_id):
+    """
+    Retrieves the reference summary if available on the NCBI.
+
+    :arg str reference_id: The id of the reference.
+    :returns:
     :rtype: int
     """
     try:
-        net_handle = Entrez.esummary(db=db, id=reference_id)
-        record = Entrez.read(net_handle)
-        net_handle.close()
+        databases = get_ncbi_databases(reference_id)
+    except NcbiConnectionError as e:
+        raise e
+
+    if 'nuccore' in databases:
+        db = 'nuccore'
+    elif 'protein' in databases:
+        db = 'protein'
+    else:
+        raise NoNcbiReference
+
+    try:
+        handle = Entrez.esummary(db=db, id=reference_id)
     except (IOError, HTTPError, HTTPException) as e:
-        print('-1, INFO, Error connecting to Entrez {} database: {}.'
-              .format(db, e))
-        print('4, ERETR, Could not retrieve record length for {}.'
-              .format(reference_id))
-        return None
-    except RuntimeError as e:
-        # TODO: Extract the db name from the error:
-        # Otherdb uid="131889391" db="protein" term="131889391"
-        return length(reference_id, db='protein')
-    return int(record[0]['Length'])
+        print('4, ERETR, Could not retrieve record length for {} from {}'
+              'Entrez database. Error message {}:'
+              .format(reference_id, db, str(e)))
+        raise NcbiConnectionError
+    else:
+        try:
+            record = Entrez.read(handle)
+        except RuntimeError:
+            raise NoNcbiReference
+        else:
+            handle.close()
+
+    return {
+        'reference_id': record[0]['AccessionVersion'],
+        'db': db,
+        'length':  int(record[0]['Length'])
+    }
 
 
 def fetch_ncbi(reference_id, size_on=True):
@@ -65,20 +132,21 @@ def fetch_ncbi(reference_id, size_on=True):
     :rtype: str
     """
     if size_on:
-        if length(reference_id) is None:
-            print('Retrieval stopped since there is no record length.')
-            return
-        if length(reference_id) > MAX_FILE_SIZE:
+        try:
+            reference_summary = get_reference_summary(reference_id)
+        except NoNcbiReference:
+            return None, True
+        if reference_summary['length'] > MAX_FILE_SIZE:
             print('4, ERETR, Could not retrieve {} (exceeds maximum file '
                   'size of {} megabytes).'
                   .format(reference_id, MAX_FILE_SIZE // 1048576))
             return None
     try:
-        net_handle = Entrez.efetch(
-            db='nuccore', id=reference_id, rettype='gbwithparts',
-            retmode='text')
-        raw_data = net_handle.read()
-        net_handle.close()
+        handle = Entrez.efetch(
+            db=reference_summary['db'], id=reference_id,
+            rettype='gbwithparts', retmode='text')
+        raw_data = handle.read()
+        handle.close()
     except (IOError, HTTPError, HTTPException) as e:
         print('-1, INFO, Error connecting to Entrez nuccore database: {}.'
               .format(e))
@@ -404,7 +472,9 @@ def link_reference(reference_id):
             link_accession, link_version = link_transcript_to_protein_by_file(
                 reference_id)
         except NoLinkError:
-            pass
+            return None
+        except ValueError:
+            return None
         else:
             _cache_link(forward_key='ncbi:transcript-to-protein:%s',
                         reverse_key='ncbi:protein-to-transcript:%s',

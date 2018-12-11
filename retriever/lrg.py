@@ -23,7 +23,6 @@ def fetch_lrg(reference_id, size_on=True):
     try:
         handle = urlopen(url)
     except URLError:
-        print('4, ERETR, Could not retrieve {}.'.format(reference_id))
         return None
 
     info = handle.info()
