@@ -389,28 +389,37 @@ def _cache_link(forward_key, reverse_key, source_accession, target_accession,
 
 def link_transcript_to_protein_by_file(reference_id):
     """
-    Try to find the transcript link to a protein by downloading and using the
-    corresponding genbank file.
+    Try to find the link between a transcript and a protein (vice versa also)
+    by downloading and using the corresponding genbank file.
+
+    We only consider references starting with 'NM' (transcripts) and 'NP'
+    (proteins), otherwise this is not reliable.
+
+    For both NMs and NPs the feature with the answer is 'CDS'. Next, the
+    qualifier for NMs is 'protein_id' (automatically in 'accession.version'
+    format), while for NPs is 'coded_by' (it includes extra coordinates after
+    the ':', .e.g, 'NM_012459.1:13..264').
 
     :arg str reference_id: The reference for which we try to get the link.
     :return: `accession[.version]` link reference.
     """
-    try:
-        content = fetch_ncbi(reference_id)
-    except Exception as e:
-        raise
-    else:
-        try:
-            record = SeqIO.read(io.StringIO(content), 'genbank')
-        except ValueError:
-            raise
-        else:
-            for feature in record.features:
-                if feature.type == 'CDS':
-                    protein_id = feature.qualifiers['protein_id'][0]
-                    return (protein_id.split('.')[0],
-                            int(protein_id.split('.')[1]))
-    return NoLinkError
+    if not reference_id.startswith('NP') or not reference_id.startswith('NM'):
+        raise ValueError()
+    content = fetch_ncbi(reference_id)
+    record = SeqIO.read(io.StringIO(content), 'genbank')
+    for feature in record.features:
+        if feature.type == 'CDS':
+            if feature.qualifiers.get('protein_id'):
+                protein_id = feature.qualifiers['protein_id'][0]
+            elif feature.qualifiers.get('coded_by'):
+                protein_id = feature.qualifiers['coded_by'][0]
+                if ':' in protein_id:
+                    protein_id = protein_id.rsplit(':')[0]
+            else:
+                raise NoLinkError()
+            return decompose_reference(protein_id)
+
+    raise NoLinkError()
 
 
 def link_reference(reference_id):
@@ -421,14 +430,11 @@ def link_reference(reference_id):
     :return: `accession[.version]` link reference.
     :rtype: str
     """
-    if '.' in reference_id:
-        accession, version = reference_id.rsplit('.', 1)
-        version = int(version)
-        match_version = True
-    else:
-        accession = reference_id
-        version = None
+    accession, version = decompose_reference(reference_id)
+    if version is None:
         match_version = False
+    else:
+        match_version = True
 
     if REDIS:
         try:
@@ -477,7 +483,7 @@ def link_reference(reference_id):
         except NoLinkError:
             return None
         except ValueError:
-            return None
+            print('Link by file reference value error.')
         else:
             _cache_link(forward_key='ncbi:transcript-to-protein:%s',
                         reverse_key='ncbi:protein-to-transcript:%s',
@@ -488,6 +494,16 @@ def link_reference(reference_id):
             return compose_reference(link_accession, link_version)
 
     return None
+
+
+def decompose_reference(reference_id):
+    if '.' in reference_id:
+        accession, version = reference_id.rsplit('.', 1)
+        version = int(version)
+    else:
+        accession = reference_id
+        version = None
+    return accession, version
 
 
 def compose_reference(accession, version=None):
