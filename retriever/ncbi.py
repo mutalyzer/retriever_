@@ -403,7 +403,7 @@ def link_transcript_to_protein_by_file(reference_id):
     :arg str reference_id: The reference for which we try to get the link.
     :return: `accession[.version]` link reference.
     """
-    if not reference_id.startswith('NP') or not reference_id.startswith('NM'):
+    if (not reference_id.startswith('NP')) or (not reference_id.startswith('NM')):
         raise ValueError()
     content = fetch_ncbi(reference_id)
     record = SeqIO.read(io.StringIO(content), 'genbank')
@@ -445,7 +445,7 @@ def link_reference(reference_id):
             pass
         else:
             if link_accession:
-                return compose_reference(link_accession, link_version)
+                return compose_reference(link_accession, link_version), 'cache'
 
     try:
         link_accession, link_version = protein_to_transcript(
@@ -460,7 +460,7 @@ def link_reference(reference_id):
                         source_version=version,
                         target_accession=link_accession,
                         target_version=link_version)
-            return compose_reference(link_accession, link_version)
+            return compose_reference(link_accession, link_version), 'api'
 
     try:
         link_accession, link_version = transcript_to_protein(
@@ -474,14 +474,14 @@ def link_reference(reference_id):
                     source_version=version,
                     target_accession=link_accession,
                     target_version=link_version)
-        return compose_reference(link_accession, link_version)
+        return compose_reference(link_accession, link_version), 'api'
 
     if version:
         try:
             link_accession, link_version = link_transcript_to_protein_by_file(
                 reference_id)
         except NoLinkError:
-            return None
+            return None, None
         except ValueError:
             print('Link by file reference value error.')
         else:
@@ -491,12 +491,16 @@ def link_reference(reference_id):
                         source_version=version,
                         target_accession=link_accession,
                         target_version=link_version)
-            return compose_reference(link_accession, link_version)
+            return compose_reference(link_accession, link_version), 'file'
 
-    return None
+    return None, None
 
 
 def decompose_reference(reference_id):
+    """
+    Get the accession and the version of a reference. The version is None
+    if it is not present.
+    """
     if '.' in reference_id:
         accession, version = reference_id.rsplit('.', 1)
         version = int(version)
@@ -508,7 +512,7 @@ def decompose_reference(reference_id):
 
 def compose_reference(accession, version=None):
     """
-    Get the accession[.version] of a reference.
+    Create the accession[.version] of a reference.
     """
     if accession is None:
         return None
