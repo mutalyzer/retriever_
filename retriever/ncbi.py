@@ -44,6 +44,13 @@ class NoNcbiReference(Exception):
     pass
 
 
+class ReferenceToLong(Exception):
+    """
+    Raised when the reference length exceeds maximum size.
+    """
+    pass
+
+
 def get_ncbi_databases(reference_id):
     """
     Queries NCBI to identify in what databases a specific reference appears.
@@ -135,26 +142,22 @@ def fetch_ncbi(reference_id, size_on=True):
         try:
             reference_summary = get_reference_summary(reference_id)
         except NoNcbiReference:
-            return None, True
-        if reference_summary['length'] > MAX_FILE_SIZE:
-            print('4, ERETR, Could not retrieve {} (exceeds maximum file '
-                  'size of {} megabytes).'
-                  .format(reference_id, MAX_FILE_SIZE // 1048576))
             return None
+        except NcbiConnectionError:
+            raise NcbiConnectionError
+
+        if reference_summary['length'] > MAX_FILE_SIZE:
+            raise ReferenceToLong
     try:
         handle = Entrez.efetch(
             db=reference_summary['db'], id=reference_id,
             rettype='gbwithparts', retmode='text')
+    except (IOError, HTTPError, HTTPException):
+        raise NcbiConnectionError
+    else:
         raw_data = handle.read()
         handle.close()
-    except (IOError, HTTPError, HTTPException) as e:
-        print('-1, INFO, Error connecting to Entrez nuccore database: {}.'
-              .format(e))
-        print('4, ERETR, Could not retrieve record {}.'
-              .format(reference_id))
-        return None
-
-    return raw_data
+        return raw_data
 
 
 def _get_link_from_ncbi(source_db, target_db, match_link_name,
