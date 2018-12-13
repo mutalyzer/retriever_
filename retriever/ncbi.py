@@ -403,7 +403,8 @@ def link_transcript_to_protein_by_file(reference_id):
     :arg str reference_id: The reference for which we try to get the link.
     :return: `accession[.version]` link reference.
     """
-    if (not reference_id.startswith('NP')) or (not reference_id.startswith('NM')):
+    if not (not reference_id.startswith('NP')) \
+            or (not reference_id.startswith('NM')):
         raise ValueError()
     content = fetch_ncbi(reference_id)
     record = SeqIO.read(io.StringIO(content), 'genbank')
@@ -441,7 +442,6 @@ def link_reference(reference_id):
             link_accession, link_version = _get_link_from_cache(
                 accession, version, match_version)
         except NoLinkError:
-            print('Linked not cached:', accession, version)
             pass
         else:
             if link_accession:
@@ -483,7 +483,7 @@ def link_reference(reference_id):
         except NoLinkError:
             return None, None
         except ValueError:
-            print('Link by file reference value error.')
+            return None, None
         else:
             _cache_link(forward_key='ncbi:transcript-to-protein:%s',
                         reverse_key='ncbi:protein-to-transcript:%s',

@@ -33,14 +33,18 @@ def main():
 
     args = parser.parse_args()
 
+    if args.link:
+        link, method = link_reference(args.reference)
+        if link:
+            print('{} (from {})'.format(link, method))
+        else:
+            print('Link not found.')
+        return
+
     if args.sizeoff:
         content, reference_type = retrieve(args.reference, not args.sizeoff)
     else:
         content, reference_type = retrieve(args.reference)
-
-    if args.link:
-        print(link_reference(args.reference))
-        return
 
     if args.parse:
         if content:
@@ -49,4 +53,7 @@ def main():
         else:
             print('No content, parsing not performed.')
     else:
-        print(content)
+        if content:
+            print(content)
+        else:
+            print('File not retrieved.')
