@@ -9,8 +9,6 @@ def get_reference_type(content):
 
 def parse(content, reference_type=None):
 
-    print(content[0:100], reference_type)
-
     if reference_type is None:
         reference_type = get_reference_type(content)
 
