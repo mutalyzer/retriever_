@@ -609,6 +609,8 @@ class Reference:
 
         self.loci = {}
 
+        self.mol_type = None
+
         # All the locis without the key present in the qualifiers.
         self.keyless_loci = []
 
@@ -652,16 +654,21 @@ class Reference:
         :arg dict loci:
         """
         loci_json = []
-        for gene in self.loci['gene']:
-            if 'mRNA' in self.loci['gene'][gene].children:
-                for child in self.loci['gene'][gene].children['mRNA']:
+
+        for gene_name, gene in self.loci['gene'].items():
+            if 'mRNA' in gene.children:
+                for child in gene.children['mRNA']:
                     locus_json = {
                         'transcript_id': child.qualifiers.get('transcript_id'),
                         'protein_id': child.link.qualifiers.get('protein_id')
                         if child.link else None,
-                        'HGNC': self.loci['gene'][gene].qualifiers.get('HGNC'),
-                        'gene': gene}
+                        'HGNC': self.loci['gene'][gene_name].qualifiers.get('HGNC'),
+                        'gene': gene_name}
                     loci_json.append(locus_json)
+            else:
+                print(gene)
+                for child in gene.children:
+                    print(child)
         print(json.dumps(loci_json, indent=2))
 
     def __str__(self):

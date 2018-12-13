@@ -15,7 +15,7 @@ import json
 
 from Bio import SeqIO, SeqRecord, SeqFeature
 from ..reference import Position, Locus, Reference
-from ..ncbi import link_reference
+from ..ncbi import link_reference, compose_reference, decompose_reference
 
 KEY_FEATURES = {
     'gene': {
@@ -25,17 +25,6 @@ KEY_FEATURES = {
             'db_xref'
         },
         'key': 'gene'
-    },
-    'mRNA': {
-        'qualifiers': {
-            'transcript_id',
-            'locus_tag',
-            'product',
-            'gene',
-            'gene_synonym',
-            'db_xref'
-        },
-        'key': 'transcript_id'
     },
     **(dict.fromkeys(
         ['mRNA', 'misc_RNA', 'ncRNA', 'tRNA', 'rRNA', 'precursor_RNA'], {
@@ -57,9 +46,16 @@ KEY_FEATURES = {
             'codon_start',
             'transl_table',
             'product',
-            'db_xref'
+            'db_xref',
+            'coded_by'
         },
         'key': 'protein_id'
+    },
+    'Protein': {
+        'qualifiers': {
+            'product'
+        },
+        'key': 'product'
     }
 }
 
@@ -101,7 +97,9 @@ def parse(content):
 
     reference = Reference()
 
-    loci = _extract_features(reference, record)
+    loci, keyless_loci = _extract_features(reference, record)
+
+    extract_mol_type(reference, loci)
 
     _construct_dependencies(loci)
 
@@ -123,7 +121,7 @@ def _extract_features(reference, record):
     """
 
     loci = {}
-    keyless_loci = []
+    keyless_loci = {}
 
     for feature in record.features:
         if feature.type == 'source':
@@ -139,9 +137,10 @@ def _extract_features(reference, record):
                 loci[feature.type][locus.qualifiers[key]] = locus
                 reference.loci[locus.qualifiers[key]] = locus
             else:
-                reference.keyless_loci.append(locus)
-                keyless_loci.append(locus)
-    return loci
+                if feature.type not in keyless_loci:
+                    keyless_loci[feature.type] = []
+                keyless_loci[feature.type].append(locus)
+    return loci, keyless_loci
 
 
 def _convert_biopython_feature(biopython_feature, config=None):
@@ -239,6 +238,20 @@ def _extract_dbxref_qualifiers(biopython_qualifier):
         elif 'GeneID' in sub_qualifier:
             qualifiers['GeneID'] = sub_qualifier.rsplit(':', 1)[1]
     return qualifiers
+
+
+def extract_mol_type(reference, loci):
+    """
+    Extract molecule type for the reference.
+    """
+    if reference.source.qualifiers.get('mol_type'):
+        if reference.source.qualifiers['mol_type'][0] in ['mRNA', 'transcribed RNA']:
+            reference.mol_type = 'n'
+        elif reference.source.qualifiers['mol_type'][0] in ['genomic DNA']:
+            reference.mol_type = 'g'
+    if reference.source.qualifiers.get('organelle'):
+        if reference.source.qualifiers['organelle'][0] == 'mitochondrion':
+            reference.mol_type = 'm'
 
 
 def _extract_annotations(record):
