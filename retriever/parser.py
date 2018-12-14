@@ -2,9 +2,10 @@ from .parsers import genbank, lrg
 
 
 def get_reference_type(content):
-    reference_type = None
-
-    return reference_type
+    if content.startswith('<?xml version='):
+        return 'lrg'
+    elif content.startswith('LOCUS'):
+        return 'genbank_ncbi'
 
 
 def parse(content, reference_type=None):
@@ -19,4 +20,4 @@ def parse(content, reference_type=None):
     else:
         return None
 
-    return reference.loci_to_json_model()
+    return reference
