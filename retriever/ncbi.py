@@ -91,10 +91,16 @@ def get_reference_summary(reference_id):
     except NcbiConnectionError as e:
         raise e
 
+    print(databases)
+
     if 'nuccore' in databases:
         db = 'nuccore'
     elif 'protein' in databases:
         db = 'protein'
+    elif 'nucest' in databases:
+        db = 'nucest'
+        # Todo: Pay attention to the following:
+        # https://ncbiinsights.ncbi.nlm.nih.gov/2018/07/30/upcoming-changes-est-gss-databases/
     else:
         raise NoNcbiReference
 
@@ -453,11 +459,11 @@ def link_reference(reference_id):
                             target_accession=link_accession,
                             target_version=link_version)
                 _cache_link(forward_key='ncbi:transcript-to-protein:%s',
-                        reverse_key='ncbi:protein-to-transcript:%s',
-                        source_accession=accession,
-                        source_version=version,
-                        target_accession=link_accession,
-                        target_version=link_version)
+                            reverse_key='ncbi:protein-to-transcript:%s',
+                            source_accession=accession,
+                            source_version=version,
+                            target_accession=link_accession,
+                            target_version=link_version)
 
             return compose_reference(link_accession, link_version), 'api'
 
