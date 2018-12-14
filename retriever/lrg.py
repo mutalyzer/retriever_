@@ -42,7 +42,7 @@ def fetch_lrg(reference_id, size_on=True):
     try:
         handle = urlopen(url)
     except URLError:
-        raise LrgUrlAccessError
+        return None
 
     info = handle.info()
 
