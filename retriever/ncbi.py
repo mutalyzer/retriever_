@@ -485,7 +485,7 @@ def link_reference(reference_id):
         except ValueError:
             return None, None
         else:
-            if settings.REDIS:
+            if settings.REDIS_URI:
                 _cache_link(forward_key='ncbi:transcript-to-protein:%s',
                             reverse_key='ncbi:protein-to-transcript:%s',
                             source_accession=accession,
