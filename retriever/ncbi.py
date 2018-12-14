@@ -5,22 +5,13 @@ import io
 
 from Bio import Entrez, SeqIO
 import redis
-
-# Maximum size for uploaded and downloaded files (in bytes).
-MAX_FILE_SIZE = 10 * 1048576  # 10 MB
-
-# This email address is used in contact information on the website and sent
-# with NCBI Entrez calls.
-EMAIL = 'mutalyzer@lumc.nl'
-
-Entrez.email = EMAIL
-
-REDIS_URI = 'redis://localhost'
+from . import settings
 
 redis = redis.StrictRedis.from_url(
-    REDIS_URI, decode_responses=True, encoding='utf-8')
+    settings.REDIS_URI, decode_responses=True, encoding='utf-8')
 
-REDIS = True
+Entrez.email = settings.EMAIL
+Entrez.api_key = settings.NCBI_API_KEY
 
 
 class NoLinkError(Exception):
@@ -146,7 +137,7 @@ def fetch_ncbi(reference_id, size_on=True):
         except NcbiConnectionError:
             raise NcbiConnectionError
 
-        if reference_summary['length'] > MAX_FILE_SIZE:
+        if reference_summary['length'] > settings.MAX_FILE_SIZE:
             raise ReferenceToLong
     try:
         handle = Entrez.efetch(
@@ -437,7 +428,7 @@ def link_reference(reference_id):
     else:
         match_version = True
 
-    if REDIS:
+    if settings.REDIS_URI:
         try:
             link_accession, link_version = _get_link_from_cache(
                 accession, version, match_version)
@@ -454,12 +445,20 @@ def link_reference(reference_id):
         pass
     else:
         if link_accession:
-            _cache_link(forward_key='ncbi:protein-to-transcript:%s',
-                        reverse_key='ncbi:transcript-to-protein:%s',
+            if settings.REDIS_URI:
+                _cache_link(forward_key='ncbi:protein-to-transcript:%s',
+                            reverse_key='ncbi:transcript-to-protein:%s',
+                            source_accession=accession,
+                            source_version=version,
+                            target_accession=link_accession,
+                            target_version=link_version)
+                _cache_link(forward_key='ncbi:transcript-to-protein:%s',
+                        reverse_key='ncbi:protein-to-transcript:%s',
                         source_accession=accession,
                         source_version=version,
                         target_accession=link_accession,
                         target_version=link_version)
+
             return compose_reference(link_accession, link_version), 'api'
 
     try:
@@ -468,12 +467,13 @@ def link_reference(reference_id):
     except NoLinkError:
         pass
     else:
-        _cache_link(forward_key='ncbi:transcript-to-protein:%s',
-                    reverse_key='ncbi:protein-to-transcript:%s',
-                    source_accession=accession,
-                    source_version=version,
-                    target_accession=link_accession,
-                    target_version=link_version)
+        if settings.REDIS_URI:
+            _cache_link(forward_key='ncbi:transcript-to-protein:%s',
+                        reverse_key='ncbi:protein-to-transcript:%s',
+                        source_accession=accession,
+                        source_version=version,
+                        target_accession=link_accession,
+                        target_version=link_version)
         return compose_reference(link_accession, link_version), 'api'
 
     if version:
@@ -485,12 +485,13 @@ def link_reference(reference_id):
         except ValueError:
             return None, None
         else:
-            _cache_link(forward_key='ncbi:transcript-to-protein:%s',
-                        reverse_key='ncbi:protein-to-transcript:%s',
-                        source_accession=accession,
-                        source_version=version,
-                        target_accession=link_accession,
-                        target_version=link_version)
+            if settings.REDIS:
+                _cache_link(forward_key='ncbi:transcript-to-protein:%s',
+                            reverse_key='ncbi:protein-to-transcript:%s',
+                            source_accession=accession,
+                            source_version=version,
+                            target_accession=link_accession,
+                            target_version=link_version)
             return compose_reference(link_accession, link_version), 'file'
 
     return None, None

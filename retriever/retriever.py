@@ -1,10 +1,8 @@
-from .lrg import fetch_lrg
-from .ncbi import fetch_ncbi, NcbiConnectionError
-
 from pathlib import Path
 
-CACHE_PATH = '/tmp'
-CACHE = True
+from .lrg import fetch_lrg
+from .ncbi import fetch_ncbi, NcbiConnectionError
+from . import settings
 
 
 def retrieve(reference_id, size_on=True, parse=False):
@@ -24,8 +22,8 @@ def retrieve(reference_id, size_on=True, parse=False):
     }
 
     content = None
-    if CACHE:
-        path = Path(CACHE_PATH) / reference_id
+    if settings.CACHE_DIR:
+        path = Path(settings.CACHE_DIR) / reference_id
         if path.is_file():
             with path.open() as f:
                 content = f.read()
@@ -57,5 +55,13 @@ def retrieve(reference_id, size_on=True, parse=False):
         else:
             checks['ncbi'] = True
             reference_type = 'genbank_ncbi' if content else None
+
+    if content and settings.CACHE_DIR:
+        if isinstance(content, bytes):
+            write_mode = 'wb'
+        else:
+            write_mode = 'w'
+        with path.open(write_mode) as f:
+            f.write(content)
 
     return content, reference_type
