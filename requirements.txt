@@ -1,0 +1,12 @@
+atomicwrites==1.2.1
+attrs==18.2.0
+biopython==1.72
+more-itertools==4.3.0
+numpy==1.15.2
+pathlib2==2.3.3
+pkg-resources==0.0.0
+pluggy==0.8.0
+py==1.7.0
+pytest==4.0.1
+redis==2.10.6
+six==1.12.0
