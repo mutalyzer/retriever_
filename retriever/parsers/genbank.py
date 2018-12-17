@@ -17,7 +17,7 @@ from Bio import SeqIO, SeqRecord, SeqFeature
 from ..reference import Position, Locus, Reference
 from ..ncbi import link_reference, compose_reference, decompose_reference
 
-KEY_FEATURES = {
+FEATURES = {
     'gene': {
         'qualifiers': {
             'gene',
@@ -54,8 +54,7 @@ KEY_FEATURES = {
     'Protein': {
         'qualifiers': {
             'product'
-        },
-        'key': 'product'
+        }
     }
 }
 
@@ -97,15 +96,18 @@ def parse(content):
 
     reference = Reference()
 
-    loci, keyless_loci = _extract_features(reference, record)
+    loci = _extract_features(reference, record)
 
-    extract_mol_type(reference, loci)
+    info = _build_info(record, reference, loci)
+
+    if info.get('mol_type') == 'p':
+        _add_extra_non_feature_loci(loci, info.get('id'))
 
     _construct_dependencies(loci)
 
     reference.loci = loci
 
-    reference.info.update(_extract_annotations(record))
+    reference.info = info
 
     reference.type = 'genbank'
 
@@ -121,14 +123,13 @@ def _extract_features(reference, record):
     """
 
     loci = {}
-    keyless_loci = {}
 
     for feature in record.features:
         if feature.type == 'source':
             reference.source = _convert_biopython_feature(feature,
                                                           SOURCE_FEATURES)
-        elif feature.type in KEY_FEATURES:
-            config = KEY_FEATURES[feature.type]
+        elif feature.type in FEATURES:
+            config = FEATURES[feature.type]
             locus = _convert_biopython_feature(feature, config)
             key = config.get('key')
             if key and locus.qualifiers.get(key):
@@ -137,10 +138,12 @@ def _extract_features(reference, record):
                 loci[feature.type][locus.qualifiers[key]] = locus
                 reference.loci[locus.qualifiers[key]] = locus
             else:
-                if feature.type not in keyless_loci:
-                    keyless_loci[feature.type] = []
-                keyless_loci[feature.type].append(locus)
-    return loci, keyless_loci
+                if loci.get('keyless') is None:
+                    loci['keyless'] = {}
+                if feature.type not in loci['keyless']:
+                    loci['keyless'][feature.type] = []
+                loci['keyless'][feature.type].append(locus)
+    return loci
 
 
 def _convert_biopython_feature(biopython_feature, config=None):
@@ -240,18 +243,24 @@ def _extract_dbxref_qualifiers(biopython_qualifier):
     return qualifiers
 
 
-def extract_mol_type(reference, loci):
+def _extract_mol_type(reference, loci):
     """
     Extract molecule type for the reference.
     """
+    mol_type = None
     if reference.source.qualifiers.get('mol_type'):
         if reference.source.qualifiers['mol_type'][0] in ['mRNA', 'transcribed RNA']:
-            reference.mol_type = 'n'
+            mol_type = 'n'
         elif reference.source.qualifiers['mol_type'][0] in ['genomic DNA']:
-            reference.mol_type = 'g'
+            mol_type = 'g'
     if reference.source.qualifiers.get('organelle'):
         if reference.source.qualifiers['organelle'][0] == 'mitochondrion':
-            reference.mol_type = 'm'
+            mol_type = 'm'
+    if mol_type is None:
+        if loci.get('keyless') and loci.get('keyless').get('Protein'):
+            mol_type = 'p'
+
+    return mol_type
 
 
 def _extract_annotations(record):
@@ -268,6 +277,72 @@ def _extract_annotations(record):
             annotations[annotation] = record.annotations[annotation]
 
     return annotations
+
+
+def _build_info(record, reference, loci):
+
+    info = _extract_annotations(record)
+
+    if reference.source.orientation:
+        info['orientation'] = reference.source.orientation
+    info.update(reference.source.qualifiers)
+
+    info['mol_type'] = _extract_mol_type(reference, loci)
+
+    info['id'] = '{}.{}'.format(
+        info.get('accessions')[0],
+        info.get('sequence_version'))
+
+    return info
+
+
+def _add_extra_non_feature_loci(loci, protein_id):
+    """
+    For NPs the mRNA and gene features need to be artificially constructed.
+    """
+    gene_keys = ['gene', 'gene_synonym', 'HGNC', 'GeneID', 'CCDS']
+    gene = {}
+    mrna = {}
+    cds = {}
+
+    if loci.get('keyless') and loci.get('keyless').get('CDS'):
+        if len(loci.get('keyless').get('CDS')) == 1:
+            cds = loci.get('keyless').get('CDS')[0]
+            cds.qualifiers['protein_id'] = protein_id
+            gene_name = cds.qualifiers.get('gene')
+            if gene_name and (gene_name not in gene):
+                gene_locus = Locus()
+                gene_locus.qualifiers = {k: v for k, v in cds.qualifiers.items()
+                                         if k in gene_keys}
+                gene[gene_name] = gene_locus
+            mrna_id = cds.qualifiers.get('coded_by').split(':')[0]
+            if mrna_id and (mrna_id not in mrna):
+                mrna_locus = Locus()
+                mrna_locus.locus_type = 'mRNA'
+                mrna_locus.qualifiers = {k: v for k, v in cds.qualifiers.items()
+                                         if k in gene_keys}
+                mrna_locus.qualifiers['transcript_id'] = mrna_id
+                mrna_locus.qualifiers['protein_id'] = protein_id
+                mrna[mrna_id] = mrna_locus
+        else:
+            return
+
+    if gene:
+        if loci.get('gene'):
+            loci['gene'].update(gene)
+        else:
+            loci['gene'] = gene
+
+    if mrna:
+        if loci.get('mRNA'):
+            loci['mRNA'].update(mrna)
+        else:
+            loci['mRNA'] = mrna
+    if cds:
+        if loci.get('CDS'):
+            loci['CDS'].update({protein_id: cds})
+        else:
+            loci['CDS'] = {protein_id: cds}
 
 
 def _construct_dependencies(loci):

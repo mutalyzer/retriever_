@@ -665,10 +665,10 @@ class Reference:
                         'HGNC': self.loci['gene'][gene_name].qualifiers.get('HGNC'),
                         'gene': gene_name}
                     loci_json.append(locus_json)
-            else:
-                print(gene)
-                for child in gene.children:
-                    print(child)
+            # else:
+            #     print(gene)
+            #     for child in gene.children:
+            #         print(child)
         print(json.dumps(loci_json, indent=2))
 
     def __str__(self):
