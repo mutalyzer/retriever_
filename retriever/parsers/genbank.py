@@ -358,7 +358,6 @@ def _construct_dependencies(loci):
             if cds_link and (cds_link in loci['CDS']):
                 loci['CDS'][cds_link].link = loci['mRNA'][mrna]
                 loci['mRNA'][mrna].link = loci['CDS'][cds_link]
-                print('added', mrna)
             mrna_gene = loci['mRNA'][mrna].qualifiers.get('gene')
             if mrna_gene and mrna_gene in loci['gene']:
                 loci['gene'][mrna_gene].add_child(loci['mRNA'][mrna])

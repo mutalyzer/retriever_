@@ -91,8 +91,6 @@ def get_reference_summary(reference_id):
     except NcbiConnectionError as e:
         raise e
 
-    print(databases)
-
     if 'nuccore' in databases:
         db = 'nuccore'
     elif 'protein' in databases:
