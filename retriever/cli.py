@@ -49,7 +49,7 @@ def main():
     if args.parse:
         if content:
             reference_model = parse(content, reference_type)
-            print(reference_model)
+            reference_model.loci_to_json_model()
         else:
             print('No content, parsing not performed.')
     else:
