@@ -653,6 +653,7 @@ class Reference:
 
         :arg dict loci:
         """
+        json_model = {'reference': self.info}
         loci_json = []
 
         for gene_name, gene in self.loci['gene'].items():
@@ -669,7 +670,9 @@ class Reference:
             #     print(gene)
             #     for child in gene.children:
             #         print(child)
-        print(json.dumps(loci_json, indent=2))
+
+        json_model.update({'loci': loci_json})
+        print(json.dumps(json_model, indent=2))
 
     def __str__(self):
         """
