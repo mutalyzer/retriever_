@@ -1,0 +1,16 @@
+{
+  "loci": [],
+  "reference": {
+    "sequence_version": 3,
+    "accessions": [
+      "NM_152263"
+    ],
+    "date": "23-SEP-2018",
+    "molecule_type": "mRNA",
+    "mol_type": null,
+    "id": "NM_152263.3",
+    "orientation": 1,
+    "chromosome": "1",
+    "organism": "Homo sapiens"
+  }
+}

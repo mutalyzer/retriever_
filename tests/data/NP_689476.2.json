@@ -1,0 +1,21 @@
+{
+  "loci": [
+    {
+      "gene": "TPM3",
+      "protein_id": "NP_689476.2",
+      "HGNC": "12012",
+      "transcript_id": "NM_152263.4"
+    }
+  ],
+  "reference": {
+    "mol_type": "p",
+    "organism": "Homo sapiens",
+    "chromosome": "1",
+    "date": "29-DEC-2018",
+    "sequence_version": 2,
+    "id": "NP_689476.2",
+    "accessions": [
+      "NP_689476"
+    ]
+  }
+}

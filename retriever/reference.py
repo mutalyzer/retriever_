@@ -672,7 +672,7 @@ class Reference:
             #         print(child)
 
         json_model.update({'loci': loci_json})
-        print(json.dumps(json_model, indent=2))
+        return json.dumps(json_model, indent=2)
 
     def __str__(self):
         """

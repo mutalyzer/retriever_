@@ -1,0 +1,47 @@
+{
+  "reference": {
+    "molecule_type": "DNA",
+    "id": "NG_012337.1",
+    "chromosome": "11",
+    "organism": "Homo sapiens",
+    "accessions": [
+      "NG_012337"
+    ],
+    "sequence_version": 1,
+    "date": "26-MAR-2012",
+    "orientation": 1,
+    "mol_type": null
+  },
+  "loci": [
+    {
+      "HGNC": "11818",
+      "gene": "TIMM8B",
+      "protein_id": "NP_036591.2",
+      "transcript_id": "NM_012459.2"
+    },
+    {
+      "HGNC": "25569",
+      "gene": "C11orf57",
+      "protein_id": "NP_001076438.1",
+      "transcript_id": "NM_001082969.1"
+    },
+    {
+      "HGNC": "25569",
+      "gene": "C11orf57",
+      "protein_id": "NP_001076439.1",
+      "transcript_id": "NM_001082970.1"
+    },
+    {
+      "HGNC": "25569",
+      "gene": "C11orf57",
+      "protein_id": "NP_060665.3",
+      "transcript_id": "NM_018195.3"
+    },
+    {
+      "HGNC": "10683",
+      "gene": "SDHD",
+      "protein_id": "NP_002993.1",
+      "transcript_id": "NM_003002.2"
+    }
+  ]
+}

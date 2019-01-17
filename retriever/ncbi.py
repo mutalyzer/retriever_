@@ -133,15 +133,14 @@ def fetch_ncbi(reference_id, size_on=True):
     :returns: Reference content.
     :rtype: str
     """
-    if size_on:
-        try:
-            reference_summary = get_reference_summary(reference_id)
-        except NoNcbiReference:
-            return None
-        except NcbiConnectionError:
-            raise NcbiConnectionError
+    try:
+        reference_summary = get_reference_summary(reference_id)
+    except NoNcbiReference:
+        return None
+    except NcbiConnectionError:
+        raise NcbiConnectionError
 
-        if reference_summary['length'] > settings.MAX_FILE_SIZE:
+    if size_on and reference_summary['length'] > settings.MAX_FILE_SIZE:
             raise ReferenceToLong
     try:
         handle = Entrez.efetch(

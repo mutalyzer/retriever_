@@ -1,0 +1,16 @@
+{
+  "reference": {
+    "orientation": 1,
+    "molecule_type": "mRNA",
+    "organism": "Homo sapiens",
+    "date": "17-APR-2013",
+    "id": "NM_152263.2",
+    "sequence_version": 2,
+    "mol_type": null,
+    "chromosome": "1",
+    "accessions": [
+      "NM_152263"
+    ]
+  },
+  "loci": []
+}
