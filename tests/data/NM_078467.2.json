@@ -1,16 +1,16 @@
 {
+  "loci": [],
   "reference": {
-    "organism": "Homo sapiens",
-    "orientation": 1,
     "accessions": [
       "NM_078467"
     ],
-    "mol_type": null,
+    "chromosome": "6",
     "date": "17-NOV-2018",
     "id": "NM_078467.2",
-    "chromosome": "6",
+    "mol_type": null,
     "molecule_type": "mRNA",
+    "organism": "Homo sapiens",
+    "orientation": 1,
     "sequence_version": 2
-  },
-  "loci": []
+  }
 }

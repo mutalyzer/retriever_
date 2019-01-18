@@ -1,47 +1,106 @@
 {
-  "reference": {
-    "molecule_type": "DNA",
-    "id": "NG_012337.1",
-    "chromosome": "11",
-    "organism": "Homo sapiens",
-    "accessions": [
-      "NG_012337"
-    ],
-    "sequence_version": 1,
-    "date": "26-MAR-2012",
-    "orientation": 1,
-    "mol_type": null
-  },
   "loci": [
     {
-      "HGNC": "11818",
-      "gene": "TIMM8B",
-      "protein_id": "NP_036591.2",
-      "transcript_id": "NM_012459.2"
-    },
-    {
       "HGNC": "25569",
+      "cds": [
+        "<136",
+        "1126"
+      ],
+      "exons": [
+        "<136",
+        "189",
+        "619",
+        "3304"
+      ],
       "gene": "C11orf57",
+      "orientation": 1,
       "protein_id": "NP_001076438.1",
       "transcript_id": "NM_001082969.1"
     },
     {
       "HGNC": "25569",
+      "cds": [
+        "<136",
+        "1126"
+      ],
+      "exons": [
+        "<136",
+        "189",
+        "619",
+        "3304"
+      ],
       "gene": "C11orf57",
-      "protein_id": "NP_001076439.1",
-      "transcript_id": "NM_001082970.1"
-    },
-    {
-      "HGNC": "25569",
-      "gene": "C11orf57",
+      "orientation": 1,
       "protein_id": "NP_060665.3",
       "transcript_id": "NM_018195.3"
     },
     {
+      "HGNC": "25569",
+      "cds": [
+        "<136",
+        "1126"
+      ],
+      "exons": [
+        "<136",
+        "189",
+        "622",
+        "3304"
+      ],
+      "gene": "C11orf57",
+      "orientation": 1,
+      "protein_id": "NP_001076439.1",
+      "transcript_id": "NM_001082970.1"
+    },
+    {
       "HGNC": "10683",
+      "cds": [
+        "5062",
+        "13124"
+      ],
+      "exons": [
+        "5001",
+        "5113",
+        "6011",
+        "6127",
+        "7021",
+        "7165",
+        "12959",
+        "13948"
+      ],
       "gene": "SDHD",
+      "orientation": 1,
       "protein_id": "NP_002993.1",
       "transcript_id": "NM_003002.2"
+    },
+    {
+      "HGNC": "11818",
+      "cds": [
+        "3449",
+        "4922"
+      ],
+      "exons": [
+        "4794",
+        "4952",
+        "2954",
+        "3616"
+      ],
+      "gene": "TIMM8B",
+      "orientation": -1,
+      "protein_id": "NP_036591.2",
+      "transcript_id": "NM_012459.2"
     }
-  ]
+  ],
+  "reference": {
+    "accessions": [
+      "NG_012337"
+    ],
+    "chromosome": "11",
+    "date": "26-MAR-2012",
+    "id": "NG_012337.1",
+    "mol_type": null,
+    "molecule_type": "DNA",
+    "organism": "Homo sapiens",
+    "orientation": 1,
+    "sequence_version": 1
+  }
 }

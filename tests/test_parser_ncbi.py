@@ -5,6 +5,15 @@ from pathlib import Path
 from retriever.parsers.genbank import parse
 
 
+def ordered(obj):
+    if isinstance(obj, dict):
+        return sorted((k, ordered(v)) for k, v in obj.items())
+    if isinstance(obj, list):
+        return sorted(ordered(x) for x in obj)
+    else:
+        return obj
+
+
 def get_references():
 
     available_references = [
@@ -12,6 +21,7 @@ def get_references():
         'NM_152263.2',
         'NM_152263.3',
         'NP_689476.2',
+        'NG_012337.1'
     ]
 
     references = []
@@ -36,6 +46,4 @@ def get_references():
 )
 def test_model(reference, content, model):
     rmodel = parse(content)
-    assert json.loads(rmodel.loci_to_json_model()) == json.loads(model)
-
-
+    assert ordered(rmodel.to_dict()) == ordered(json.loads(model))

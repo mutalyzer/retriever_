@@ -585,6 +585,20 @@ class Locus(object):
             output += '{}  {}..{}'.format(delimiter, part.start, part.end)
         return output
 
+    def get_parts_list(self):
+        """
+        Returns the start and end positions in a list.
+
+        """
+        output = []
+        if self._parts:
+            for part in self._parts:
+                output.append(str(part.start))
+                output.append(str(part.end))
+        else:
+            output = [str(self.start), str(self.end)]
+        return output
+
     def get_key_type_and_value(self):
         """
 
@@ -632,22 +646,7 @@ class Reference:
         if reference and cfg:
             self.create_record(reference, cfg)
 
-    def to_json(self):
-        """
-        Converts the record into JSON.
-
-        :return: record JSON representation (string).
-        """
-        output = {'annotations': self._annotations,
-                  'features': {}}
-        for child_type in self.children:
-            output['features'][child_type] = []
-            for child in self.children[child_type]:
-                if child_type == child.locus_type:
-                    output['features'][child_type].append(child.to_dict())
-        return json.dumps(output, indent=2)
-
-    def loci_to_json_model(self):
+    def to_dict(self):
         """
         Draft loci object serializer.
 
@@ -661,18 +660,24 @@ class Reference:
                 for child in gene.children['mRNA']:
                     locus_json = {
                         'transcript_id': child.qualifiers.get('transcript_id'),
-                        'protein_id': child.link.qualifiers.get('protein_id')
-                        if child.link else None,
                         'HGNC': self.loci['gene'][gene_name].qualifiers.get('HGNC'),
-                        'gene': gene_name}
+                        'gene': gene_name,
+                        'exons': child.get_parts_list(),
+                        'orientation': child.orientation
+                    }
+                    if child.link:
+                        locus_json.update({
+                            'cds': [str(child.link.start),
+                                    str(child.link.end)],
+                            'protein_id': child.link.qualifiers.get('protein_id')})
+
                     loci_json.append(locus_json)
-            # else:
-            #     print(gene)
-            #     for child in gene.children:
-            #         print(child)
 
         json_model.update({'loci': loci_json})
-        return json.dumps(json_model, indent=2)
+        return(json_model)
+
+    def to_json(self):
+        return json.dumps(self.to_dict(), sort_keys=True, indent=2)
 
     def __str__(self):
         """
