@@ -1,17 +1,13 @@
+{'gene': {'TPM3': <retriever.reference.Locus object at 0x7f3e69064da0>}, 'source': <retriever.reference.Locus object at 0x7f3e69064d30>, 'mRNA': {'NM_152263.4': <retriever.reference.Locus object at 0x7f3e68fe3400>}, 'CDS': {'NP_689476.2': <retriever.reference.Locus object at 0x7f3e68fd7f98>}, 'keyless': {'CDS': [<retriever.reference.Locus object at 0x7f3e68fd7f98>], 'Protein': [<retriever.reference.Locus object at 0x7f3e69064cf8>]}}
 {
   "loci": [
     {
       "HGNC": "12012",
-      "cds": [
+      "gene": "TPM3",
+      "location": [
         "1",
         "285"
       ],
-      "exons": [
-        "None",
-        "None"
-      ],
-      "gene": "TPM3",
-      "orientation": null,
       "protein_id": "NP_689476.2",
       "transcript_id": "NM_152263.4"
     }
@@ -21,10 +17,9 @@
       "NP_689476"
     ],
     "chromosome": "1",
-    "date": "29-DEC-2018",
     "id": "NP_689476.2",
-    "mol_type": "p",
     "organism": "Homo sapiens",
-    "sequence_version": 2
+    "reference_type": "p",
+    "version": 2
   }
 }

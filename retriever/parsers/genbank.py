@@ -55,6 +55,12 @@ FEATURES = {
         'qualifiers': {
             'product'
         }
+    },
+    'exon': {
+        'qualifiers': {
+            'gene',
+            'gene_synonym'
+        }
     }
 }
 
@@ -96,16 +102,20 @@ def parse(content):
 
     reference = Reference()
 
-    loci = _extract_features(reference, record)
+    loci = _extract_features(record)
 
-    info = _build_info(record, reference, loci)
+    annotations = _get_annotations(record)
 
-    if info.get('mol_type') == 'p':
+    info = _construct_info(annotations, loci)
+
+    if info.get('reference_type') == 'p':
         _add_extra_non_feature_loci(loci, info.get('id'))
 
     _construct_dependencies(loci)
 
     reference.loci = loci
+
+    reference.source = loci['source']
 
     reference.info = info
 
@@ -114,11 +124,10 @@ def parse(content):
     return reference
 
 
-def _extract_features(reference, record):
+def _extract_features(record):
     """
     Loops over the record features and extracts them into Locus instances.
 
-    :arg Reference reference: The actual reference.
     :arg SeqRecord record: A biopython record.
     """
 
@@ -126,8 +135,8 @@ def _extract_features(reference, record):
 
     for feature in record.features:
         if feature.type == 'source':
-            reference.source = _convert_biopython_feature(feature,
-                                                          SOURCE_FEATURES)
+            loci['source'] = _convert_biopython_feature(feature,
+                                                        SOURCE_FEATURES)
         elif feature.type in FEATURES:
             config = FEATURES[feature.type]
             locus = _convert_biopython_feature(feature, config)
@@ -136,7 +145,6 @@ def _extract_features(reference, record):
                 if feature.type not in loci:
                     loci[feature.type] = {}
                 loci[feature.type][locus.qualifiers[key]] = locus
-                reference.loci[locus.qualifiers[key]] = locus
             else:
                 if loci.get('keyless') is None:
                     loci['keyless'] = {}
@@ -177,7 +185,7 @@ def _convert_biopython_feature(biopython_feature, config=None):
     locus_type = biopython_feature.type
     orientation = biopython_feature.strand
 
-    qualifiers = _extract_qualifiers(biopython_feature.qualifiers, config)
+    qualifiers = _get_qualifiers(biopython_feature.qualifiers, config)
 
     parts = None
     # Check if it is a compound sequence.
@@ -198,7 +206,7 @@ def _convert_biopython_feature(biopython_feature, config=None):
     return locus
 
 
-def _extract_qualifiers(biopython_qualifiers, config):
+def _get_qualifiers(biopython_qualifiers, config):
     """
     Extracts the biopython qualifiers mentioned in the configuration.
 
@@ -213,13 +221,13 @@ def _extract_qualifiers(biopython_qualifiers, config):
         if k in config['qualifiers']:
             if k == 'db_xref':
                 qualifiers.update(
-                    _extract_dbxref_qualifiers(biopython_qualifiers[k]))
+                    _get_dbxref_qualifiers(biopython_qualifiers[k]))
             else:
                 qualifiers[k] = biopython_qualifiers[k][0]
     return qualifiers
 
 
-def _extract_dbxref_qualifiers(biopython_qualifier):
+def _get_dbxref_qualifiers(biopython_qualifier):
     """
     Extracts qualifiers which can be part of the same biopython feature, as
     for example the "dbxref" which can be as follows:
@@ -243,19 +251,30 @@ def _extract_dbxref_qualifiers(biopython_qualifier):
     return qualifiers
 
 
-def _extract_mol_type(reference, loci):
+def _get_reference_type(annotations, loci):
     """
     Extract molecule type for the reference.
     """
     mol_type = None
-    if reference.source.qualifiers.get('mol_type'):
-        if reference.source.qualifiers['mol_type'][0] in ['mRNA', 'transcribed RNA']:
-            mol_type = 'n'
-        elif reference.source.qualifiers['mol_type'][0] in ['genomic DNA']:
-            mol_type = 'g'
-    if reference.source.qualifiers.get('organelle'):
-        if reference.source.qualifiers['organelle'][0] == 'mitochondrion':
+
+    source = loci['source']
+
+    if source.qualifiers.get('organelle'):
+        if source.qualifiers['organelle'][0] == 'mitochondrion':
             mol_type = 'm'
+
+    if source.qualifiers.get('mol_type'):
+        if source.qualifiers['mol_type'][0] in ['mRNA', 'transcribed RNA']:
+            mol_type = 'n'
+        elif source.qualifiers['mol_type'][0] in ['genomic DNA']:
+            mol_type = 'g'
+
+    if annotations.get('molecule_type'):
+        if annotations['molecule_type'] == 'mRNA':
+            mol_type = 'c'
+        elif annotations['molecule_type'] == 'DNA':
+            mol_type = 'g'
+
     if mol_type is None:
         if loci.get('keyless') and loci.get('keyless').get('Protein'):
             mol_type = 'p'
@@ -263,7 +282,7 @@ def _extract_mol_type(reference, loci):
     return mol_type
 
 
-def _extract_annotations(record):
+def _get_annotations(record):
     """
     Extract record annotations.
 
@@ -279,19 +298,26 @@ def _extract_annotations(record):
     return annotations
 
 
-def _build_info(record, reference, loci):
+def _construct_info(annotations, loci):
+    """
 
-    info = _extract_annotations(record)
+    """
+    info = {}
 
-    if reference.source.orientation:
-        info['orientation'] = reference.source.orientation
-    info.update(reference.source.qualifiers)
+    if loci['source'].qualifiers.get('orientation'):
+        info['orientation'] = loci['source'].qualifiers.get('orientation')
 
-    info['mol_type'] = _extract_mol_type(reference, loci)
+    info['reference_type'] = _get_reference_type(annotations, loci)
+
+    info.update({'accessions': annotations.get('accessions'),
+                 'version': annotations.get('sequence_version'),
+                 'organism': loci['source'].qualifiers.get('organism'),
+                 'chromosome': loci['source'].qualifiers.get('chromosome'),
+                 })
 
     info['id'] = '{}.{}'.format(
         info.get('accessions')[0],
-        info.get('sequence_version'))
+        info.get('version'))
 
     return info
 
@@ -380,5 +406,3 @@ def print_loci(loci):
                 print(' {} - {}'.format(
                     child.qualifiers.get('transcript_id'),
                     child.link.qualifiers.get('protein_id')))
-
-

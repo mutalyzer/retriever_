@@ -5,12 +5,9 @@
       "NM_078467"
     ],
     "chromosome": "6",
-    "date": "17-NOV-2018",
     "id": "NM_078467.2",
-    "mol_type": null,
-    "molecule_type": "mRNA",
     "organism": "Homo sapiens",
-    "orientation": 1,
-    "sequence_version": 2
+    "reference_type": "c",
+    "version": 2
   }
 }

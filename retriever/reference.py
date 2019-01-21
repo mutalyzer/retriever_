@@ -661,20 +661,22 @@ class Reference:
                     locus_json = {
                         'transcript_id': child.qualifiers.get('transcript_id'),
                         'HGNC': self.loci['gene'][gene_name].qualifiers.get('HGNC'),
-                        'gene': gene_name,
-                        'exons': child.get_parts_list(),
-                        'orientation': child.orientation
+                        'gene': gene_name
                     }
+                    if child.orientation:
+                        locus_json.update({'orientation': child.orientation})
+                    if child.parts:
+                        locus_json.update({'exons': child.get_parts_list()})
                     if child.link:
                         locus_json.update({
-                            'cds': [str(child.link.start),
-                                    str(child.link.end)],
+                            'location': [str(child.link.start),
+                                         str(child.link.end)],
                             'protein_id': child.link.qualifiers.get('protein_id')})
 
                     loci_json.append(locus_json)
 
         json_model.update({'loci': loci_json})
-        return(json_model)
+        return json_model
 
     def to_json(self):
         return json.dumps(self.to_dict(), sort_keys=True, indent=2)
