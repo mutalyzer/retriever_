@@ -111,6 +111,9 @@ def parse(content):
     if info.get('reference_type') == 'p':
         _add_extra_non_feature_loci(loci, info.get('id'))
 
+    if info.get('reference_type') == 'c':
+        _construct_transcript_loci(loci)
+
     _construct_dependencies(loci)
 
     reference.loci = loci
@@ -392,6 +395,46 @@ def _construct_dependencies(loci):
             if cds_gene and cds_gene in loci['gene']:
                 loci['gene'][cds_gene].add_child(loci['CDS'][cds])
 
+
+def _construct_transcript_loci(loci):
+    locus = {}
+
+    genes = loci.get('gene')
+    if genes:
+        if not isinstance(genes, dict):
+            # Should we raise an error?
+            return
+        if len(genes) != 1:
+            # Should we raise an error?
+            return
+        gene = list(genes.values())[0]
+        print(gene)
+        locus['gene'] = gene.qualifiers.get('gene')
+    else:
+        print('no gene')
+        # We should infer the gene.
+    protein = loci.get('CDS')
+    if protein:
+        if not isinstance(protein, dict):
+            # Should we raise an error?
+            return
+        if len(genes) != 1:
+            # Should we raise an error?
+            return
+        protein = list(protein.values())[0]
+        if locus.get('gene') and locus['gene'] == protein.qualifiers.get('gene'):
+            locus['cds_location'] = [str(protein.start), str(protein.end)]
+    if loci.get('keyless') and loci.get('keyless').get('exon'):
+        exons = loci.get('keyless').get('exon')
+        for exon in exons:
+            exon_gene = exon.qualifiers.get('gene')
+            if exon_gene == protein.qualifiers.get('gene'):
+                if locus.get('exons'):
+                    locus['exons'].append(str(exon.start))
+                    locus['exons'].append(str(exon.end))
+                else:
+                    locus['exons'] = []
+    print(locus)
 
 def print_loci(loci):
     """
