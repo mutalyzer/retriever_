@@ -1,12 +1,45 @@
 {
-  "loci": [],
+  "loci": [
+    {
+      "HGNC": "12012",
+      "cds_location": [
+        118,
+        975
+      ],
+      "exons": [
+        1,
+        234,
+        235,
+        360,
+        361,
+        494,
+        495,
+        612,
+        613,
+        683,
+        684,
+        759,
+        760,
+        822,
+        823,
+        892,
+        893,
+        971,
+        972,
+        7099
+      ],
+      "gene": "TPM3",
+      "orientation": 1,
+      "protein_id": "NP_689476.2",
+      "transcript_variant": "001"
+    }
+  ],
   "reference": {
     "accessions": [
       "NM_152263"
     ],
     "chromosome": "1",
-    "id": "NM_152263.3",
-    "organism": "Homo sapiens",
+    "organisim": "Homo sapiens",
     "reference_type": "c",
     "version": 3
   }

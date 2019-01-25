@@ -1,0 +1,36 @@
+{
+  "loci": [
+    {
+      "HGNC": "4713",
+      "exons": [
+        1,
+        1358,
+        1359,
+        1493,
+        1494,
+        1606,
+        1607,
+        1729,
+        1730,
+        2348
+      ],
+      "gene": "H19",
+      "orientation": 1,
+      "transcript_location": [
+        1,
+        2362
+      ],
+      "transcript_variant": "001"
+    }
+  ],
+  "reference": {
+    "accessions": [
+      "NR_002196",
+      "XR_000200"
+    ],
+    "chromosome": "11",
+    "organisim": "Homo sapiens",
+    "reference_type": "n",
+    "version": 2
+  }
+}

@@ -112,7 +112,10 @@ def parse(content):
         _add_extra_non_feature_loci(loci, info.get('id'))
 
     if info.get('reference_type') == 'c':
-        _construct_transcript_loci(loci)
+        loci['curated'] = _construct_transcript_loci(loci)
+
+    if info.get('reference_type') == 'n':
+        loci['curated'] = _construct_ncrna_loci(loci)
 
     _construct_dependencies(loci)
 
@@ -277,6 +280,9 @@ def _get_reference_type(annotations, loci):
             mol_type = 'c'
         elif annotations['molecule_type'] == 'DNA':
             mol_type = 'g'
+        elif annotations['molecule_type'] == 'RNA':
+            if 'keyless' in loci and 'ncRNA' in loci['keyless']:
+                mol_type = 'n'
 
     if mol_type is None:
         if loci.get('keyless') and loci.get('keyless').get('Protein'):
@@ -312,15 +318,14 @@ def _construct_info(annotations, loci):
 
     info['reference_type'] = _get_reference_type(annotations, loci)
 
-    info.update({'accessions': annotations.get('accessions'),
-                 'version': annotations.get('sequence_version'),
-                 'organism': loci['source'].qualifiers.get('organism'),
-                 'chromosome': loci['source'].qualifiers.get('chromosome'),
-                 })
-
-    info['id'] = '{}.{}'.format(
-        info.get('accessions')[0],
-        info.get('version'))
+    if annotations.get('accessions'):
+        info['accessions'] = annotations.get('accessions')
+    if annotations.get('sequence_version'):
+        info['version'] = annotations.get('sequence_version')
+    if loci['source'].qualifiers.get('organism'):
+        info['organisim'] = loci['source'].qualifiers.get('organism')
+    if loci['source'].qualifiers.get('chromosome'):
+        info['chromosome'] = loci['source'].qualifiers.get('chromosome')
 
     return info
 
@@ -397,6 +402,9 @@ def _construct_dependencies(loci):
 
 
 def _construct_transcript_loci(loci):
+    """
+    Create and check the locus for an mRNA type of sequence.
+    """
     locus = {}
 
     genes = loci.get('gene')
@@ -408,8 +416,9 @@ def _construct_transcript_loci(loci):
             # Should we raise an error?
             return
         gene = list(genes.values())[0]
-        print(gene)
         locus['gene'] = gene.qualifiers.get('gene')
+        if 'HGNC' in gene.qualifiers:
+            locus['HGNC'] = gene.qualifiers['HGNC']
     else:
         print('no gene')
         # We should infer the gene.
@@ -423,18 +432,85 @@ def _construct_transcript_loci(loci):
             return
         protein = list(protein.values())[0]
         if locus.get('gene') and locus['gene'] == protein.qualifiers.get('gene'):
-            locus['cds_location'] = [str(protein.start), str(protein.end)]
+            if not protein.fuzzy_position_inside():
+                locus['cds_location'] = [int(str(protein.start)),
+                                         int(str(protein.end))]
+        if 'protein_id' in protein.qualifiers:
+            locus['protein_id'] = protein.qualifiers['protein_id']
+        if protein.orientation:
+            locus['orientation'] = protein.orientation
+
     if loci.get('keyless') and loci.get('keyless').get('exon'):
         exons = loci.get('keyless').get('exon')
         for exon in exons:
             exon_gene = exon.qualifiers.get('gene')
             if exon_gene == protein.qualifiers.get('gene'):
-                if locus.get('exons'):
-                    locus['exons'].append(str(exon.start))
-                    locus['exons'].append(str(exon.end))
+                if locus.get('exons') is not None:
+                    if not exon.fuzzy_position_inside():
+                        locus['exons'].append(int(str(exon.start)))
+                        locus['exons'].append(int(str(exon.end)))
                 else:
-                    locus['exons'] = []
-    print(locus)
+                    if not exon.fuzzy_position_inside():
+                        locus['exons'] = [int(str(exon.start)),
+                                          int(str(exon.end))]
+    locus['transcript_variant'] = '001'
+    return locus
+
+
+def _construct_ncrna_loci(loci):
+    """
+    Create and check the locus for an ncRNA type of sequence.
+    """
+    locus = {}
+
+    genes = loci.get('gene')
+    if genes:
+        if not isinstance(genes, dict):
+            # Should we raise an error?
+            return
+        if len(genes) != 1:
+            # Should we raise an error?
+            return
+        gene = list(genes.values())[0]
+        locus['gene'] = gene.qualifiers.get('gene')
+        if 'HGNC' in gene.qualifiers:
+            locus['HGNC'] = gene.qualifiers['HGNC']
+    else:
+        print('no gene')
+        # We should infer the gene.
+    if 'keyless' in loci and 'ncRNA' in loci['keyless']:
+        ncrna = list(loci['keyless']['ncRNA'])
+    if ncrna:
+        if not isinstance(ncrna, list):
+            # Should we raise an error?
+            return
+        if len(ncrna) != 1:
+            # Should we raise an error?
+            return
+        ncrna = ncrna[0]
+        if locus.get('gene') and locus['gene'] == ncrna.qualifiers.get('gene'):
+            if not ncrna.fuzzy_position_inside():
+                locus['transcript_location'] = [int(str(ncrna.start)),
+                                                int(str(ncrna.end))]
+        if ncrna.orientation:
+            locus['orientation'] = ncrna.orientation
+
+    if loci.get('keyless') and loci.get('keyless').get('exon'):
+        exons = loci.get('keyless').get('exon')
+        for exon in exons:
+            exon_gene = exon.qualifiers.get('gene')
+            if exon_gene == ncrna.qualifiers.get('gene'):
+                if locus.get('exons') is not None:
+                    if not exon.fuzzy_position_inside():
+                        locus['exons'].append(int(str(exon.start)))
+                        locus['exons'].append(int(str(exon.end)))
+                else:
+                    if not exon.fuzzy_position_inside():
+                        locus['exons'] = [int(str(exon.start)),
+                                          int(str(exon.end))]
+    locus['transcript_variant'] = '001'
+    return locus
+
 
 def print_loci(loci):
     """

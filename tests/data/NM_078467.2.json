@@ -1,12 +1,33 @@
 {
-  "loci": [],
+  "loci": [
+    {
+      "HGNC": "1784",
+      "cds_location": [
+        73,
+        567
+      ],
+      "exons": [
+        1,
+        35,
+        36,
+        67,
+        68,
+        517,
+        518,
+        2106
+      ],
+      "gene": "CDKN1A",
+      "orientation": 1,
+      "protein_id": "NP_510867.1",
+      "transcript_variant": "001"
+    }
+  ],
   "reference": {
     "accessions": [
       "NM_078467"
     ],
     "chromosome": "6",
-    "id": "NM_078467.2",
-    "organism": "Homo sapiens",
+    "organisim": "Homo sapiens",
     "reference_type": "c",
     "version": 2
   }

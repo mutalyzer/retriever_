@@ -593,8 +593,8 @@ class Locus(object):
         output = []
         if self._parts:
             for part in self._parts:
-                output.append(str(part.start))
-                output.append(str(part.end))
+                output.append(int(str(part.start)))
+                output.append(int(str(part.end)))
         else:
             output = [str(self.start), str(self.end)]
         return output
@@ -655,25 +655,29 @@ class Reference:
         json_model = {'reference': self.info}
         loci_json = []
 
-        for gene_name, gene in self.loci['gene'].items():
-            if 'mRNA' in gene.children:
-                for child in gene.children['mRNA']:
-                    locus_json = {
-                        'transcript_id': child.qualifiers.get('transcript_id'),
-                        'HGNC': self.loci['gene'][gene_name].qualifiers.get('HGNC'),
-                        'gene': gene_name
-                    }
-                    if child.orientation:
-                        locus_json.update({'orientation': child.orientation})
-                    if child.parts:
-                        locus_json.update({'exons': child.get_parts_list()})
-                    if child.link:
-                        locus_json.update({
-                            'location': [str(child.link.start),
-                                         str(child.link.end)],
-                            'protein_id': child.link.qualifiers.get('protein_id')})
+        if 'curated' in self.loci:
+            loci_json.append(self.loci['curated'])
+        else:
+            for gene_name, gene in self.loci['gene'].items():
+                if 'mRNA' in gene.children:
+                    for child in gene.children['mRNA']:
+                        if not child.fuzzy_position_inside():
+                            locus_json = {
+                                'transcript_id': child.qualifiers.get('transcript_id'),
+                                'HGNC': self.loci['gene'][gene_name].qualifiers.get('HGNC'),
+                                'gene': gene_name
+                            }
+                            if child.orientation:
+                                locus_json.update({'orientation': child.orientation})
+                            if child.parts:
+                                locus_json.update({'exons': child.get_parts_list()})
+                            if child.link:
+                                locus_json.update({
+                                    'location': [int(str(child.link.start)),
+                                                 int(str(child.link.end))],
+                                    'protein_id': child.link.qualifiers.get('protein_id')})
 
-                    loci_json.append(locus_json)
+                            loci_json.append(locus_json)
 
         json_model.update({'loci': loci_json})
         return json_model

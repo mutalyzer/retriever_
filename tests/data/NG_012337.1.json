@@ -1,68 +1,17 @@
 {
   "loci": [
     {
-      "HGNC": "25569",
-      "exons": [
-        "<136",
-        "189",
-        "619",
-        "3304"
-      ],
-      "gene": "C11orf57",
-      "location": [
-        "<136",
-        "1126"
-      ],
-      "orientation": 1,
-      "protein_id": "NP_001076438.1",
-      "transcript_id": "NM_001082969.1"
-    },
-    {
-      "HGNC": "25569",
-      "exons": [
-        "<136",
-        "189",
-        "619",
-        "3304"
-      ],
-      "gene": "C11orf57",
-      "location": [
-        "<136",
-        "1126"
-      ],
-      "orientation": 1,
-      "protein_id": "NP_060665.3",
-      "transcript_id": "NM_018195.3"
-    },
-    {
-      "HGNC": "25569",
-      "exons": [
-        "<136",
-        "189",
-        "622",
-        "3304"
-      ],
-      "gene": "C11orf57",
-      "location": [
-        "<136",
-        "1126"
-      ],
-      "orientation": 1,
-      "protein_id": "NP_001076439.1",
-      "transcript_id": "NM_001082970.1"
-    },
-    {
       "HGNC": "11818",
       "exons": [
-        "4794",
-        "4952",
-        "2954",
-        "3616"
+        4794,
+        4952,
+        2954,
+        3616
       ],
       "gene": "TIMM8B",
       "location": [
-        "3449",
-        "4922"
+        3449,
+        4922
       ],
       "orientation": -1,
       "protein_id": "NP_036591.2",
@@ -71,19 +20,19 @@
     {
       "HGNC": "10683",
       "exons": [
-        "5001",
-        "5113",
-        "6011",
-        "6127",
-        "7021",
-        "7165",
-        "12959",
-        "13948"
+        5001,
+        5113,
+        6011,
+        6127,
+        7021,
+        7165,
+        12959,
+        13948
       ],
       "gene": "SDHD",
       "location": [
-        "5062",
-        "13124"
+        5062,
+        13124
       ],
       "orientation": 1,
       "protein_id": "NP_002993.1",
@@ -95,8 +44,7 @@
       "NG_012337"
     ],
     "chromosome": "11",
-    "id": "NG_012337.1",
-    "organism": "Homo sapiens",
+    "organisim": "Homo sapiens",
     "reference_type": "g",
     "version": 1
   }
