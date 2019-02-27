@@ -323,7 +323,7 @@ def _construct_info(annotations, loci):
     if annotations.get('sequence_version'):
         info['version'] = annotations.get('sequence_version')
     if loci['source'].qualifiers.get('organism'):
-        info['organisim'] = loci['source'].qualifiers.get('organism')
+        info['organism'] = loci['source'].qualifiers.get('organism')
     if loci['source'].qualifiers.get('chromosome'):
         info['chromosome'] = loci['source'].qualifiers.get('chromosome')
 
