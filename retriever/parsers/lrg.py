@@ -23,8 +23,6 @@ import xml.dom.minidom
 from Bio.Seq import Seq
 from Bio.Alphabet import IUPAC
 
-from ..reference import Position, Locus, Reference
-
 
 def _get_content(data, refname):
     """
@@ -39,7 +37,7 @@ def _get_content(data, refname):
     temp = data.getElementsByTagName(refname)
     if temp:
         return temp[0].lastChild.data
-    return ""
+    return None
 
 
 def _attr2dict(attr):
@@ -52,65 +50,35 @@ def _attr2dict(attr):
     Integer string values are converted to integers.
     :rtype: dictionary
     """
-    ret = {}
+    attr_dict = {}
     for key, value in attr.items():
         if value.isdigit():
             value = int(value)
-        ret[key] = value
-    return ret
+        attr_dict[key] = value
+    return attr_dict
 
 
-def _get_coordinates(data, system=None):
+def _get_location(data, coord_system=None):
     """
     Get attributes from descendent <coordinates> element as a dictionary. If
     more than one <coordinates> element is found, we have a preference for the
-    one with 'coord_system' attribute equal to the `system` argument, if
+    one with 'coord_system' attribute equal to the `coord_system` argument, if
     defined.
     """
     result = None
     coordinates = data.getElementsByTagName('coordinates')
     for coordinate in coordinates:
         attributes = _attr2dict(coordinate.attributes)
-        if result and system and attributes.get('coord_system') != system:
+        if result and coord_system and \
+                attributes.get('coord_system') != coord_system:
             continue
         result = attributes
-    return result
-
-
-def _get_gene_name(section):
-    """
-    Extract the gene name from the LRG record updatable section.
-
-    NOTE: It is necessary to use the updatable section since there is no
-    other way to identify the main gene directly from the LRG file.
-    A possibility would be to use the HGNC id with some external service.
-    Another way would be to make use of the special file with genes to LRG:
-    http://ftp.ebi.ac.uk/pub/databases/lrgex/list_LRGs_transcripts_GRCh38.txt
-
-    :arg section: (updatable) section of the LRG file
-    :return: gene name present under the lrg annotation set
-    """
-    gene_name = ''
-    annotation_nodes = section.getElementsByTagName('annotation_set')
-    for anno in annotation_nodes:
-        if anno.getAttribute('type') == 'lrg':
-            gene_name = _get_content(anno, 'lrg_locus')
-    return gene_name
-
-
-def _get_gene(fixed, updatable):
-    """
-    Create the gene locus.
-
-    :param fixed: The fixed section of the LRG XML file.
-    :param updatable: The updatable section of the LRG XML file.
-    :return: Corresponding gene locus.
-    """
-    gene = Locus(locus_type='gene')
-    gene.qualifiers = {
-        'gene': _get_gene_name(updatable),
-        'HGNC': _get_content(fixed, 'hgnc_id')}
-    return gene
+    return {'type': 'range',
+            'start': {'type': 'point',
+                      'position': int(result['start']) - 1},
+            'end': {'type': 'point',
+                    'position': int(result['end'])},
+            'strand': int(result['strand'])}
 
 
 def _get_transcripts(section):
@@ -122,86 +90,48 @@ def _get_transcripts(section):
     """
     lrg_id = _get_content(section, 'id')
 
-    mrna_list = {}
-    cds_list = {}
-    for tdata in section.getElementsByTagName('transcript'):
-        transcript = Locus(locus_type='mRNA')
-        cds = Locus(locus_type='CDS')
+    transcripts = []
+    for transcript_data in section.getElementsByTagName('transcript'):
+        transcript = {'id': transcript_data.getAttribute('name'),
+                      'type': 'transcript',
+                      'location': _get_location(transcript_data, lrg_id)}
 
-        # iterate over the transcripts in the fixed section.
-        # get the transcript from the updatable section and combine results
-        transcript_name = tdata.getAttribute('name')
-
-        transcript.qualifiers['transcript_id'] = transcript_name
-
-        # Set the locusTag, linkMethod (used in the output) and the location
-        # LRG file transcripts can (for now) always be linked via the locustag
-        transcript.qualifiers['locusTag'] = transcript_name and 't' + \
-                                            transcript_name
-        transcript.qualifiers['linkMethod'] = 'Locus Tag'
-
-        coordinates = tdata.getElementsByTagName('coordinates')[0]
-        transcript.start = int(coordinates.getAttribute('start'))
-        transcript.end = int(coordinates.getAttribute('end'))
-
-        # Get the transcript exons and store them in a position list.
+        # Get the exons.
         exons = []
-        for exon in tdata.getElementsByTagName('exon'):
-            coordinates = _get_coordinates(exon, lrg_id)
-            start = Position(coordinates['start'])
-            end = Position(coordinates['end'])
-            exons.append(Locus(start=start, end=end, orientation=1))
+        for exon_data in transcript_data.getElementsByTagName('exon'):
+            exons.append({'type': 'exon',
+                          'id': exon_data.getAttribute('label'),
+                          'location': _get_location(exon_data, lrg_id)})
+        transcript['features'] = exons
 
-        transcript.parts = exons
-
-        # Get the CDS of the transcript and store them in a position list.
+        # Get the CDS.
         for cds_id, source_cds in enumerate(
-                tdata.getElementsByTagName("coding_region")):
+                transcript_data.getElementsByTagName("coding_region")):
             if cds_id > 0:
                 # Todo: For now, we only support one CDS per transcript and
                 #   ignore all others. This should be discussed.
                 continue
-            cds_name = source_cds.getElementsByTagName(
-                'translation')[0].getAttribute('name')
-            coordinates = _get_coordinates(source_cds, lrg_id)
-            cds.start = Position(coordinates['start'])
-            cds.end = Position(coordinates['end'])
-            cds.qualifiers['protein_id'] = cds_name
+            transcript['features'].append(
+                {'type': 'cds',
+                 'id': source_cds.getElementsByTagName(
+                     'translation')[0].getAttribute('name'),
+                 'location': _get_location(source_cds, lrg_id)})
 
-        # Note: Not all the transcripts contain a coding_region.
-        if tdata.getElementsByTagName('coding_region'):
-            transcript.qualifiers['transcribe'] = True
-            transcript.link = cds
-            cds.link = transcript
-
-        mrna_list.update({transcript_name: transcript})
-        cds_list.update({cds_name: cds})
-    return mrna_list, cds_list
+        transcripts.append(transcript)
+    return transcripts
 
 
-def _get_loci(fixed, updatable):
+def _get_gene(fixed):
     """
-    Construct the loci reference model.
+    Construct the gene reference model.
 
     :param fixed: The fixed section of the LRG XML file.
-    :param updatable: The updatable section of the LRG XML file.
     :return: Corresponding loci reference model.
     """
-    gene = _get_gene(fixed, updatable)
-
-    loci = {'gene': {gene.qualifiers.get('gene'): gene}}
-
-    mrna_list, cds_list = _get_transcripts(fixed)
-    if len(mrna_list) > 0:
-        loci['mRNA'] = mrna_list
-        for mrna in mrna_list:
-            gene.add_child(loci['mRNA'][mrna])
-    if len(cds_list) > 0:
-        loci['CDS'] = cds_list
-        for cds in cds_list:
-            gene.add_child(loci['CDS'][cds])
-
-    return loci
+    gene = {'type': 'gene',
+            'id': _get_content(fixed, 'hgnc_id'),
+            'features': _get_transcripts(fixed)}
+    return gene
 
 
 def parse(content):
@@ -209,28 +139,32 @@ def parse(content):
     Parses an LRG <xml> formatted string and calls the appropriate methods to
     create and return the defined reference model.
 
-    :arg bytes content: Content of LRG file
-
-    :return: Corresponding reference instance.
-    :rtype: Reference
+    :arg bytes content: LRG file content.
+    :return: Corresponding dictionary model.
     """
-    reference = Reference()
-    reference.type = 'LRG'
 
-    # Extract the fixed and updatable section.
+    # Extract the fixed section.
     data = xml.dom.minidom.parseString(content)
     fixed = data.getElementsByTagName('fixed_annotation')[0]
-    updatable = data.getElementsByTagName('updatable_annotation')[0]
-
-    reference.info = {
-        'organism': _get_content(data, 'organism'),
-        'sequence_source': _get_content(data, 'sequence_source'),
-        'creation_date': _get_content(data, 'creation_date'),
-        'molType': 'g'}
 
     # Get the sequence from the fixed section
-    reference.seq = Seq(_get_content(fixed, 'sequence'), IUPAC.unambiguous_dna)
+    sequence = Seq(_get_content(fixed, 'sequence'), IUPAC.unambiguous_dna)
 
-    reference.loci = _get_loci(fixed, updatable)
+    model = {'type': 'top',
+             'id': _get_content(data, 'id'),
+             'location': {'type': 'range',
+                          'start': {'type': 'point',
+                                    'position': 0},
+                          'end':  {'type': 'point',
+                                   'position': len(sequence)}},
+             'qualifiers': {'organism': _get_content(data, 'organism'),
+                            'sequence_source': _get_content(data,
+                                                            'sequence_source'),
+                            'creation_date': _get_content(data,
+                                                          'creation_date'),
+                            'hgnc_id': _get_content(data, 'hgnc_id'),
+                            'mol_type': _get_content(data, 'mol_type')},
+             'features': [_get_gene(fixed)]}
 
-    return reference
+    return {'model': model,
+            'sequence': {'seq': str(sequence)}}
