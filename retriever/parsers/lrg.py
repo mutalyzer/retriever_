@@ -93,7 +93,6 @@ def _get_transcripts(section):
     transcripts = []
     for transcript_data in section.getElementsByTagName('transcript'):
         transcript = {'id': transcript_data.getAttribute('name'),
-                      'type': 'transcript',
                       'location': _get_location(transcript_data, lrg_id)}
 
         # Get the exons.
@@ -105,6 +104,7 @@ def _get_transcripts(section):
         transcript['features'] = exons
 
         # Get the CDS.
+        transcript_type = 'ncRNA'
         for cds_id, source_cds in enumerate(
                 transcript_data.getElementsByTagName("coding_region")):
             if cds_id > 0:
@@ -112,10 +112,13 @@ def _get_transcripts(section):
                 #   ignore all others. This should be discussed.
                 continue
             transcript['features'].append(
-                {'type': 'cds',
+                {'type': 'CDS',
                  'id': source_cds.getElementsByTagName(
                      'translation')[0].getAttribute('name'),
                  'location': _get_location(source_cds, lrg_id)})
+            transcript_type = 'mRNA'
+
+        transcript['type'] = transcript_type
 
         transcripts.append(transcript)
     return transcripts
@@ -150,7 +153,7 @@ def parse(content):
     # Get the sequence from the fixed section
     sequence = Seq(_get_content(fixed, 'sequence'), IUPAC.unambiguous_dna)
 
-    model = {'type': 'top',
+    model = {'type': 'genomic DNA',
              'id': _get_content(data, 'id'),
              'location': {'type': 'range',
                           'start': {'type': 'point',
