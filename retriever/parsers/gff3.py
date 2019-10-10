@@ -3,9 +3,9 @@ Module for gff files parsing.
 
 GFF3 specifications:
 - Official:
-  - https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md
+  - [1] https://github.com/The-Sequence-Ontology/Specifications/blob/master/gff3.md
 - NCBI:
-  - ftp://ftp.ncbi.nlm.nih.gov/genomes/README_GFF3.txt
+  - [2]: ftp://ftp.ncbi.nlm.nih.gov/genomes/README_GFF3.txt
   - https://www.ncbi.nlm.nih.gov/genbank/genomes_gff/
 - Ensembl:
   - ftp://ftp.ensembl.org/pub/release-98/gff3/homo_sapiens/README
@@ -38,6 +38,11 @@ import io
 from ..util import make_location
 
 CONSIDERED_TYPES = ['region', 'gene', 'mRNA', 'exon', 'CDS', 'lnc_RNA']
+QUALIFIERS = {'gene': {'Name': 'name',
+                       'gene_synonym': 'synonym'},
+              'region': {'mol_type': 'mol_type',
+                         'Is_circular': 'is_circular',
+                         'transl_table': 'transl_table'}}
 SO_IDS = {'gene': 'SO:0000704',
           'mRNA': 'SO:0000234',
           'ncRNA': 'SO:0000655',
@@ -85,14 +90,11 @@ def _combine_cdses(mrna):
 
 
 def _get_qualifiers(feature):
-    attrs = {'gene': {'Name': 'name',
-                      'gene_synonym': 'synonym'},
-             'region': {'mol_type': 'mol_type'}}
     q = feature.qualifiers
     t = feature.type
-    if feature.type in attrs.keys():
-        qs = {attrs[t][k]: q[k][0] if len(q[k]) == 1 else q[k]
-              for k in q.keys() if k in attrs[t].keys()}
+    if feature.type in QUALIFIERS.keys():
+        qs = {QUALIFIERS[t][k]: q[k][0] if len(q[k]) == 1 else q[k]
+              for k in q.keys() if k in QUALIFIERS[t].keys()}
         if t == 'gene':
             if q.get('Dbxref'):
                 for dbxref_entry in q['Dbxref']:
@@ -116,9 +118,15 @@ def _get_feature_type(feature):
         return feature.type
 
 
-def _get_features(feature, parent=None):
-    if parent and isinstance(parent, SeqFeature):
-        if parent.type == 'gene' and feature.type == 'exon':
+def _get_feature_model(feature, parent=None, skip=None):
+    """
+    Recursively get the model for a particular feature. If some sub features
+    do not need to be included, specify them in the `skip` dictionary.
+
+    The method to combine CDSes into a single feature is also employed.
+    """
+    if skip and parent and isinstance(parent, SeqFeature):
+        if parent in skip.keys() and skip[parent] == feature.type:
             return
     if feature.type in CONSIDERED_TYPES:
         model = {'id': _get_feature_id(feature),
@@ -133,7 +141,8 @@ def _get_features(feature, parent=None):
         if feature.sub_features:
             model['features'] = []
             for sub_feature in feature.sub_features:
-                sub_feature_model = _get_features(sub_feature, feature)
+                sub_feature_model = _get_feature_model(sub_feature, feature,
+                                                       skip)
                 if sub_feature_model:
                     model['features'].append(sub_feature_model)
         if feature.type == 'mRNA':
@@ -141,32 +150,68 @@ def _get_features(feature, parent=None):
         return model
 
 
+def _get_region_model(features):
+    """
+    Multiple `region` features can be present in the file. According to
+    the NCBI [2], the one that corresponds to the `source` feature that
+    appears in a GenBank flatfile format can be identified by the
+    `gbkey=Src` attribute and is the first feature row for every seqid.
+    """
+    for feature in features:
+        if feature.type == 'region' and feature.qualifiers.get('gbkey'):
+            if feature.qualifiers['gbkey'] == 'Src':
+                return _get_feature_model(feature)
+
+
+def _create_mrna_features(features, mrna_id):
+    mrna_model = {'id': mrna_id}
+    exon_positions = []
+    for sub_feature in features[0]['features']:
+        if sub_feature['type'] == 'exon':
+            exon_positions.append(sub_feature['location']['start']['position'])
+            exon_positions.append(sub_feature['location']['end']['position'])
+    if exon_positions:
+        mrna_model['location'] = make_location(sorted(exon_positions)[0, -1])
+    print(json.dumps(mrna_model, indent=2))
+    return mrna_model
+
+
+def _create_mrna_model(record):
+    features = []
+    for feature in record.features:
+        feature_model = _get_feature_model(feature, record, {'gene': 'exon'})
+        if feature_model:
+            features.append(feature_model)
+
+
 def _create_record_model(record, source=None):
+    """
+    Our model follows the gene-mRNA-CDS/exon and gene-ncRNA-exon conventions.
+    Annotations in GFF3 files also conform to this, with some exceptions:
+    - `mol_type=mRNA` references (e.g., NM_/XM, NR_/XR), for which the RNA is
+       missing: gene-(CDS)/exon. In this case we create the RNA.
+    - There may be some floating exons attached directly to a gene. We do not
+      add them to our model.
+    """
+
+    features = []
+    # Consider first if the record is mRNA.
+    region_model = _get_region_model(record.features)
+    if region_model:
+        if region_model.get('qualifiers'):
+            if region_model['qualifiers']['mol_type'] == 'mRNA':
+               features = _create_mrna_model(record)
+    else:
+        for feature in record.features:
+            feature_model = _get_feature_model(feature, record,
+                                               {'gene': 'exon'})
+            if feature_model:
+                features.append(feature_model)
+
     model = {'id': record.id,
              'location': make_location(
                  record.annotations['sequence-region'][0][2],
                  record.annotations['sequence-region'][0][1])}
-
-    features = []
-    region_model = None
-    for feature in record.features:
-        feature_model = _get_features(feature, record)
-        if feature_model:
-            if feature_model['type'] == 'region':
-                region_model = feature_model
-            else:
-                features.append(feature_model)
-    if features:
-        model['features'] = features
-
-    if region_model:
-        if region_model.get('qualifiers') and region_model.get['qualifiers'].get('mol_type'):
-            model['type'] = region_model['qualifiers']['mol_type']
-    else:
-        model['type'] = 'genomic DNA'
-
-    # if model['type'] == 'mRNA':
-    #     features = _create_mrna_features(features)
 
     if features:
         model['features'] = features
