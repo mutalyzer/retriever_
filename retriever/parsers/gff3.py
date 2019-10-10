@@ -36,8 +36,9 @@ from BCBio.GFF import GFFParser
 from Bio.SeqFeature import SeqFeature
 import io
 from ..util import make_location
+import json
 
-CONSIDERED_TYPES = ['region', 'gene', 'mRNA', 'exon', 'CDS', 'lnc_RNA']
+CONSIDERED_TYPES = ['gene', 'mRNA', 'exon', 'CDS', 'lnc_RNA']
 QUALIFIERS = {'gene': {'Name': 'name',
                        'gene_synonym': 'synonym'},
               'region': {'mol_type': 'mol_type',
@@ -118,7 +119,8 @@ def _get_feature_type(feature):
         return feature.type
 
 
-def _get_feature_model(feature, parent=None, skip=None):
+def _get_feature_model(feature, parent=None, skip=None,
+                       considered_types=CONSIDERED_TYPES):
     """
     Recursively get the model for a particular feature. If some sub features
     do not need to be included, specify them in the `skip` dictionary.
@@ -128,7 +130,7 @@ def _get_feature_model(feature, parent=None, skip=None):
     if skip and parent and isinstance(parent, SeqFeature):
         if parent in skip.keys() and skip[parent] == feature.type:
             return
-    if feature.type in CONSIDERED_TYPES:
+    if feature.type in considered_types:
         model = {'id': _get_feature_id(feature),
                  'type': _get_feature_type(feature),
                  'location': make_location(
@@ -159,29 +161,29 @@ def _get_region_model(features):
     """
     for feature in features:
         if feature.type == 'region' and feature.qualifiers.get('gbkey'):
-            if feature.qualifiers['gbkey'] == 'Src':
-                return _get_feature_model(feature)
+            if feature.qualifiers['gbkey'][0] == 'Src':
+                return _get_feature_model(feature, considered_types=['region'])
 
 
-def _create_mrna_features(features, mrna_id):
-    mrna_model = {'id': mrna_id}
+def _create_mrna_model(record):
+    mrna_model = {'id': record.id,
+                  'type': 'mRNA'}
+    features = []
+    for feature in record.features:
+        feature_model = _get_feature_model(feature, record, {'gene': 'exon'})
+        if feature_model:
+            features.append(feature_model)
     exon_positions = []
     for sub_feature in features[0]['features']:
         if sub_feature['type'] == 'exon':
             exon_positions.append(sub_feature['location']['start']['position'])
             exon_positions.append(sub_feature['location']['end']['position'])
     if exon_positions:
-        mrna_model['location'] = make_location(sorted(exon_positions)[0, -1])
-    print(json.dumps(mrna_model, indent=2))
-    return mrna_model
-
-
-def _create_mrna_model(record):
-    features = []
-    for feature in record.features:
-        feature_model = _get_feature_model(feature, record, {'gene': 'exon'})
-        if feature_model:
-            features.append(feature_model)
+        mrna_model['location'] = make_location(sorted(exon_positions)[0],
+                                               sorted(exon_positions)[-1])
+    mrna_model['features'] = features[0]['features']
+    features[0]['features'] = mrna_model
+    return features
 
 
 def _create_record_model(record, source=None):
@@ -200,13 +202,13 @@ def _create_record_model(record, source=None):
     if region_model:
         if region_model.get('qualifiers'):
             if region_model['qualifiers']['mol_type'] == 'mRNA':
-               features = _create_mrna_model(record)
-    else:
-        for feature in record.features:
-            feature_model = _get_feature_model(feature, record,
-                                               {'gene': 'exon'})
-            if feature_model:
-                features.append(feature_model)
+                features = _create_mrna_model(record)
+            else:
+                for feature in record.features:
+                    feature_model = _get_feature_model(feature, record,
+                                                       {'gene': 'exon'})
+                    if feature_model:
+                        features.append(feature_model)
 
     model = {'id': record.id,
              'location': make_location(
@@ -215,7 +217,6 @@ def _create_record_model(record, source=None):
 
     if features:
         model['features'] = features
-
     return model
 
 
