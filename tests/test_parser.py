@@ -9,6 +9,7 @@ def get_references():
     references = {'gff3': ['NM_078467.2',
                            'NM_152263.2',
                            'NM_152263.3',
+                           'NM_000077.4',
                            'NG_012337.1',
                            'NR_002196.2',
                            'L41870.1',
@@ -35,5 +36,3 @@ def test_schema_validation(reference_id, reference_type, reference_content):
         assert validate(reference_model['model']) is None
     else:
         assert validate(reference_model) is None
-
-
