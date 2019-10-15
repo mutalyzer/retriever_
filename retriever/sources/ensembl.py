@@ -1,6 +1,4 @@
 from retriever.util import make_request
-from Bio import SeqIO
-from io import StringIO
 from urllib.error import HTTPError
 import json
 
