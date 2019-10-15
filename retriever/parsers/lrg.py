@@ -153,7 +153,7 @@ def parse(content):
     # Get the sequence from the fixed section
     sequence = Seq(_get_content(fixed, 'sequence'), IUPAC.unambiguous_dna)
 
-    model = {'type': 'genomic DNA',
+    model = {'type': 'record',
              'id': _get_content(data, 'id'),
              'location': {'type': 'range',
                           'start': {'type': 'point',
