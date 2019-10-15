@@ -36,7 +36,7 @@ from BCBio.GFF import GFFParser
 from Bio.SeqFeature import SeqFeature
 import io
 from ..util import make_location
-import json
+
 
 CONSIDERED_TYPES = ['gene', 'mRNA', 'exon', 'CDS', 'lnc_RNA']
 QUALIFIERS = {'gene': {'Name': 'name',
@@ -182,7 +182,7 @@ def _create_mrna_model(record):
         mrna_model['location'] = make_location(sorted(exon_positions)[0],
                                                sorted(exon_positions)[-1])
     mrna_model['features'] = features[0]['features']
-    features[0]['features'] = mrna_model
+    features[0]['features'] = [mrna_model]
     return features
 
 
@@ -199,21 +199,29 @@ def _create_record_model(record, source=None):
     features = []
     # Consider first if the record is mRNA.
     region_model = _get_region_model(record.features)
+    mol_type = None
     if region_model:
         if region_model.get('qualifiers'):
-            if region_model['qualifiers']['mol_type'] == 'mRNA':
-                features = _create_mrna_model(record)
+            if region_model.get('qualifiers'):
+                if region_model['qualifiers']['mol_type'] == 'mRNA':
+                    features = _create_mrna_model(record)
+                mol_type = region_model['qualifiers']['mol_type']
             else:
                 for feature in record.features:
                     feature_model = _get_feature_model(feature, record,
                                                        {'gene': 'exon'})
                     if feature_model:
                         features.append(feature_model)
+    if mol_type is None:
+        if source and source == 'ensembl':
+            mol_type = 'genomic DNA'
 
     model = {'id': record.id,
+             'type': 'record',
              'location': make_location(
                  record.annotations['sequence-region'][0][2],
-                 record.annotations['sequence-region'][0][1])}
+                 record.annotations['sequence-region'][0][1]),
+             'qualifiers': {'mol_type': mol_type}}
 
     if features:
         model['features'] = features
