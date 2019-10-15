@@ -190,8 +190,11 @@ def _create_record_model(record, source=None):
     """
     Our model follows the gene-mRNA-CDS/exon and gene-ncRNA-exon conventions.
     Annotations in GFF3 files also conform to this, with some exceptions:
-    - `mol_type=mRNA` references (e.g., NM_/XM, NR_/XR), for which the RNA is
-       missing: gene-(CDS)/exon. In this case we create the RNA.
+    - `mol_type=*RNA` references (e.g., NM_/XM, NR_/XR), for which the RNA
+       may missing: gene-(CDS)/exon. In the case of 'mRNA' we create the RNA.
+       TODO: Find a solution for other RNA features. It seems like for such
+             records there could be a transcript present there but the exons
+             are attached to the gene and not the RNA.
     - There may be some floating exons attached directly to a gene. We do not
       add them to our model.
     """
@@ -202,26 +205,23 @@ def _create_record_model(record, source=None):
     mol_type = None
     if region_model:
         if region_model.get('qualifiers'):
-            if region_model.get('qualifiers'):
-                if region_model['qualifiers']['mol_type'] == 'mRNA':
-                    features = _create_mrna_model(record)
-                mol_type = region_model['qualifiers']['mol_type']
-            else:
-                for feature in record.features:
-                    feature_model = _get_feature_model(feature, record,
-                                                       {'gene': 'exon'})
-                    if feature_model:
-                        features.append(feature_model)
-    if mol_type is None:
-        if source and source == 'ensembl':
-            mol_type = 'genomic DNA'
+            if region_model['qualifiers']['mol_type'] == 'mRNA':
+                features = _create_mrna_model(record)
+            mol_type = region_model['qualifiers']['mol_type']
+    else:
+        for feature in record.features:
+            feature_model = _get_feature_model(feature, record,
+                                               {'gene': 'exon'})
+            if feature_model:
+                features.append(feature_model)
 
     model = {'id': record.id,
              'type': 'record',
              'location': make_location(
                  record.annotations['sequence-region'][0][2],
-                 record.annotations['sequence-region'][0][1]),
-             'qualifiers': {'mol_type': mol_type}}
+                 record.annotations['sequence-region'][0][1])}
+    if mol_type:
+        model['qualifiers'] = {'mol_type': mol_type}
 
     if features:
         model['features'] = features
