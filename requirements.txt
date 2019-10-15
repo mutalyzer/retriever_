@@ -25,10 +25,10 @@ py==1.7.0
 Pygments==2.3.1
 pytest==4.0.1
 redis==2.10.6
-requests==2.21.0
+requests==2.22.0
 -e git+git@github.com:mutalyzer/retriever.git@ccaaed734e5c7ffc8f942a18348e1cab09fb1111#egg=retriever
 schema==0.7.0
 six==1.12.0
 traitlets==4.3.2
-urllib3==1.24.1
+urllib3==1.25.6
 wcwidth==0.1.7
