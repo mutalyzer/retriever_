@@ -125,7 +125,7 @@ def _get_feature_model(feature, parent=None, skip=None,
     Recursively get the model for a particular feature. If some sub features
     do not need to be included, specify them in the `skip` dictionary.
 
-    The method to combine CDSes into a single feature is also employed.
+    The method to combine CDSes into a single feature is also called.
     """
     if skip and parent and isinstance(parent, SeqFeature):
         if parent in skip.keys() and skip[parent] == feature.type:
@@ -143,13 +143,27 @@ def _get_feature_model(feature, parent=None, skip=None,
         if feature.sub_features:
             model['features'] = []
             for sub_feature in feature.sub_features:
-                sub_feature_model = _get_feature_model(sub_feature, feature,
-                                                       skip)
+                sub_feature_model = _get_feature_model(
+                    feature=sub_feature, parent=feature, skip=skip,
+                    considered_types=considered_types)
                 if sub_feature_model:
                     model['features'].append(sub_feature_model)
         if feature.type == 'mRNA':
             _combine_cdses(model)
         return model
+
+
+def _get_record_features_model(record, skip=None,
+                               considered_types=CONSIDERED_TYPES):
+    features = []
+    if record.features:
+        for feature in record.features:
+            feature_model = _get_feature_model(
+                feature=feature, parent=record, skip=skip,
+                considered_types=considered_types)
+            if feature_model:
+                features.append(feature_model)
+    return features
 
 
 def _get_region_model(features):
@@ -162,27 +176,33 @@ def _get_region_model(features):
     for feature in features:
         if feature.type == 'region' and feature.qualifiers.get('gbkey'):
             if feature.qualifiers['gbkey'][0] == 'Src':
-                return _get_feature_model(feature, considered_types=['region'])
+                return _get_feature_model(feature=feature,
+                                          considered_types=['region'])
 
 
-def _create_mrna_model(record):
-    mrna_model = {'id': record.id,
-                  'type': 'mRNA'}
-    features = []
-    for feature in record.features:
-        feature_model = _get_feature_model(feature, record, {'gene': 'exon'})
-        if feature_model:
-            features.append(feature_model)
+def _get_rna_features(record, mol_type):
+    if mol_type == 'mRNA':
+        feature_type = 'mRNA'
+    else:
+        feature_type = 'ncRNA'
+    rna_model = {'id': record.id,
+                 'type': feature_type}
+
+    features = _get_record_features_model(
+        record=record,
+        skip={'gene': 'exon'},
+        considered_types=['gene', 'exon', 'CDS'])
+
     exon_positions = []
     for sub_feature in features[0]['features']:
         if sub_feature['type'] == 'exon':
             exon_positions.append(sub_feature['location']['start']['position'])
             exon_positions.append(sub_feature['location']['end']['position'])
     if exon_positions:
-        mrna_model['location'] = make_location(sorted(exon_positions)[0],
+        rna_model['location'] = make_location(sorted(exon_positions)[0],
                                                sorted(exon_positions)[-1])
-    mrna_model['features'] = features[0]['features']
-    features[0]['features'] = [mrna_model]
+    rna_model['features'] = features[0]['features']
+    features[0]['features'] = [rna_model]
     return features
 
 
@@ -190,30 +210,27 @@ def _create_record_model(record, source=None):
     """
     Our model follows the gene-mRNA-CDS/exon and gene-ncRNA-exon conventions.
     Annotations in GFF3 files also conform to this, with some exceptions:
-    - `mol_type=*RNA` references (e.g., NM_/XM, NR_/XR), for which the RNA
-       may missing: gene-(CDS)/exon. In the case of 'mRNA' we create the RNA.
-       TODO: Find a solution for other RNA features. It seems like for such
-             records there could be a transcript present there but the exons
-             are attached to the gene and not the RNA.
+    - `mol_type=*RNA` NCBI references (e.g., NM_/XM, NR_/XR), for which the
+       RNA may be missing, leaving something like: gene-(CDS)/exon. In this
+       case we create the '*RNA' feature between the gene and the CDS/exons.
+       We observed that for mRNAs (e.g., NMs) the gene children consist of
+       only the CDS and exons, while for other RNAs (e.g., NRs) there are
+       other features as well (which we do not consider).
     - There may be some floating exons attached directly to a gene. We do not
       add them to our model.
     """
 
-    features = []
-    # Consider first if the record is mRNA.
-    region_model = _get_region_model(record.features)
+    features = None
     mol_type = None
-    if region_model:
-        if region_model.get('qualifiers'):
-            if region_model['qualifiers']['mol_type'] == 'mRNA':
-                features = _create_mrna_model(record)
-            mol_type = region_model['qualifiers']['mol_type']
-    else:
-        for feature in record.features:
-            feature_model = _get_feature_model(feature, record,
-                                               {'gene': 'exon'})
-            if feature_model:
-                features.append(feature_model)
+    if source and source == 'ncbi':
+        region_model = _get_region_model(record.features)
+        if region_model and region_model.get('qualifiers'):
+            if region_model['qualifiers'].get('mol_type'):
+                mol_type = region_model['qualifiers']['mol_type']
+                if 'RNA' in region_model['qualifiers']['mol_type'].upper():
+                    features = _get_rna_features(record, mol_type)
+    if features is None:
+        features = _get_record_features_model(record, skip={'gene': 'exon'})
 
     model = {'id': record.id,
              'type': 'record',

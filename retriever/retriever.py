@@ -79,7 +79,7 @@ def retrieve(reference_id, reference_source=None, reference_type=None,
     if parse:
         if annotations is None:
             return
-        model = parser.parse(annotations, reference_type)
+        model = parser.parse(annotations, reference_type, reference_source)
         if reference_type is 'gff3':
             sequence = fetch_sequence(reference_id, reference_source)
             return {'model': model,

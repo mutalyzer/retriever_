@@ -8,7 +8,7 @@ def get_reference_type(content):
         return 'genbank_ncbi'
 
 
-def parse(reference_content, reference_type=None):
+def parse(reference_content, reference_type=None, reference_source=None):
 
     if reference_type is None:
         reference_type = get_reference_type(reference_content)
@@ -18,7 +18,7 @@ def parse(reference_content, reference_type=None):
     elif reference_type == 'genbank':
         model = genbank.parse(reference_content)
     elif reference_type == 'gff3':
-        model = gff3.parse(reference_content)
+        model = gff3.parse(reference_content, reference_source)
     else:
         return None
 
