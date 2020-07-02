@@ -2,7 +2,7 @@ import pytest
 import json
 from pathlib import Path
 
-from retriever.retriever import retrieve
+from mutalyzer_retriever import retrieve
 
 
 def _get_content(relative_location):
@@ -59,9 +59,9 @@ def test_model(r_id, r_source, r_type, expected_model, monkeypatch):
     def mock_fetch_sequence(reference_id, reference_source=None):
         return json.loads(_get_content('data/' + r_id + '.sequence'))
 
-    monkeypatch.setattr('retriever.retriever.fetch_annotations',
+    monkeypatch.setattr('mutalyzer_retriever.retriever.fetch_annotations',
                         mock_fetch_annotation)
-    monkeypatch.setattr('retriever.retriever.fetch_sequence',
+    monkeypatch.setattr('mutalyzer_retriever.retriever.fetch_sequence',
                         mock_fetch_sequence)
 
     assert ordered(retrieve(r_id, parse=True)) == ordered(expected_model)

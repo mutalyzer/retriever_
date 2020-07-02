@@ -1,5 +1,5 @@
 from .sources import ncbi, ensembl, lrg
-from retriever import parser
+from . import parser
 
 
 def fetch_annotations(reference_id, reference_type=None):

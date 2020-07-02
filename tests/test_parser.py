@@ -1,7 +1,7 @@
 import pytest
 from pathlib import Path
-from retriever import parser
-from retriever.schema_validation import validate
+from mutalyzer_retriever import parser
+from mutalyzer_retriever.schema_validation import validate
 
 
 def get_references_content(references):

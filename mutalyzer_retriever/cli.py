@@ -7,7 +7,7 @@ import argparse
 from . import usage, version
 from .sources.ncbi import link_reference
 import json
-from retriever.retriever import retrieve
+from .retriever import retrieve
 
 
 def main():

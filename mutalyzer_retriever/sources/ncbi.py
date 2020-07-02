@@ -5,13 +5,9 @@ import io
 import requests
 
 from Bio import Entrez, SeqIO
-import redis
 from .. import settings
-from retriever.util import make_request
+from ..util import make_request
 
-
-redis = redis.StrictRedis.from_url(
-    settings.REDIS_URI, decode_responses=True, encoding='utf-8')
 
 Entrez.email = settings.EMAIL
 Entrez.api_key = settings.NCBI_API_KEY
@@ -294,66 +290,6 @@ def protein_to_transcript(protein_accession, protein_version=None,
         match_version=match_version)
 
 
-def _get_link_from_cache(source_accession, source_version=None,
-                         match_version=True):
-    """
-    Retrieve a linked accession number from the cache.
-
-    :arg str forward_key: Cache key format string for the forward direction.
-      The source term will be substituted in this template.
-    :arg str reverse_key: Cache key format string for the reverse direction.
-      The target term will be substituted in this template.
-    :arg str source_accession: Accession number for which we want to find a
-      link (without version number).
-    :arg int source_version: Optional version number for `source_accession`.
-    :arg bool match_version: If `False`, the link does not have to match
-      `source_version`.
-
-    :raises _NegativeLinkError: If a negative link was found.
-    :raises NoLinkError: If no link could be found.
-
-    :returns: Tuple of `(target_accession, target_version)` representing the
-      link target. If `source_version` is not specified or `match_version` is
-      `False`, `target_version` can be `None`.
-    :rtype: tuple(str, int)
-    """
-    keys = ['ncbi:protein-to-transcript:%s', 'ncbi:transcript-to-protein:%s']
-
-    for key in keys:
-        if source_version is not None:
-            # Query cache for link with version.
-            target = redis.get(key %
-                               ('%s.%d' % (source_accession, source_version)))
-            if target:
-                target_accession, target_version = target.split('.')
-                return target_accession, int(target_version)
-
-        if source_version is None or not match_version:
-            # Query cache for link without version.
-            target = redis.get(key % source_accession)
-            if target is not None:
-                return target, None
-
-    raise NoLinkError()
-
-
-def _cache_link(forward_key, reverse_key, source_accession, target_accession,
-                source_version=None, target_version=None):
-    """
-    Store a transcript-protein link in the cache.
-    """
-    # Store the link without version in both directions.
-    redis.set(forward_key % source_accession, target_accession)
-    redis.set(reverse_key % target_accession, source_accession)
-
-    if source_version is not None and target_version is not None:
-        # Store the link with version in both directions.
-        redis.set(forward_key % ('%s.%d' % (source_accession, source_version)),
-                  '%s.%d' % (target_accession, target_version))
-        redis.set(reverse_key % ('%s.%d' % (target_accession, target_version)),
-                  '%s.%d' % (source_accession, source_version))
-
-
 def link_transcript_to_protein_by_file(reference_id):
     """
     Try to find the link between a transcript and a protein (vice versa also)
@@ -404,16 +340,6 @@ def link_reference(reference_id):
     else:
         match_version = True
 
-    if settings.REDIS_URI:
-        try:
-            link_accession, link_version = _get_link_from_cache(
-                accession, version, match_version)
-        except NoLinkError:
-            pass
-        else:
-            if link_accession:
-                return compose_reference(link_accession, link_version), 'cache'
-
     try:
         link_accession, link_version = protein_to_transcript(
             accession, version, match_version)
@@ -421,20 +347,6 @@ def link_reference(reference_id):
         pass
     else:
         if link_accession:
-            if settings.REDIS_URI:
-                _cache_link(forward_key='ncbi:protein-to-transcript:%s',
-                            reverse_key='ncbi:transcript-to-protein:%s',
-                            source_accession=accession,
-                            source_version=version,
-                            target_accession=link_accession,
-                            target_version=link_version)
-                _cache_link(forward_key='ncbi:transcript-to-protein:%s',
-                            reverse_key='ncbi:protein-to-transcript:%s',
-                            source_accession=accession,
-                            source_version=version,
-                            target_accession=link_accession,
-                            target_version=link_version)
-
             return compose_reference(link_accession, link_version), 'api'
 
     try:
@@ -443,13 +355,6 @@ def link_reference(reference_id):
     except NoLinkError:
         pass
     else:
-        if settings.REDIS_URI:
-            _cache_link(forward_key='ncbi:transcript-to-protein:%s',
-                        reverse_key='ncbi:protein-to-transcript:%s',
-                        source_accession=accession,
-                        source_version=version,
-                        target_accession=link_accession,
-                        target_version=link_version)
         return compose_reference(link_accession, link_version), 'api'
 
     if version:
@@ -461,13 +366,6 @@ def link_reference(reference_id):
         except ValueError:
             return None, None
         else:
-            if settings.REDIS_URI:
-                _cache_link(forward_key='ncbi:transcript-to-protein:%s',
-                            reverse_key='ncbi:protein-to-transcript:%s',
-                            source_accession=accession,
-                            source_version=version,
-                            target_accession=link_accession,
-                            target_version=link_version)
             return compose_reference(link_accession, link_version), 'file'
 
     return None, None

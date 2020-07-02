@@ -1,4 +1,4 @@
-from retriever.util import make_request
+from ..util import make_request
 from urllib.error import HTTPError
 import json
 
