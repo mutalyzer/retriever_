@@ -1,4 +1,4 @@
-from schema import Schema, And, Optional
+from schema import And, Optional, Schema
 
 point = Schema(
     {

@@ -3,11 +3,11 @@ CLI entry point.
 """
 
 import argparse
+import json
 
 from . import usage, version
-from .sources.ncbi import link_reference
-import json
 from .retriever import retrieve
+from .sources.ncbi import link_reference
 
 
 def main():

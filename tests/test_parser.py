@@ -1,5 +1,6 @@
-import pytest
 from pathlib import Path
+
+import pytest
 from mutalyzer_retriever import parser
 from mutalyzer_retriever.schema_validation import validate
 

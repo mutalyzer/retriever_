@@ -32,11 +32,12 @@ Notes:
     entries with the same ID are part of the same protein. They are split like
     this in the same manner as the exons are.
 """
+import io
+
 from BCBio.GFF import GFFParser
 from Bio.SeqFeature import SeqFeature
-import io
-from ..util import make_location
 
+from ..util import make_location
 
 CONSIDERED_TYPES = ["gene", "mRNA", "exon", "CDS", "lnc_RNA"]
 QUALIFIERS = {

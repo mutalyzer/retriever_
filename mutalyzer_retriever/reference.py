@@ -3,15 +3,13 @@ Main gbparser module.
 
 @requires: biopython
 """
-import os
-import logging
+import hashlib
 import io
 import json
-import hashlib
+import logging
+import os
 
-from Bio import SeqRecord
-from Bio import SeqFeature
-from Bio import SeqIO
+from Bio import SeqFeature, SeqIO, SeqRecord
 
 
 class PositionError(Exception):

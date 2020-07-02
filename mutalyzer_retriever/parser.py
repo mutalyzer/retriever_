@@ -1,4 +1,4 @@
-from .parsers import genbank, lrg, gff3
+from .parsers import genbank, gff3, lrg
 
 
 def get_reference_type(content):

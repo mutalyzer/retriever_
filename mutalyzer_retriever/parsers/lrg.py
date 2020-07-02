@@ -20,8 +20,9 @@ already employed by Mutalyzer in other circumstances.
 """
 
 import xml.dom.minidom
-from Bio.Seq import Seq
+
 from Bio.Alphabet import IUPAC
+from Bio.Seq import Seq
 
 
 def _get_content(data, refname):

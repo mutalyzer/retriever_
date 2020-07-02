@@ -1,6 +1,7 @@
-from ..util import make_request
-from urllib.error import HTTPError
 import json
+from urllib.error import HTTPError
+
+from ..util import make_request
 
 
 def get_json(feature_id):

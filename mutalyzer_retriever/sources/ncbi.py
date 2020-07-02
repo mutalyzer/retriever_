@@ -1,13 +1,12 @@
-from http.client import HTTPException
+import io
 from http.client import HTTPException
 from urllib.error import HTTPError
-import io
-import requests
 
+import requests
 from Bio import Entrez, SeqIO
+
 from .. import settings
 from ..util import make_request
-
 
 Entrez.email = settings.EMAIL
 Entrez.api_key = settings.NCBI_API_KEY

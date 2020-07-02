@@ -10,12 +10,13 @@ Additionally it should also provide some checks:
 """
 import hashlib
 import io
-import os
 import json
+import os
 
-from Bio import SeqIO, SeqRecord, SeqFeature
-from ..reference import Position, Locus, Reference
-from ..sources.ncbi import link_reference, compose_reference, decompose_reference
+from Bio import SeqFeature, SeqIO, SeqRecord
+
+from ..reference import Locus, Position, Reference
+from ..sources.ncbi import compose_reference, decompose_reference, link_reference
 
 FEATURES = {
     "gene": {"qualifiers": {"gene", "gene_synonym", "db_xref"}, "key": "gene"},
