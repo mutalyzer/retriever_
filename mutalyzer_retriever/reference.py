@@ -18,6 +18,7 @@ class PositionError(Exception):
     """
     Exception raised for errors in the position input.
     """
+
     pass
 
 
@@ -48,6 +49,7 @@ class Position:
     Note that p1 + p2 is not allowed. There is no reason at the moment to add
     two positions.
     """
+
     # TODO: Decide exactly what operations to allow for positions.
     # TODO: Allow only positions > 0.
     def __init__(self, position=None):
@@ -95,7 +97,7 @@ class Position:
             self._position_from_str(str(position))
         # If position is an instance of something else we raise an error.
         else:
-            raise PositionError('Incorrect position input.')
+            raise PositionError("Incorrect position input.")
 
     @property
     def fuzzy(self):
@@ -113,7 +115,7 @@ class Position:
 
         :param fuzzy: Fuzzy position type '<' or '>'.
         """
-        if fuzzy in ['<', '>']:
+        if fuzzy in ["<", ">"]:
             self._fuzzy = fuzzy
 
     def _position_from_int(self, position):
@@ -136,15 +138,15 @@ class Position:
         """
         # Check if position is empty.
         if not position:
-            raise PositionError('Incorrect position input.')
+            raise PositionError("Incorrect position input.")
         # Check for fuzzy before/after positions.
-        if position[0] in ['<', '>']:
+        if position[0] in ["<", ">"]:
             try:
                 pos = int(position[1:])
                 self._position = pos
                 self._fuzzy = position[0]
             except ValueError:
-                raise PositionError('Incorrect position input.')
+                raise PositionError("Incorrect position input.")
             return
         # Check for exact position.
         # With a string you can also define an exact position
@@ -153,7 +155,7 @@ class Position:
             pos = int(position)
             self._position_from_int(pos)
         except ValueError:
-            raise PositionError('Incorrect position input.')
+            raise PositionError("Incorrect position input.")
 
     def is_fuzzy(self):
         """
@@ -172,7 +174,7 @@ class Position:
 
         :return: True of position is a 'before' one or False otherwise.
         """
-        return bool(self._fuzzy == '<')
+        return bool(self._fuzzy == "<")
 
     def is_after(self):
         """
@@ -180,7 +182,7 @@ class Position:
 
         :return: True of position is an 'after' one or False otherwise.
         """
-        return bool(self._fuzzy == '>')
+        return bool(self._fuzzy == ">")
 
     def add_int(self, value):
         """
@@ -191,10 +193,10 @@ class Position:
         if isinstance(value, int):
             self._position += value
         else:
-            raise PositionError('Different argument than int provided.')
+            raise PositionError("Different argument than int provided.")
 
     def __str__(self):
-        output = ''
+        output = ""
         if self.is_fuzzy():
             output += self._fuzzy
         output += str(self._position)
@@ -224,10 +226,21 @@ class Locus(object):
     """
     A Locus object, to store data about the genes, mRNA, CDS, etc. features.
     """
-    def __init__(self, start=None, end=None, orientation=None,
-                 locus_type=None, parts=None, sequence=None,
-                 qualifiers=None, parent=None, children=None,
-                 config=None, link=None):
+
+    def __init__(
+        self,
+        start=None,
+        end=None,
+        orientation=None,
+        locus_type=None,
+        parts=None,
+        sequence=None,
+        qualifiers=None,
+        parent=None,
+        children=None,
+        config=None,
+        link=None,
+    ):
         """
         :param qualifiers: Dictionary containing the genbank qualifiers.
                            Taken directly from the BioPython SeqFeature.
@@ -245,7 +258,7 @@ class Locus(object):
         # Check that *start* is greater than the *end*.
         if None not in [start, end]:
             if self._start.position > self._end.position:
-                raise Exception('Locus start > sequence end.')
+                raise Exception("Locus start > sequence end.")
 
         self._orientation = None
         if orientation is not None:
@@ -315,7 +328,7 @@ class Locus(object):
     def orientation(self, orientation):
         # Check if orientation is correct.
         if orientation not in [None, 1, -1]:
-            raise Exception('Incorrect sequence orientation (not 1 or -1).')
+            raise Exception("Incorrect sequence orientation (not 1 or -1).")
         self._orientation = orientation
 
     @property
@@ -329,14 +342,14 @@ class Locus(object):
             # Check if providing parts are all Loci.
             for part in parts:
                 if not isinstance(part, Locus):
-                    raise Exception('Incorrect sequence part element provided.')
+                    raise Exception("Incorrect sequence part element provided.")
             self._parts = parts
         # But *parts* can be also just a Locus instance. If this is the
         # case we just create the list with that instance in it.
         elif isinstance(parts, Locus):
             self.parts = [].append(parts)
         else:
-            raise Exception('Incorrect parts provided.')
+            raise Exception("Incorrect parts provided.")
 
     @property
     def sequence(self):
@@ -397,28 +410,31 @@ class Locus(object):
         if None not in [self._end.position, self._start.position]:
             return self._end - self._start + 1
         else:
-            raise Exception('None limits present in locus.')
+            raise Exception("None limits present in locus.")
 
     def __str__(self):
         """
         Simple locus information string representation.
         """
         if self._locus_type:
-            feature_location = '{:10}{}..{}\n'.\
-                format(self._locus_type, self._start, self._end)
+            feature_location = "{:10}{}..{}\n".format(
+                self._locus_type, self._start, self._end
+            )
         else:
-            feature_location = '  {}..{}\n'.format(self._start, self._end)
-        qualifiers = '\n'.join('  {:15}: {}'.
-                               format(k, v) for k,v in self.qualifiers.items())
+            feature_location = "  {}..{}\n".format(self._start, self._end)
+        qualifiers = "\n".join(
+            "  {:15}: {}".format(k, v) for k, v in self.qualifiers.items()
+        )
         parts = self.get_parts_string()
-        output = '{} qualifiers:\n{}\n strand: {}'.format(
-            feature_location, qualifiers, self.get_strand())
-        if parts != '':
-            output += '\n parts:{}'.format(parts)
+        output = "{} qualifiers:\n{}\n strand: {}".format(
+            feature_location, qualifiers, self.get_strand()
+        )
+        if parts != "":
+            output += "\n parts:{}".format(parts)
         if self.children:
-            output += ' children:\n'
+            output += " children:\n"
             for child in self.children:
-                output += '{}'.format(child.locus_type)
+                output += "{}".format(child.locus_type)
         return output
 
     def to_dict(self):
@@ -428,26 +444,25 @@ class Locus(object):
 
         :return: The locus as a dictionary.
         """
-        values = dict(start=str(self.start),
-                      end=str(self.end),
-                      strand=self.get_strand(),
-                      parts=[])
+        values = dict(
+            start=str(self.start), end=str(self.end), strand=self.get_strand(), parts=[]
+        )
         for part in self.parts:
-            values['parts'].append(part.to_dict())
+            values["parts"].append(part.to_dict())
 
         values.update(self.qualifiers)
 
-        if 'children' in self.config:
+        if "children" in self.config:
             for child_type in self.children:
                 values[child_type] = []
                 for child in self.children[child_type]:
                     values[child_type].append(child.to_dict())
 
-        if 'key' in self.config:
-            if self.get_qualifier(self.config['key']):
-                output = {self.qualifiers[self.config['key']]: values}
+        if "key" in self.config:
+            if self.get_qualifier(self.config["key"]):
+                output = {self.qualifiers[self.config["key"]]: values}
             else:
-                output = {'None': values}
+                output = {"None": values}
         else:
             output = values
         return output
@@ -517,11 +532,11 @@ class Locus(object):
         if self._qualifiers is not None:
             # '_qualifiers' should be also a dictionary.
             if isinstance(self._qualifiers, dict):
-                if 'gene' in self._qualifiers:
+                if "gene" in self._qualifiers:
                     # Gene found, so we return it.
                     # It seems like BioPyothon provides stores the gene
                     # name in a list, so we should get the first element.
-                    return self._qualifiers['gene'][0]
+                    return self._qualifiers["gene"][0]
         # No 'gene' found among the '_qualifiers' dictionary.
         return None
 
@@ -530,9 +545,9 @@ class Locus(object):
         Converts the orientation into either '+' or '-'.
         """
         if self._orientation == -1:
-            return '-'
+            return "-"
         if self._orientation == 1:
-            return '+'
+            return "+"
 
     def add_child(self, locus):
         """
@@ -571,7 +586,7 @@ class Locus(object):
         if isinstance(part, Locus):
             self._parts.append(part)
         else:
-            raise Exception('Part to be appended is not a locus.')
+            raise Exception("Part to be appended is not a locus.")
 
     def get_parts_string(self):
         """
@@ -579,10 +594,10 @@ class Locus(object):
 
         :return: Dictionary with start and end positions as string values.
         """
-        output = ''
-        delimiter = '\n'
+        output = ""
+        delimiter = "\n"
         for part in self._parts:
-            output += '{}  {}..{}'.format(delimiter, part.start, part.end)
+            output += "{}  {}..{}".format(delimiter, part.start, part.end)
         return output
 
     def get_parts_list(self):
@@ -604,7 +619,7 @@ class Locus(object):
 
         :return:
         """
-        key_type = self.config.get('key')
+        key_type = self.config.get("key")
         return key_type, self.qualifiers.get(key_type)
 
 
@@ -612,8 +627,8 @@ class Reference:
     """
     Structured container of all the features in a reference file.
     """
-    def __init__(self, start=None, end=None,
-                 reference=None, cfg=None):
+
+    def __init__(self, start=None, end=None, reference=None, cfg=None):
 
         self.type = None
 
@@ -652,34 +667,43 @@ class Reference:
 
         :arg dict loci:
         """
-        json_model = {'reference': self.info}
+        json_model = {"reference": self.info}
         loci_json = []
 
-        if 'curated' in self.loci:
-            loci_json.append(self.loci['curated'])
+        if "curated" in self.loci:
+            loci_json.append(self.loci["curated"])
         else:
-            for gene_name, gene in self.loci['gene'].items():
-                if 'mRNA' in gene.children:
-                    for child in gene.children['mRNA']:
+            for gene_name, gene in self.loci["gene"].items():
+                if "mRNA" in gene.children:
+                    for child in gene.children["mRNA"]:
                         if not child.fuzzy_position_inside():
                             locus_json = {
-                                'transcript_id': child.qualifiers.get('transcript_id'),
-                                'HGNC': self.loci['gene'][gene_name].qualifiers.get('HGNC'),
-                                'gene': gene_name
+                                "transcript_id": child.qualifiers.get("transcript_id"),
+                                "HGNC": self.loci["gene"][gene_name].qualifiers.get(
+                                    "HGNC"
+                                ),
+                                "gene": gene_name,
                             }
                             if child.orientation:
-                                locus_json.update({'orientation': child.orientation})
+                                locus_json.update({"orientation": child.orientation})
                             if child.parts:
-                                locus_json.update({'exons': child.get_parts_list()})
+                                locus_json.update({"exons": child.get_parts_list()})
                             if child.link:
-                                locus_json.update({
-                                    'location': [int(str(child.link.start)),
-                                                 int(str(child.link.end))],
-                                    'protein_id': child.link.qualifiers.get('protein_id')})
+                                locus_json.update(
+                                    {
+                                        "location": [
+                                            int(str(child.link.start)),
+                                            int(str(child.link.end)),
+                                        ],
+                                        "protein_id": child.link.qualifiers.get(
+                                            "protein_id"
+                                        ),
+                                    }
+                                )
 
                             loci_json.append(locus_json)
 
-        json_model.update({'loci': loci_json})
+        json_model.update({"loci": loci_json})
         return json_model
 
     def to_json(self):
@@ -690,10 +714,10 @@ class Reference:
         Simple record string representation.
         """
         # print(self.loci.values())
-        info = '\n'.join([' {:17}: {}'.
-                         format(k, v) for k, v in self.info.items()])
-        loci = '\n'.join(map(str, self.loci.values()))
+        info = "\n".join([" {:17}: {}".format(k, v) for k, v in self.info.items()])
+        loci = "\n".join(map(str, self.loci.values()))
 
-        return '\nReference info:\n{}\n{}\nTotal loci: {}'.format(
-            info, loci, len(self.loci))
+        return "\nReference info:\n{}\n{}\nTotal loci: {}".format(
+            info, loci, len(self.loci)
+        )
         # return json.dumps(self._annotations)

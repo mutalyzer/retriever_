@@ -38,33 +38,38 @@ import io
 from ..util import make_location
 
 
-CONSIDERED_TYPES = ['gene', 'mRNA', 'exon', 'CDS', 'lnc_RNA']
-QUALIFIERS = {'gene': {'Name': 'name',
-                       'gene_synonym': 'synonym'},
-              'region': {'mol_type': 'mol_type',
-                         'Is_circular': 'is_circular',
-                         'transl_table': 'transl_table'}}
-SO_IDS = {'gene': 'SO:0000704',
-          'mRNA': 'SO:0000234',
-          'ncRNA': 'SO:0000655',
-          'exon': 'SO:0000147',
-          'CDS': 'SO:0000316'}
+CONSIDERED_TYPES = ["gene", "mRNA", "exon", "CDS", "lnc_RNA"]
+QUALIFIERS = {
+    "gene": {"Name": "name", "gene_synonym": "synonym"},
+    "region": {
+        "mol_type": "mol_type",
+        "Is_circular": "is_circular",
+        "transl_table": "transl_table",
+    },
+}
+SO_IDS = {
+    "gene": "SO:0000704",
+    "mRNA": "SO:0000234",
+    "ncRNA": "SO:0000655",
+    "exon": "SO:0000147",
+    "CDS": "SO:0000316",
+}
 
 
 def _get_feature_id(feature):
-    if feature.type == 'gene':
-        if feature.qualifiers.get('gene_id'):
-            return feature.qualifiers['gene_id'][0]
-        return feature.qualifiers['Name'][0]
-    elif feature.type == 'mRNA':
-        return feature.qualifiers['transcript_id'][0]
-    elif feature.type == 'lnc_RNA':
-        return feature.qualifiers['transcript_id'][0]
-    elif feature.type == 'CDS':
-        return feature.qualifiers['protein_id'][0]
-    elif feature.type == 'exon':
-        if feature.qualifiers.get('exon_id'):
-            return feature.qualifiers['exon_id'][0]
+    if feature.type == "gene":
+        if feature.qualifiers.get("gene_id"):
+            return feature.qualifiers["gene_id"][0]
+        return feature.qualifiers["Name"][0]
+    elif feature.type == "mRNA":
+        return feature.qualifiers["transcript_id"][0]
+    elif feature.type == "lnc_RNA":
+        return feature.qualifiers["transcript_id"][0]
+    elif feature.type == "CDS":
+        return feature.qualifiers["protein_id"][0]
+    elif feature.type == "exon":
+        if feature.qualifiers.get("exon_id"):
+            return feature.qualifiers["exon_id"][0]
         elif feature.id:
             return feature.id
 
@@ -75,18 +80,18 @@ def _combine_cdses(mrna):
     """
     positions = []
     exons = []
-    for feature in mrna['features']:
-        if feature['type'] == 'CDS':
-            positions.append(feature['location']['start']['position'])
-            positions.append(feature['location']['end']['position'])
-        elif feature['type'] == 'exon':
+    for feature in mrna["features"]:
+        if feature["type"] == "CDS":
+            positions.append(feature["location"]["start"]["position"])
+            positions.append(feature["location"]["end"]["position"])
+        elif feature["type"] == "exon":
             exons.append(feature)
     positions = sorted(positions)
-    for feature in mrna['features']:
-        if feature['type'] == 'CDS':
-            feature['location']['start']['position'] = positions[0]
-            feature['location']['end']['position'] = positions[-1]
-            mrna['features'] = exons + [feature]
+    for feature in mrna["features"]:
+        if feature["type"] == "CDS":
+            feature["location"]["start"]["position"] = positions[0]
+            feature["location"]["end"]["position"] = positions[-1]
+            mrna["features"] = exons + [feature]
             return
 
 
@@ -94,33 +99,37 @@ def _get_qualifiers(feature):
     q = feature.qualifiers
     t = feature.type
     if feature.type in QUALIFIERS.keys():
-        qs = {QUALIFIERS[t][k]: q[k][0] if len(q[k]) == 1 else q[k]
-              for k in q.keys() if k in QUALIFIERS[t].keys()}
-        if t == 'gene':
-            if q.get('Dbxref'):
-                for dbxref_entry in q['Dbxref']:
-                    if 'HGNC' in dbxref_entry:
-                        qs['HGNC'] = dbxref_entry.split(':')[-1]
+        qs = {
+            QUALIFIERS[t][k]: q[k][0] if len(q[k]) == 1 else q[k]
+            for k in q.keys()
+            if k in QUALIFIERS[t].keys()
+        }
+        if t == "gene":
+            if q.get("Dbxref"):
+                for dbxref_entry in q["Dbxref"]:
+                    if "HGNC" in dbxref_entry:
+                        qs["HGNC"] = dbxref_entry.split(":")[-1]
         return qs
 
 
 def _get_feature_type(feature):
-    if feature.type in ['gene']:
-        return 'gene'
-    elif feature.type in ['mRNA']:
-        return 'mRNA'
-    elif feature.type in ['lnc_RNA']:
-        return 'ncRNA'
-    elif feature.type in ['exon']:
-        return 'exon'
-    elif feature.type in ['CDS']:
-        return 'CDS'
+    if feature.type in ["gene"]:
+        return "gene"
+    elif feature.type in ["mRNA"]:
+        return "mRNA"
+    elif feature.type in ["lnc_RNA"]:
+        return "ncRNA"
+    elif feature.type in ["exon"]:
+        return "exon"
+    elif feature.type in ["CDS"]:
+        return "CDS"
     else:
         return feature.type
 
 
-def _get_feature_model(feature, parent=None, skip=None,
-                       considered_types=CONSIDERED_TYPES):
+def _get_feature_model(
+    feature, parent=None, skip=None, considered_types=CONSIDERED_TYPES
+):
     """
     Recursively get the model for a particular feature. If some sub features
     do not need to be included, specify them in the `skip` dictionary.
@@ -131,36 +140,42 @@ def _get_feature_model(feature, parent=None, skip=None,
         if parent in skip.keys() and skip[parent] == feature.type:
             return
     if feature.type in considered_types:
-        model = {'id': _get_feature_id(feature),
-                 'type': _get_feature_type(feature),
-                 'location': make_location(
-                     feature.location.start,
-                     feature.location.end,
-                     feature.location.strand)}
+        model = {
+            "id": _get_feature_id(feature),
+            "type": _get_feature_type(feature),
+            "location": make_location(
+                feature.location.start, feature.location.end, feature.location.strand
+            ),
+        }
         qualifiers = _get_qualifiers(feature)
         if qualifiers:
-            model['qualifiers'] = qualifiers
+            model["qualifiers"] = qualifiers
         if feature.sub_features:
-            model['features'] = []
+            model["features"] = []
             for sub_feature in feature.sub_features:
                 sub_feature_model = _get_feature_model(
-                    feature=sub_feature, parent=feature, skip=skip,
-                    considered_types=considered_types)
+                    feature=sub_feature,
+                    parent=feature,
+                    skip=skip,
+                    considered_types=considered_types,
+                )
                 if sub_feature_model:
-                    model['features'].append(sub_feature_model)
-        if feature.type == 'mRNA':
+                    model["features"].append(sub_feature_model)
+        if feature.type == "mRNA":
             _combine_cdses(model)
         return model
 
 
-def _get_record_features_model(record, skip=None,
-                               considered_types=CONSIDERED_TYPES):
+def _get_record_features_model(record, skip=None, considered_types=CONSIDERED_TYPES):
     features = []
     if record.features:
         for feature in record.features:
             feature_model = _get_feature_model(
-                feature=feature, parent=record, skip=skip,
-                considered_types=considered_types)
+                feature=feature,
+                parent=record,
+                skip=skip,
+                considered_types=considered_types,
+            )
             if feature_model:
                 features.append(feature_model)
     return features
@@ -174,35 +189,33 @@ def _get_region_model(features):
     `gbkey=Src` attribute and is the first feature row for every seqid.
     """
     for feature in features:
-        if feature.type == 'region' and feature.qualifiers.get('gbkey'):
-            if feature.qualifiers['gbkey'][0] == 'Src':
-                return _get_feature_model(feature=feature,
-                                          considered_types=['region'])
+        if feature.type == "region" and feature.qualifiers.get("gbkey"):
+            if feature.qualifiers["gbkey"][0] == "Src":
+                return _get_feature_model(feature=feature, considered_types=["region"])
 
 
 def _get_rna_features(record, mol_type):
-    if mol_type == 'mRNA':
-        feature_type = 'mRNA'
+    if mol_type == "mRNA":
+        feature_type = "mRNA"
     else:
-        feature_type = 'ncRNA'
-    rna_model = {'id': record.id,
-                 'type': feature_type}
+        feature_type = "ncRNA"
+    rna_model = {"id": record.id, "type": feature_type}
 
     features = _get_record_features_model(
-        record=record,
-        skip={'gene': 'exon'},
-        considered_types=['gene', 'exon', 'CDS'])
+        record=record, skip={"gene": "exon"}, considered_types=["gene", "exon", "CDS"]
+    )
 
     exon_positions = []
-    for sub_feature in features[0]['features']:
-        if sub_feature['type'] == 'exon':
-            exon_positions.append(sub_feature['location']['start']['position'])
-            exon_positions.append(sub_feature['location']['end']['position'])
+    for sub_feature in features[0]["features"]:
+        if sub_feature["type"] == "exon":
+            exon_positions.append(sub_feature["location"]["start"]["position"])
+            exon_positions.append(sub_feature["location"]["end"]["position"])
     if exon_positions:
-        rna_model['location'] = make_location(sorted(exon_positions)[0],
-                                               sorted(exon_positions)[-1])
-    rna_model['features'] = features[0]['features']
-    features[0]['features'] = [rna_model]
+        rna_model["location"] = make_location(
+            sorted(exon_positions)[0], sorted(exon_positions)[-1]
+        )
+    rna_model["features"] = features[0]["features"]
+    features[0]["features"] = [rna_model]
     return features
 
 
@@ -222,26 +235,29 @@ def _create_record_model(record, source=None):
 
     features = None
     mol_type = None
-    if source and source == 'ncbi':
+    if source and source == "ncbi":
         region_model = _get_region_model(record.features)
-        if region_model and region_model.get('qualifiers'):
-            if region_model['qualifiers'].get('mol_type'):
-                mol_type = region_model['qualifiers']['mol_type']
-                if 'RNA' in region_model['qualifiers']['mol_type'].upper():
+        if region_model and region_model.get("qualifiers"):
+            if region_model["qualifiers"].get("mol_type"):
+                mol_type = region_model["qualifiers"]["mol_type"]
+                if "RNA" in region_model["qualifiers"]["mol_type"].upper():
                     features = _get_rna_features(record, mol_type)
     if features is None:
-        features = _get_record_features_model(record, skip={'gene': 'exon'})
+        features = _get_record_features_model(record, skip={"gene": "exon"})
 
-    model = {'id': record.id,
-             'type': 'record',
-             'location': make_location(
-                 record.annotations['sequence-region'][0][2],
-                 record.annotations['sequence-region'][0][1])}
+    model = {
+        "id": record.id,
+        "type": "record",
+        "location": make_location(
+            record.annotations["sequence-region"][0][2],
+            record.annotations["sequence-region"][0][1],
+        ),
+    }
     if mol_type:
-        model['qualifiers'] = {'mol_type': mol_type}
+        model["qualifiers"] = {"mol_type": mol_type}
 
     if features:
-        model['features'] = features
+        model["features"] = features
     return model
 
 

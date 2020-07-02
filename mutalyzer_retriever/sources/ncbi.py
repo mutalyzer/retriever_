@@ -17,6 +17,7 @@ class NoLinkError(Exception):
     """
     Raised when no transcript-protein (or vice-versa) link can be found.
     """
+
     pass
 
 
@@ -24,6 +25,7 @@ class NcbiConnectionError(Exception):
     """
     Raised when there is some NCBI connection error.
     """
+
     pass
 
 
@@ -31,6 +33,7 @@ class NoNcbiReference(Exception):
     """
     Raised when reference not found on NCBI.
     """
+
     pass
 
 
@@ -38,6 +41,7 @@ class ReferenceToLong(Exception):
     """
     Raised when the reference length exceeds maximum size.
     """
+
     pass
 
 
@@ -62,8 +66,8 @@ def get_ncbi_databases(reference_id):
     :returns: Set with NCBI databases.
     :rtype: set
     """
-    if '.' in reference_id:
-        reference_id = reference_id.rsplit('.')[0]
+    if "." in reference_id:
+        reference_id = reference_id.rsplit(".")[0]
     try:
         handle = Entrez.egquery(term=reference_id)
     except (IOError, HTTPError, HTTPException) as e:
@@ -71,9 +75,9 @@ def get_ncbi_databases(reference_id):
 
     result = Entrez.read(handle)
     databases = set()
-    for item in result['eGQueryResult']:
-        if item['Status'].upper() == 'OK' and int(item['Count']) >= 1:
-            databases.add(item['DbName'])
+    for item in result["eGQueryResult"]:
+        if item["Status"].upper() == "OK" and int(item["Count"]) >= 1:
+            databases.add(item["DbName"])
     return databases
 
 
@@ -90,12 +94,12 @@ def get_reference_summary(reference_id):
     except NcbiConnectionError as e:
         raise e
 
-    if 'nuccore' in databases:
-        db = 'nuccore'
-    elif 'protein' in databases:
-        db = 'protein'
-    elif 'nucest' in databases:
-        db = 'nucest'
+    if "nuccore" in databases:
+        db = "nuccore"
+    elif "protein" in databases:
+        db = "protein"
+    elif "nucest" in databases:
+        db = "nucest"
         # Todo: Pay attention to the following:
         # https://ncbiinsights.ncbi.nlm.nih.gov/2018/07/30/upcoming-changes-est-gss-databases/
     else:
@@ -104,9 +108,10 @@ def get_reference_summary(reference_id):
     try:
         handle = Entrez.esummary(db=db, id=reference_id)
     except (IOError, HTTPError, HTTPException) as e:
-        print('4, ERETR, Could not retrieve record length for {} from {}'
-              'Entrez database. Error message {}:'
-              .format(reference_id, db, str(e)))
+        print(
+            "4, ERETR, Could not retrieve record length for {} from {}"
+            "Entrez database. Error message {}:".format(reference_id, db, str(e))
+        )
         raise NcbiConnectionError
     else:
         try:
@@ -117,15 +122,20 @@ def get_reference_summary(reference_id):
             handle.close()
 
     return {
-        'reference_id': record[0]['AccessionVersion'],
-        'db': db,
-        'length':  int(record[0]['Length'])
+        "reference_id": record[0]["AccessionVersion"],
+        "db": db,
+        "length": int(record[0]["Length"]),
     }
 
 
-def _get_link_from_ncbi(source_db, target_db, match_link_name,
-                        source_accession, source_version=None,
-                        match_version=True):
+def _get_link_from_ncbi(
+    source_db,
+    target_db,
+    match_link_name,
+    source_accession,
+    source_version=None,
+    match_version=True,
+):
     """
     Retrieve a linked accession number from the NCBI.
 
@@ -153,13 +163,19 @@ def _get_link_from_ncbi(source_db, target_db, match_link_name,
     def fail_or_retry():
         if source_version is None or match_version:
             raise NoLinkError()
-        return _get_link_from_ncbi(source_db, target_db, match_link_name,
-                                   source_accession, source_version=None,
-                                   match_version=False)
+        return _get_link_from_ncbi(
+            source_db,
+            target_db,
+            match_link_name,
+            source_accession,
+            source_version=None,
+            match_version=False,
+        )
+
     if source_version is None:
         source = source_accession
     else:
-        source = '%s.%d' % (source_accession, source_version)
+        source = "%s.%d" % (source_accession, source_version)
 
     # Find source record.
     try:
@@ -176,7 +192,7 @@ def _get_link_from_ncbi(source_db, target_db, match_link_name,
     finally:
         handle.close()
     try:
-        source_gi = result['IdList'][0]
+        source_gi = result["IdList"][0]
     except IndexError:
         return fail_or_retry()
 
@@ -195,12 +211,12 @@ def _get_link_from_ncbi(source_db, target_db, match_link_name,
     finally:
         handle.close()
 
-    if not result[0]['LinkSetDb']:
+    if not result[0]["LinkSetDb"]:
         return fail_or_retry()
 
-    for link in result[0]['LinkSetDb']:
-        if match_link_name(link['LinkName']):
-            target_gi = link['Link'][0]['Id']
+    for link in result[0]["LinkSetDb"]:
+        if match_link_name(link["LinkName"]):
+            target_gi = link["Link"][0]["Id"]
             break
     else:
         return fail_or_retry()
@@ -208,12 +224,13 @@ def _get_link_from_ncbi(source_db, target_db, match_link_name,
     # Get target record.
     try:
         handle = Entrez.efetch(
-            db=target_db, id=target_gi, rettype='acc', retmode='text')
+            db=target_db, id=target_gi, rettype="acc", retmode="text"
+        )
     except (IOError, HTTPException):
         # TODO: Log error.
         return fail_or_retry()
 
-    target = handle.read().strip().split('.')
+    target = handle.read().strip().split(".")
     handle.close()
 
     target_accession = target[0]
@@ -221,23 +238,35 @@ def _get_link_from_ncbi(source_db, target_db, match_link_name,
     return target_accession, target_version
 
 
-def _get_link(source_db, target_db, match_link_name,
-              source_accession, source_version=None, match_version=True):
+def _get_link(
+    source_db,
+    target_db,
+    match_link_name,
+    source_accession,
+    source_version=None,
+    match_version=True,
+):
     """
     The actual linking caller.
     """
     try:
         target_accession, target_version = _get_link_from_ncbi(
-            source_db, target_db, match_link_name, source_accession,
-            source_version=source_version, match_version=match_version)
+            source_db,
+            target_db,
+            match_link_name,
+            source_accession,
+            source_version=source_version,
+            match_version=match_version,
+        )
     except NoLinkError:
         raise
 
     return target_accession, target_version
 
 
-def transcript_to_protein(transcript_accession, transcript_version=None,
-                          match_version=True):
+def transcript_to_protein(
+    transcript_accession, transcript_version=None, match_version=True
+):
     """
     Try to find the protein link to a transcript by using the NCBI Entrez API.
 
@@ -257,14 +286,16 @@ def transcript_to_protein(transcript_accession, transcript_version=None,
     :rtype: tuple(str, int)
     """
     return _get_link(
-        'nucleotide', 'protein',
-        lambda link: link in ('nuccore_protein', 'nuccore_protein_cds'),
-        transcript_accession, source_version=transcript_version,
-        match_version=match_version)
+        "nucleotide",
+        "protein",
+        lambda link: link in ("nuccore_protein", "nuccore_protein_cds"),
+        transcript_accession,
+        source_version=transcript_version,
+        match_version=match_version,
+    )
 
 
-def protein_to_transcript(protein_accession, protein_version=None,
-                          match_version=True):
+def protein_to_transcript(protein_accession, protein_version=None, match_version=True):
     """
     Try to find the transcript link to a protein by using the NCBI Entrez API.
 
@@ -285,9 +316,13 @@ def protein_to_transcript(protein_accession, protein_version=None,
     :rtype: tuple(str, int)
     """
     return _get_link(
-        'protein', 'nucleotide', lambda link: link == 'protein_nuccore_mrna',
-        protein_accession, source_version=protein_version,
-        match_version=match_version)
+        "protein",
+        "nucleotide",
+        lambda link: link == "protein_nuccore_mrna",
+        protein_accession,
+        source_version=protein_version,
+        match_version=match_version,
+    )
 
 
 def link_transcript_to_protein_by_file(reference_id):
@@ -306,19 +341,18 @@ def link_transcript_to_protein_by_file(reference_id):
     :arg str reference_id: The reference for which we try to get the link.
     :return: `accession[.version]` link reference.
     """
-    if not (not reference_id.startswith('NP')) \
-            or (not reference_id.startswith('NM')):
+    if not (not reference_id.startswith("NP")) or (not reference_id.startswith("NM")):
         raise ValueError()
     content = get_genbank(reference_id)
-    record = SeqIO.read(io.StringIO(content), 'genbank')
+    record = SeqIO.read(io.StringIO(content), "genbank")
     for feature in record.features:
-        if feature.type == 'CDS':
-            if feature.qualifiers.get('protein_id'):
-                protein_id = feature.qualifiers['protein_id'][0]
-            elif feature.qualifiers.get('coded_by'):
-                protein_id = feature.qualifiers['coded_by'][0]
-                if ':' in protein_id:
-                    protein_id = protein_id.rsplit(':')[0]
+        if feature.type == "CDS":
+            if feature.qualifiers.get("protein_id"):
+                protein_id = feature.qualifiers["protein_id"][0]
+            elif feature.qualifiers.get("coded_by"):
+                protein_id = feature.qualifiers["coded_by"][0]
+                if ":" in protein_id:
+                    protein_id = protein_id.rsplit(":")[0]
             else:
                 raise NoLinkError()
             return decompose_reference(protein_id)
@@ -342,31 +376,34 @@ def link_reference(reference_id):
 
     try:
         link_accession, link_version = protein_to_transcript(
-            accession, version, match_version)
+            accession, version, match_version
+        )
     except NoLinkError:
         pass
     else:
         if link_accession:
-            return compose_reference(link_accession, link_version), 'api'
+            return compose_reference(link_accession, link_version), "api"
 
     try:
         link_accession, link_version = transcript_to_protein(
-            accession, version, match_version)
+            accession, version, match_version
+        )
     except NoLinkError:
         pass
     else:
-        return compose_reference(link_accession, link_version), 'api'
+        return compose_reference(link_accession, link_version), "api"
 
     if version:
         try:
             link_accession, link_version = link_transcript_to_protein_by_file(
-                reference_id)
+                reference_id
+            )
         except NoLinkError:
             return None, None
         except ValueError:
             return None, None
         else:
-            return compose_reference(link_accession, link_version), 'file'
+            return compose_reference(link_accession, link_version), "file"
 
     return None, None
 
@@ -376,8 +413,8 @@ def decompose_reference(reference_id):
     Get the accession and the version of a reference. The version is None
     if it is not present.
     """
-    if '.' in reference_id:
-        accession, version = reference_id.rsplit('.', 1)
+    if "." in reference_id:
+        accession, version = reference_id.rsplit(".", 1)
         version = int(version)
     else:
         accession = reference_id
@@ -394,7 +431,7 @@ def compose_reference(accession, version=None):
     if version is None:
         return accession
     else:
-        return '{}.{}'.format(accession, version)
+        return "{}.{}".format(accession, version)
 
 
 def get_genbank(reference_id, size_on=True):
@@ -413,12 +450,15 @@ def get_genbank(reference_id, size_on=True):
     except NcbiConnectionError:
         raise NcbiConnectionError
 
-    if size_on and reference_summary['length'] > settings.MAX_FILE_SIZE:
-            raise ReferenceToLong
+    if size_on and reference_summary["length"] > settings.MAX_FILE_SIZE:
+        raise ReferenceToLong
     try:
         handle = Entrez.efetch(
-            db=reference_summary['db'], id=reference_id,
-            rettype='gbwithparts', retmode='text')
+            db=reference_summary["db"],
+            id=reference_id,
+            rettype="gbwithparts",
+            retmode="text",
+        )
     except (IOError, HTTPError, HTTPException):
         raise NcbiConnectionError
     else:
@@ -429,32 +469,29 @@ def get_genbank(reference_id, size_on=True):
 
 def get_sequence(feature_id):
 
-    Entrez.email = 'info@mutalyzer.nl'
+    Entrez.email = "info@mutalyzer.nl"
 
     try:
-        handle = Entrez.efetch(db='nucleotide', id=feature_id, rettype='fasta')
+        handle = Entrez.efetch(db="nucleotide", id=feature_id, rettype="fasta")
     except HTTPError:
         return
     records = []
     for record in SeqIO.parse(handle, "fasta"):
-        records.append({'seq': str(record.seq),
-                        'description': record.description})
+        records.append({"seq": str(record.seq), "description": record.description})
     handle.close()
     if len(records) == 1:
         return records[0]
 
 
 def get_gff3(feature_id):
-    url = 'https://eutils.ncbi.nlm.nih.gov/sviewer/viewer.cgi'
-    params = {'db': 'nuccore',
-              'report': 'gff3',
-              'id': feature_id}
+    url = "https://eutils.ncbi.nlm.nih.gov/sviewer/viewer.cgi"
+    params = {"db": "nuccore", "report": "gff3", "id": feature_id}
     return make_request(url, params)
 
 
-def fetch_annotations(reference_id, reference_type='gff3', size_on=True):
-    if reference_type in [None, 'gff3']:
-        return get_gff3(reference_id), 'gff3'
-    if reference_type == 'genbank':
-        return get_genbank(reference_id, size_on), 'genbank'
+def fetch_annotations(reference_id, reference_type="gff3", size_on=True):
+    if reference_type in [None, "gff3"]:
+        return get_gff3(reference_id), "gff3"
+    if reference_type == "genbank":
+        return get_genbank(reference_id, size_on), "genbank"
     return None, None

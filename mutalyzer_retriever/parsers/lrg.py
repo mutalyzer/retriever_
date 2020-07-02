@@ -66,19 +66,18 @@ def _get_location(data, coord_system=None):
     defined.
     """
     result = None
-    coordinates = data.getElementsByTagName('coordinates')
+    coordinates = data.getElementsByTagName("coordinates")
     for coordinate in coordinates:
         attributes = _attr2dict(coordinate.attributes)
-        if result and coord_system and \
-                attributes.get('coord_system') != coord_system:
+        if result and coord_system and attributes.get("coord_system") != coord_system:
             continue
         result = attributes
-    return {'type': 'range',
-            'start': {'type': 'point',
-                      'position': int(result['start']) - 1},
-            'end': {'type': 'point',
-                    'position': int(result['end'])},
-            'strand': int(result['strand'])}
+    return {
+        "type": "range",
+        "start": {"type": "point", "position": int(result["start"]) - 1},
+        "end": {"type": "point", "position": int(result["end"])},
+        "strand": int(result["strand"]),
+    }
 
 
 def _get_transcripts(section):
@@ -88,37 +87,48 @@ def _get_transcripts(section):
     :param section: (fixed) section of the LRG file
     :return: list of transcripts (GenRecord.Locus)
     """
-    lrg_id = _get_content(section, 'id')
+    lrg_id = _get_content(section, "id")
 
     transcripts = []
-    for transcript_data in section.getElementsByTagName('transcript'):
-        transcript = {'id': transcript_data.getAttribute('name'),
-                      'location': _get_location(transcript_data, lrg_id)}
+    for transcript_data in section.getElementsByTagName("transcript"):
+        transcript = {
+            "id": transcript_data.getAttribute("name"),
+            "location": _get_location(transcript_data, lrg_id),
+        }
 
         # Get the exons.
         exons = []
-        for exon_data in transcript_data.getElementsByTagName('exon'):
-            exons.append({'type': 'exon',
-                          'id': exon_data.getAttribute('label'),
-                          'location': _get_location(exon_data, lrg_id)})
-        transcript['features'] = exons
+        for exon_data in transcript_data.getElementsByTagName("exon"):
+            exons.append(
+                {
+                    "type": "exon",
+                    "id": exon_data.getAttribute("label"),
+                    "location": _get_location(exon_data, lrg_id),
+                }
+            )
+        transcript["features"] = exons
 
         # Get the CDS.
-        transcript_type = 'ncRNA'
+        transcript_type = "ncRNA"
         for cds_id, source_cds in enumerate(
-                transcript_data.getElementsByTagName("coding_region")):
+            transcript_data.getElementsByTagName("coding_region")
+        ):
             if cds_id > 0:
                 # Todo: For now, we only support one CDS per transcript and
                 #   ignore all others. This should be discussed.
                 continue
-            transcript['features'].append(
-                {'type': 'CDS',
-                 'id': source_cds.getElementsByTagName(
-                     'translation')[0].getAttribute('name'),
-                 'location': _get_location(source_cds, lrg_id)})
-            transcript_type = 'mRNA'
+            transcript["features"].append(
+                {
+                    "type": "CDS",
+                    "id": source_cds.getElementsByTagName("translation")[
+                        0
+                    ].getAttribute("name"),
+                    "location": _get_location(source_cds, lrg_id),
+                }
+            )
+            transcript_type = "mRNA"
 
-        transcript['type'] = transcript_type
+        transcript["type"] = transcript_type
 
         transcripts.append(transcript)
     return transcripts
@@ -131,9 +141,11 @@ def _get_gene(fixed):
     :param fixed: The fixed section of the LRG XML file.
     :return: Corresponding loci reference model.
     """
-    gene = {'type': 'gene',
-            'id': _get_content(fixed, 'hgnc_id'),
-            'features': _get_transcripts(fixed)}
+    gene = {
+        "type": "gene",
+        "id": _get_content(fixed, "hgnc_id"),
+        "features": _get_transcripts(fixed),
+    }
     return gene
 
 
@@ -148,26 +160,27 @@ def parse(content):
 
     # Extract the fixed section.
     data = xml.dom.minidom.parseString(content)
-    fixed = data.getElementsByTagName('fixed_annotation')[0]
+    fixed = data.getElementsByTagName("fixed_annotation")[0]
 
     # Get the sequence from the fixed section
-    sequence = Seq(_get_content(fixed, 'sequence'), IUPAC.unambiguous_dna)
+    sequence = Seq(_get_content(fixed, "sequence"), IUPAC.unambiguous_dna)
 
-    model = {'type': 'record',
-             'id': _get_content(data, 'id'),
-             'location': {'type': 'range',
-                          'start': {'type': 'point',
-                                    'position': 0},
-                          'end':  {'type': 'point',
-                                   'position': len(sequence)}},
-             'qualifiers': {'organism': _get_content(data, 'organism'),
-                            'sequence_source': _get_content(data,
-                                                            'sequence_source'),
-                            'creation_date': _get_content(data,
-                                                          'creation_date'),
-                            'hgnc_id': _get_content(data, 'hgnc_id'),
-                            'mol_type': _get_content(data, 'mol_type')},
-             'features': [_get_gene(fixed)]}
+    model = {
+        "type": "record",
+        "id": _get_content(data, "id"),
+        "location": {
+            "type": "range",
+            "start": {"type": "point", "position": 0},
+            "end": {"type": "point", "position": len(sequence)},
+        },
+        "qualifiers": {
+            "organism": _get_content(data, "organism"),
+            "sequence_source": _get_content(data, "sequence_source"),
+            "creation_date": _get_content(data, "creation_date"),
+            "hgnc_id": _get_content(data, "hgnc_id"),
+            "mol_type": _get_content(data, "mol_type"),
+        },
+        "features": [_get_gene(fixed)],
+    }
 
-    return {'model': model,
-            'sequence': {'seq': str(sequence)}}
+    return {"model": model, "sequence": {"seq": str(sequence)}}
