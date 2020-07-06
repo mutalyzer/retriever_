@@ -8,15 +8,12 @@ Additionally it should also provide some checks:
 - what features were not linked.
 - what features do not have a key.
 """
-import hashlib
 import io
-import json
-import os
 
 from Bio import SeqFeature, SeqIO, SeqRecord
 
 from ..reference import Locus, Position, Reference
-from ..sources.ncbi import _compose_reference, _decompose_reference, link_reference
+from ..sources.ncbi import link_reference
 
 FEATURES = {
     "gene": {"qualifiers": {"gene", "gene_synonym", "db_xref"}, "key": "gene"},
