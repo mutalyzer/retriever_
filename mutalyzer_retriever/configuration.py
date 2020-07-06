@@ -36,7 +36,9 @@ def setup_settings(configuration_path=None):
     else:
         loaded_settings = settings
 
-    if loaded_settings.get("MAX_FILE_SIZE"):
+    if loaded_settings.get("MAX_FILE_SIZE") and isinstance(
+        loaded_settings["MAX_FILE_SIZE"], str
+    ):
         loaded_settings["MAX_FILE_SIZE"] = eval(loaded_settings["MAX_FILE_SIZE"])
 
     return loaded_settings
