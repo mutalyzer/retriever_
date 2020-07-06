@@ -19,7 +19,7 @@ NOTE: A strong alternative to the minidom parser would be lxml, which was
 already employed by Mutalyzer in other circumstances.
 """
 
-import xml.dom.minidom
+from xml.dom import minidom
 
 from Bio.Alphabet import IUPAC
 from Bio.Seq import Seq
@@ -160,7 +160,7 @@ def parse(content):
     """
 
     # Extract the fixed section.
-    data = xml.dom.minidom.parseString(content)
+    data = minidom.parseString(content)
     fixed = data.getElementsByTagName("fixed_annotation")[0]
 
     # Get the sequence from the fixed section

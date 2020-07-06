@@ -4,14 +4,14 @@ from urllib.error import HTTPError
 from ..util import make_request
 
 
-def get_json(feature_id):
+def fetch_json(feature_id):
     url = "https://rest.ensembl.org/lookup/id/{}".format(feature_id)
     params = {"feature": ["gene", "transcript", "cds"], "expand": 1}
     headers = {"Content-Type": "application/json"}
     return make_request(url, params, headers)
 
 
-def get_gff(feature_id):
+def fetch_gff(feature_id):
     url = "https://rest.ensembl.org/overlap/id/{}".format(feature_id)
     params = {"feature": ["gene", "transcript", "cds", "exon"]}
     headers = {"Content-Type": "text/x-gff3"}
@@ -21,7 +21,7 @@ def get_gff(feature_id):
         print("HTTP error")
 
 
-def get_sequence_details(feature_id):
+def fetch_sequence_details(feature_id):
     url = "https://rest.ensembl.org/lookup/id/{}".format(feature_id)
     headers = {"Content-Type": "application/json"}
     response = json.loads(make_request(url, headers=headers))
@@ -33,8 +33,8 @@ def get_sequence_details(feature_id):
     )
 
 
-def get_sequence(feature_id):
-    start, end, species, seq_region_name = get_sequence_details(feature_id)
+def fetch_sequence(feature_id):
+    start, end, species, seq_region_name = fetch_sequence_details(feature_id)
     url = "https://rest.ensembl.org/sequence/region/{}/{}:{}..{}".format(
         species, seq_region_name, start, end
     )
@@ -42,11 +42,11 @@ def get_sequence(feature_id):
     return json.loads(make_request(url, headers=headers))
 
 
-def get_annotations(reference_id, reference_type):
+def fetch_annotations(reference_id, reference_type):
     if reference_type in [None, "gff3"]:
-        return get_gff(reference_id), "gff3"
+        return fetch_gff(reference_id), "gff3"
     if reference_type == "json":
-        return get_json(reference_id), "json"
+        return fetch_json(reference_id), "json"
     if reference_type == "genbank":
         return None, "genbank"
     return None, None

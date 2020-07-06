@@ -1,8 +1,15 @@
-import os
 from urllib.error import URLError
 from urllib.request import urlopen
 
-from .. import settings
+from .. import configuration
+
+
+class NoLrgSettings(Exception):
+    """
+    Raised when there are no LRG settings.
+    """
+
+    pass
 
 
 class NoLrgUrlSet(Exception):
@@ -15,7 +22,7 @@ class NoLrgUrlSet(Exception):
 
 class LrgUrlAccessError(Exception):
     """
-    Raised when there is no LRG path specified in the settings.
+    Raised when there is some error when accessing the LRG url.
     """
 
     pass
@@ -29,7 +36,7 @@ class ReferenceToLong(Exception):
     pass
 
 
-class NotLrG(Exception):
+class NotLrg(Exception):
     """
     Raised when the reference is not LRG.
     """
@@ -49,12 +56,14 @@ def fetch_lrg(reference_id, size_on=True):
     """
     Fetch the LRG file content.
 
-    :param size_on: flag for the maximum sequence length
-    :param reference_id: the name of the LRG file to fetch
+    :arg str reference_id: the name of the LRG file to fetch
+    :arg bool size_on: flag for the maximum sequence length
     :returns: the file content or None when the file was not retrieved
     """
-    if settings.LRG_PREFIX_URL:
-        url = "{}/{}.xml".format(settings.LRG_PREFIX_URL, reference_id)
+    settings = configuration.settings
+
+    if settings.get("LRG_URL"):
+        url = "{}/{}.xml".format(settings["LRG_URL"], reference_id)
     else:
         raise NoLrgUrlSet()
 
@@ -69,12 +78,12 @@ def fetch_lrg(reference_id, size_on=True):
         if "Content-length" in info:
             if size_on:
                 length = int(info["Content-Length"])
-                if 512 > length or length > settings.MAX_FILE_SIZE:
+                if 512 > length or length > settings["MAX_FILE_SIZE"]:
                     handle.close()
                     raise ReferenceToLong(
                         "Filesize '{}' is not within the allowed boundaries "
                         "(512 < filesize < {} ) for {}.".format(
-                            length, settings.MAX_FILE_SIZE // 1048576, reference_id
+                            length, settings["MAX_FILE_SIZE"] // 1048576, reference_id,
                         )
                     )
         else:
@@ -84,4 +93,4 @@ def fetch_lrg(reference_id, size_on=True):
         return raw_data.decode()
     else:
         handle.close()
-        raise (NotLrG())
+        raise (NotLrg())

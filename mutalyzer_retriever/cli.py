@@ -42,6 +42,8 @@ def main():
         "--type", help="reference type", choices=["gff3", "genbank", "json", "sequence"]
     )
 
+    parser.add_argument("-c", "--configuration", help="configuration file path")
+
     args = parser.parse_args()
 
     if args.link:
@@ -56,6 +58,7 @@ def main():
             reference_type=args.type,
             size_off=args.sizeoff,
             parse=args.parse,
+            configuration_path=args.configuration,
         )
         if isinstance(output, dict):
             print(json.dumps(output, indent=2))

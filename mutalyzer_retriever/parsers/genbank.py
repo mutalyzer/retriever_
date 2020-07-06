@@ -16,7 +16,7 @@ import os
 from Bio import SeqFeature, SeqIO, SeqRecord
 
 from ..reference import Locus, Position, Reference
-from ..sources.ncbi import compose_reference, decompose_reference, link_reference
+from ..sources.ncbi import _compose_reference, _decompose_reference, link_reference
 
 FEATURES = {
     "gene": {"qualifiers": {"gene", "gene_synonym", "db_xref"}, "key": "gene"},
