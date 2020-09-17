@@ -1,4 +1,4 @@
-from .parsers import gff3, lrg, fasta
+from .parsers import fasta, gff3, lrg
 
 
 def get_reference_type(content):

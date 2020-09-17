@@ -6,7 +6,7 @@ import argparse
 import json
 
 from . import usage, version
-from .retriever import retrieve_raw, retrieve_model, retrieve_model_from_file
+from .retriever import retrieve_model, retrieve_model_from_file, retrieve_raw
 
 
 def main():
@@ -31,9 +31,7 @@ def main():
 
     parser.add_argument("--parse", help="parse reference content", action="store_true")
 
-    parser.add_argument(
-        "--indent", help="indentation spaces", default=None
-    )
+    parser.add_argument("--indent", help="indentation spaces", default=None)
 
     parser.add_argument(
         "--source", help="retrieval source", choices=["ncbi", "ensembl", "lrg"]
@@ -52,14 +50,14 @@ def main():
 
     parser.add_argument("-c", "--configuration", help="configuration file path")
 
-    subparsers = parser.add_subparsers(help="parse files to get the model", dest="from_file")
+    subparsers = parser.add_subparsers(
+        help="parse files to get the model", dest="from_file"
+    )
 
     parser_from_file = subparsers.add_parser("from_file")
 
     parser_from_file.add_argument(
-        "--paths",
-        help="either gff3 and fasta paths or just one for lrg",
-        nargs="+",
+        "--paths", help="either gff3 and fasta paths or just one for lrg", nargs="+",
     )
     parser_from_file.add_argument(
         "--is_lrg",
@@ -70,7 +68,8 @@ def main():
 
     args = parser.parse_args()
 
-    if args.indent: args.indent = int(args.indent)
+    if args.indent:
+        args.indent = int(args.indent)
 
     if args.from_file:
         output = retrieve_model_from_file(paths=args.paths, is_lrg=args.is_lrg)

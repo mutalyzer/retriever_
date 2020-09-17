@@ -5,7 +5,7 @@ from urllib.error import HTTPError
 from Bio import Entrez, SeqIO
 
 from .. import configuration
-from ..request import request, RequestErrors, Http400
+from ..request import Http400, RequestErrors, request
 
 Entrez.email = configuration.settings["EMAIL"]
 Entrez.api_key = configuration.settings.get("NCBI_API_KEY")
@@ -15,6 +15,7 @@ class ReferenceToLong(Exception):
     """
     Raised when the reference length exceeds maximum size.
     """
+
     pass
 
 

@@ -1,5 +1,6 @@
-from Bio import SeqIO
 from io import StringIO
+
+from Bio import SeqIO
 
 
 def parse(fasta):

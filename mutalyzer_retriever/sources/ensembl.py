@@ -1,6 +1,6 @@
 import json
 
-from ..request import request, RequestErrors, Http400
+from ..request import Http400, RequestErrors, request
 
 
 def fetch_json(feature_id):

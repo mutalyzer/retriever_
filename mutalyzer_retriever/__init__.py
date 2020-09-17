@@ -1,6 +1,6 @@
 from pkg_resources import get_distribution
 
-from .retriever import retrieve_raw, retrieve_model
+from .retriever import retrieve_model, retrieve_raw
 
 
 def _get_metadata(name):
