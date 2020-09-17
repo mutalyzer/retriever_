@@ -21,7 +21,6 @@ already employed by Mutalyzer in other circumstances.
 
 from xml.dom import minidom
 
-from Bio.Alphabet import IUPAC
 from Bio.Seq import Seq
 
 
@@ -166,7 +165,7 @@ def parse(content):
     fixed = data.getElementsByTagName("fixed_annotation")[0]
 
     # Get the sequence from the fixed section
-    sequence = Seq(_get_content(fixed, "sequence"), IUPAC.unambiguous_dna)
+    sequence = Seq(_get_content(fixed, "sequence"))
 
     annotations = {
         "type": "record",
