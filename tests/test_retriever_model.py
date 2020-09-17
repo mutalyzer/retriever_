@@ -4,11 +4,6 @@ from pathlib import Path
 import pytest
 from mutalyzer_retriever import retrieve_model
 
-import socket
-def guard(*args, **kwargs):
-    raise Exception("I told you not to use the Internet!")
-socket.socket = guard
-
 
 def _get_content(relative_location):
     data_file = Path(__file__).parent.joinpath(relative_location)
