@@ -62,7 +62,6 @@ def fetch_fasta(feature_id):
         else:
             raise e
     else:
-        print(type(response))
         return response
 
 

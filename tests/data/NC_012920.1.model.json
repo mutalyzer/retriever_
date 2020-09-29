@@ -1,0 +1,1077 @@
+{
+  "annotations": {
+    "id": "NC_012920.1",
+    "type": "record",
+    "location": {
+      "type": "range",
+      "start": {
+        "type": "point",
+        "position": 0
+      },
+      "end": {
+        "type": "point",
+        "position": 16569
+      }
+    },
+    "qualifiers": {
+      "is_circular": "true",
+      "name": "MT",
+      "mol_type": "genomic DNA"
+    },
+    "features": [
+      {
+        "id": "TRNF",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 576
+          },
+          "end": {
+            "type": "point",
+            "position": 647
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNF",
+          "HGNC": "7481"
+        },
+        "features": []
+      },
+      {
+        "id": "RNR1",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 647
+          },
+          "end": {
+            "type": "point",
+            "position": 1601
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "RNR1",
+          "synonym": "MTRNR1",
+          "HGNC": "7470"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNV",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 1601
+          },
+          "end": {
+            "type": "point",
+            "position": 1670
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNV",
+          "synonym": "MTTV",
+          "HGNC": "7500"
+        },
+        "features": []
+      },
+      {
+        "id": "RNR2",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 1670
+          },
+          "end": {
+            "type": "point",
+            "position": 3229
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "RNR2",
+          "synonym": "MTRNR2",
+          "HGNC": "7471"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNL1",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 3229
+          },
+          "end": {
+            "type": "point",
+            "position": 3304
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNL1",
+          "synonym": "MTTL1",
+          "HGNC": "7490"
+        },
+        "features": []
+      },
+      {
+        "id": "ND1",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 3306
+          },
+          "end": {
+            "type": "point",
+            "position": 4262
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "ND1",
+          "synonym": "MTND1",
+          "HGNC": "7455"
+        },
+        "features": [
+          {
+            "id": "YP_003024026.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 3306
+              },
+              "end": {
+                "type": "point",
+                "position": 4262
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "TRNI",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 4262
+          },
+          "end": {
+            "type": "point",
+            "position": 4331
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNI",
+          "synonym": "MTTI",
+          "HGNC": "7488"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNQ",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 4328
+          },
+          "end": {
+            "type": "point",
+            "position": 4400
+          },
+          "strand": -1
+        },
+        "qualifiers": {
+          "name": "TRNQ",
+          "synonym": "MTTQ",
+          "HGNC": "7495"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNM",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 4401
+          },
+          "end": {
+            "type": "point",
+            "position": 4469
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNM",
+          "synonym": "MTTM",
+          "HGNC": "7492"
+        },
+        "features": []
+      },
+      {
+        "id": "ND2",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 4469
+          },
+          "end": {
+            "type": "point",
+            "position": 5511
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "ND2",
+          "synonym": "MTND2",
+          "HGNC": "7456"
+        },
+        "features": [
+          {
+            "id": "YP_003024027.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 4469
+              },
+              "end": {
+                "type": "point",
+                "position": 5511
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "TRNW",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 5511
+          },
+          "end": {
+            "type": "point",
+            "position": 5579
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNW",
+          "synonym": "MTTW",
+          "HGNC": "7501"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNA",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 5586
+          },
+          "end": {
+            "type": "point",
+            "position": 5655
+          },
+          "strand": -1
+        },
+        "qualifiers": {
+          "name": "TRNA",
+          "synonym": "MTTA",
+          "HGNC": "7475"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNN",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 5656
+          },
+          "end": {
+            "type": "point",
+            "position": 5729
+          },
+          "strand": -1
+        },
+        "qualifiers": {
+          "name": "TRNN",
+          "synonym": "MTTN",
+          "HGNC": "7493"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNC",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 5760
+          },
+          "end": {
+            "type": "point",
+            "position": 5826
+          },
+          "strand": -1
+        },
+        "qualifiers": {
+          "name": "TRNC",
+          "synonym": "MTTC",
+          "HGNC": "7477"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNY",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 5825
+          },
+          "end": {
+            "type": "point",
+            "position": 5891
+          },
+          "strand": -1
+        },
+        "qualifiers": {
+          "name": "TRNY",
+          "synonym": "MTTY",
+          "HGNC": "7502"
+        },
+        "features": []
+      },
+      {
+        "id": "COX1",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 5903
+          },
+          "end": {
+            "type": "point",
+            "position": 7445
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "COX1",
+          "synonym": [
+            "COI",
+            "MTCO1"
+          ],
+          "HGNC": "7419"
+        },
+        "features": [
+          {
+            "id": "YP_003024028.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 5903
+              },
+              "end": {
+                "type": "point",
+                "position": 7445
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "TRNS1",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 7445
+          },
+          "end": {
+            "type": "point",
+            "position": 7514
+          },
+          "strand": -1
+        },
+        "qualifiers": {
+          "name": "TRNS1",
+          "synonym": "MTTS1",
+          "HGNC": "7497"
+        },
+        "features": []
+      },
+      {
+        "id": "TRND",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 7517
+          },
+          "end": {
+            "type": "point",
+            "position": 7585
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRND",
+          "synonym": "MTTD",
+          "HGNC": "7478"
+        },
+        "features": []
+      },
+      {
+        "id": "COX2",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 7585
+          },
+          "end": {
+            "type": "point",
+            "position": 8269
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "COX2",
+          "synonym": [
+            "COII",
+            "MTCO2"
+          ],
+          "HGNC": "7421"
+        },
+        "features": [
+          {
+            "id": "YP_003024029.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 7585
+              },
+              "end": {
+                "type": "point",
+                "position": 8269
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "TRNK",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 8294
+          },
+          "end": {
+            "type": "point",
+            "position": 8364
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNK",
+          "synonym": "MTTK",
+          "HGNC": "7489"
+        },
+        "features": []
+      },
+      {
+        "id": "ATP8",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 8365
+          },
+          "end": {
+            "type": "point",
+            "position": 8572
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "ATP8",
+          "synonym": [
+            "ATPase8",
+            "MTATP8"
+          ],
+          "HGNC": "7415"
+        },
+        "features": [
+          {
+            "id": "YP_003024030.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 8365
+              },
+              "end": {
+                "type": "point",
+                "position": 8572
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "ATP6",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 8526
+          },
+          "end": {
+            "type": "point",
+            "position": 9207
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "ATP6",
+          "synonym": [
+            "ATPase6",
+            "MTATP6"
+          ],
+          "HGNC": "7414"
+        },
+        "features": [
+          {
+            "id": "YP_003024031.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 8526
+              },
+              "end": {
+                "type": "point",
+                "position": 9207
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "COX3",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 9206
+          },
+          "end": {
+            "type": "point",
+            "position": 9990
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "COX3",
+          "synonym": [
+            "COIII",
+            "MTCO3"
+          ],
+          "HGNC": "7422"
+        },
+        "features": [
+          {
+            "id": "YP_003024032.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 9206
+              },
+              "end": {
+                "type": "point",
+                "position": 9990
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "TRNG",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 9990
+          },
+          "end": {
+            "type": "point",
+            "position": 10058
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNG",
+          "synonym": "MTTG",
+          "HGNC": "7486"
+        },
+        "features": []
+      },
+      {
+        "id": "ND3",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 10058
+          },
+          "end": {
+            "type": "point",
+            "position": 10404
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "ND3",
+          "synonym": "MTND3",
+          "HGNC": "7458"
+        },
+        "features": [
+          {
+            "id": "YP_003024033.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 10058
+              },
+              "end": {
+                "type": "point",
+                "position": 10404
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "TRNR",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 10404
+          },
+          "end": {
+            "type": "point",
+            "position": 10469
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNR",
+          "synonym": "MTTR",
+          "HGNC": "7496"
+        },
+        "features": []
+      },
+      {
+        "id": "ND4L",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 10469
+          },
+          "end": {
+            "type": "point",
+            "position": 10766
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "ND4L",
+          "synonym": "MTND4L",
+          "HGNC": "7460"
+        },
+        "features": [
+          {
+            "id": "YP_003024034.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 10469
+              },
+              "end": {
+                "type": "point",
+                "position": 10766
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "ND4",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 10759
+          },
+          "end": {
+            "type": "point",
+            "position": 12137
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "ND4",
+          "synonym": "MTND4",
+          "HGNC": "7459"
+        },
+        "features": [
+          {
+            "id": "YP_003024035.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 10759
+              },
+              "end": {
+                "type": "point",
+                "position": 12137
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "TRNH",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 12137
+          },
+          "end": {
+            "type": "point",
+            "position": 12206
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNH",
+          "synonym": "MTTH",
+          "HGNC": "7487"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNS2",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 12206
+          },
+          "end": {
+            "type": "point",
+            "position": 12265
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNS2",
+          "synonym": "MTTS2",
+          "HGNC": "7498"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNL2",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 12265
+          },
+          "end": {
+            "type": "point",
+            "position": 12336
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNL2",
+          "synonym": "MTTL2",
+          "HGNC": "7491"
+        },
+        "features": []
+      },
+      {
+        "id": "ND5",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 12336
+          },
+          "end": {
+            "type": "point",
+            "position": 14148
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "ND5",
+          "synonym": "MTND5",
+          "HGNC": "7461"
+        },
+        "features": [
+          {
+            "id": "YP_003024036.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 12336
+              },
+              "end": {
+                "type": "point",
+                "position": 14148
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "ND6",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 14148
+          },
+          "end": {
+            "type": "point",
+            "position": 14673
+          },
+          "strand": -1
+        },
+        "qualifiers": {
+          "name": "ND6",
+          "synonym": "MTND6",
+          "HGNC": "7462"
+        },
+        "features": [
+          {
+            "id": "YP_003024037.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 14148
+              },
+              "end": {
+                "type": "point",
+                "position": 14673
+              },
+              "strand": -1
+            }
+          }
+        ]
+      },
+      {
+        "id": "TRNE",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 14673
+          },
+          "end": {
+            "type": "point",
+            "position": 14742
+          },
+          "strand": -1
+        },
+        "qualifiers": {
+          "name": "TRNE",
+          "synonym": "MTTE",
+          "HGNC": "7479"
+        },
+        "features": []
+      },
+      {
+        "id": "CYTB",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 14746
+          },
+          "end": {
+            "type": "point",
+            "position": 15887
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "CYTB",
+          "synonym": "MTCYB",
+          "HGNC": "7427"
+        },
+        "features": [
+          {
+            "id": "YP_003024038.1",
+            "type": "CDS",
+            "location": {
+              "type": "range",
+              "start": {
+                "type": "point",
+                "position": 14746
+              },
+              "end": {
+                "type": "point",
+                "position": 15887
+              },
+              "strand": 1
+            }
+          }
+        ]
+      },
+      {
+        "id": "TRNT",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 15887
+          },
+          "end": {
+            "type": "point",
+            "position": 15953
+          },
+          "strand": 1
+        },
+        "qualifiers": {
+          "name": "TRNT",
+          "synonym": "MTTT",
+          "HGNC": "7499"
+        },
+        "features": []
+      },
+      {
+        "id": "TRNP",
+        "type": "gene",
+        "location": {
+          "type": "range",
+          "start": {
+            "type": "point",
+            "position": 15955
+          },
+          "end": {
+            "type": "point",
+            "position": 16023
+          },
+          "strand": -1
+        },
+        "qualifiers": {
+          "name": "TRNP",
+          "synonym": "MTTP",
+          "HGNC": "7494"
+        },
+        "features": []
+      }
+    ]
+  },
+  "sequence": {
+    "seq": "GATCACAGGTCTATCACCCTATTAACCACTCACGGGAGCTCTCCATGCATTTGGTATTTTCGTCTGGGGGGTATGCACGCGATAGCATTGCGAGACGCTGGAGCCGGAGCACCCTATGTCGCAGTATCTGTCTTTGATTCCTGCCTCATCCTATTATTTATCGCACCTACGTTCAATATTACAGGCGAACATACTTACTAAAGTGTGTTAATTAATTAATGCTTGTAGGACATAATAATAACAATTGAATGTCTGCACAGCCACTTTCCACACAGACATCATAACAAAAAATTTCCACCAAACCCCCCCTCCCCCGCTTCTGGCCACAGCACTTAAACACATCTCTGCCAAACCCCAAAAACAAAGAACCCTAACACCAGCCTAACCAGATTTCAAATTTTATCTTTTGGCGGTATGCACTTTTAACAGTCACCCCCCAACTAACACATTATTTTCCCCTCCCACTCCCATACTACTAATCTCATCAATACAACCCCCGCCCATCCTACCCAGCACACACACACCGCTGCTAACCCCATACCCCGAACCAACCAAACCCCAAAGACACCCCCCACAGTTTATGTAGCTTACCTCCTCAAAGCAATACACTGAAAATGTTTAGACGGGCTCACATCACCCCATAAACAAATAGGTTTGGTCCTAGCCTTTCTATTAGCTCTTAGTAAGATTACACATGCAAGCATCCCCGTTCCAGTGAGTTCACCCTCTAAATCACCACGATCAAAAGGAACAAGCATCAAGCACGCAGCAATGCAGCTCAAAACGCTTAGCCTAGCCACACCCCCACGGGAAACAGCAGTGATTAACCTTTAGCAATAAACGAAAGTTTAACTAAGCTATACTAACCCCAGGGTTGGTCAATTTCGTGCCAGCCACCGCGGTCACACGATTAACCCAAGTCAATAGAAGCCGGCGTAAAGAGTGTTTTAGATCACCCCCTCCCCAATAAAGCTAAAACTCACCTGAGTTGTAAAAAACTCCAGTTGACACAAAATAGACTACGAAAGTGGCTTTAACATATCTGAACACACAATAGCTAAGACCCAAACTGGGATTAGATACCCCACTATGCTTAGCCCTAAACCTCAACAGTTAAATCAACAAAACTGCTCGCCAGAACACTACGAGCCACAGCTTAAAACTCAAAGGACCTGGCGGTGCTTCATATCCCTCTAGAGGAGCCTGTTCTGTAATCGATAAACCCCGATCAACCTCACCACCTCTTGCTCAGCCTATATACCGCCATCTTCAGCAAACCCTGATGAAGGCTACAAAGTAAGCGCAAGTACCCACGTAAAGACGTTAGGTCAAGGTGTAGCCCATGAGGTGGCAAGAAATGGGCTACATTTTCTACCCCAGAAAACTACGATAGCCCTTATGAAACTTAAGGGTCGAAGGTGGATTTAGCAGTAAACTAAGAGTAGAGTGCTTAGTTGAACAGGGCCCTGAAGCGCGTACACACCGCCCGTCACCCTCCTCAAGTATACTTCAAAGGACATTTAACTAAAACCCCTACGCATTTATATAGAGGAGACAAGTCGTAACATGGTAAGTGTACTGGAAAGTGCACTTGGACGAACCAGAGTGTAGCTTAACACAAAGCACCCAACTTACACTTAGGAGATTTCAACTTAACTTGACCGCTCTGAGCTAAACCTAGCCCCAAACCCACTCCACCTTACTACCAGACAACCTTAGCCAAACCATTTACCCAAATAAAGTATAGGCGATAGAAATTGAAACCTGGCGCAATAGATATAGTACCGCAAGGGAAAGATGAAAAATTATAACCAAGCATAATATAGCAAGGACTAACCCCTATACCTTCTGCATAATGAATTAACTAGAAATAACTTTGCAAGGAGAGCCAAAGCTAAGACCCCCGAAACCAGACGAGCTACCTAAGAACAGCTAAAAGAGCACACCCGTCTATGTAGCAAAATAGTGGGAAGATTTATAGGTAGAGGCGACAAACCTACCGAGCCTGGTGATAGCTGGTTGTCCAAGATAGAATCTTAGTTCAACTTTAAATTTGCCCACAGAACCCTCTAAATCCCCTTGTAAATTTAACTGTTAGTCCAAAGAGGAACAGCTCTTTGGACACTAGGAAAAAACCTTGTAGAGAGAGTAAAAAATTTAACACCCATAGTAGGCCTAAAAGCAGCCACCAATTAAGAAAGCGTTCAAGCTCAACACCCACTACCTAAAAAATCCCAAACATATAACTGAACTCCTCACACCCAATTGGACCAATCTATCACCCTATAGAAGAACTAATGTTAGTATAAGTAACATGAAAACATTCTCCTCCGCATAAGCCTGCGTCAGATTAAAACACTGAACTGACAATTAACAGCCCAATATCTACAATCAACCAACAAGTCATTATTACCCTCACTGTCAACCCAACACAGGCATGCTCATAAGGAAAGGTTAAAAAAAGTAAAAGGAACTCGGCAAATCTTACCCCGCCTGTTTACCAAAAACATCACCTCTAGCATCACCAGTATTAGAGGCACCGCCTGCCCAGTGACACATGTTTAACGGCCGCGGTACCCTAACCGTGCAAAGGTAGCATAATCACTTGTTCCTTAAATAGGGACCTGTATGAATGGCTCCACGAGGGTTCAGCTGTCTCTTACTTTTAACCAGTGAAATTGACCTGCCCGTGAAGAGGCGGGCATAACACAGCAAGACGAGAAGACCCTATGGAGCTTTAATTTATTAATGCAAACAGTACCTAACAAACCCACAGGTCCTAAACTACCAAACCTGCATTAAAAATTTCGGTTGGGGCGACCTCGGAGCAGAACCCAACCTCCGAGCAGTACATGCTAAGACTTCACCAGTCAAAGCGAACTACTATACTCAATTGATCCAATAACTTGACCAACGGAACAAGTTACCCTAGGGATAACAGCGCAATCCTATTCTAGAGTCCATATCAACAATAGGGTTTACGACCTCGATGTTGGATCAGGACATCCCGATGGTGCAGCCGCTATTAAAGGTTCGTTTGTTCAACGATTAAAGTCCTACGTGATCTGAGTTCAGACCGGAGTAATCCAGGTCGGTTTCTATCTACNTTCAAATTCCTCCCTGTACGAAAGGACAAGAGAAATAAGGCCTACTTCACAAAGCGCCTTCCCCCGTAAATGATATCATCTCAACTTAGTATTATACCCACACCCACCCAAGAACAGGGTTTGTTAAGATGGCAGAGCCCGGTAATCGCATAAAACTTAAAACTTTACAGTCAGAGGTTCAATTCCTCTTCTTAACAACATACCCATGGCCAACCTCCTACTCCTCATTGTACCCATTCTAATCGCAATGGCATTCCTAATGCTTACCGAACGAAAAATTCTAGGCTATATACAACTACGCAAAGGCCCCAACGTTGTAGGCCCCTACGGGCTACTACAACCCTTCGCTGACGCCATAAAACTCTTCACCAAAGAGCCCCTAAAACCCGCCACATCTACCATCACCCTCTACATCACCGCCCCGACCTTAGCTCTCACCATCGCTCTTCTACTATGAACCCCCCTCCCCATACCCAACCCCCTGGTCAACCTCAACCTAGGCCTCCTATTTATTCTAGCCACCTCTAGCCTAGCCGTTTACTCAATCCTCTGATCAGGGTGAGCATCAAACTCAAACTACGCCCTGATCGGCGCACTGCGAGCAGTAGCCCAAACAATCTCATATGAAGTCACCCTAGCCATCATTCTACTATCAACATTACTAATAAGTGGCTCCTTTAACCTCTCCACCCTTATCACAACACAAGAACACCTCTGATTACTCCTGCCATCATGACCCTTGGCCATAATATGATTTATCTCCACACTAGCAGAGACCAACCGAACCCCCTTCGACCTTGCCGAAGGGGAGTCCGAACTAGTCTCAGGCTTCAACATCGAATACGCCGCAGGCCCCTTCGCCCTATTCTTCATAGCCGAATACACAAACATTATTATAATAAACACCCTCACCACTACAATCTTCCTAGGAACAACATATGACGCACTCTCCCCTGAACTCTACACAACATATTTTGTCACCAAGACCCTACTTCTAACCTCCCTGTTCTTATGAATTCGAACAGCATACCCCCGATTCCGCTACGACCAACTCATACACCTCCTATGAAAAAACTTCCTACCACTCACCCTAGCATTACTTATATGATATGTCTCCATACCCATTACAATCTCCAGCATTCCCCCTCAAACCTAAGAAATATGTCTGATAAAAGAGTTACTTTGATAGAGTAAATAATAGGAGCTTAAACCCCCTTATTTCTAGGACTATGAGAATCGAACCCATCCCTGAGAATCCAAAATTCTCCGTGCCACCTATCACACCCCATCCTAAAGTAAGGTCAGCTAAATAAGCTATCGGGCCCATACCCCGAAAATGTTGGTTATACCCTTCCCGTACTAATTAATCCCCTGGCCCAACCCGTCATCTACTCTACCATCTTTGCAGGCACACTCATCACAGCGCTAAGCTCGCACTGATTTTTTACCTGAGTAGGCCTAGAAATAAACATGCTAGCTTTTATTCCAGTTCTAACCAAAAAAATAAACCCTCGTTCCACAGAAGCTGCCATCAAGTATTTCCTCACGCAAGCAACCGCATCCATAATCCTTCTAATAGCTATCCTCTTCAACAATATACTCTCCGGACAATGAACCATAACCAATACTACCAATCAATACTCATCATTAATAATCATAATAGCTATAGCAATAAAACTAGGAATAGCCCCCTTTCACTTCTGAGTCCCAGAGGTTACCCAAGGCACCCCTCTGACATCCGGCCTGCTTCTTCTCACATGACAAAAACTAGCCCCCATCTCAATCATATACCAAATCTCTCCCTCACTAAACGTAAGCCTTCTCCTCACTCTCTCAATCTTATCCATCATAGCAGGCAGTTGAGGTGGATTAAACCAAACCCAGCTACGCAAAATCTTAGCATACTCCTCAATTACCCACATAGGATGAATAATAGCAGTTCTACCGTACAACCCTAACATAACCATTCTTAATTTAACTATTTATATTATCCTAACTACTACCGCATTCCTACTACTCAACTTAAACTCCAGCACCACGACCCTACTACTATCTCGCACCTGAAACAAGCTAACATGACTAACACCCTTAATTCCATCCACCCTCCTCTCCCTAGGAGGCCTGCCCCCGCTAACCGGCTTTTTGCCCAAATGGGCCATTATCGAAGAATTCACAAAAAACAATAGCCTCATCATCCCCACCATCATAGCCACCATCACCCTCCTTAACCTCTACTTCTACCTACGCCTAATCTACTCCACCTCAATCACACTACTCCCCATATCTAACAACGTAAAAATAAAATGACAGTTTGAACATACAAAACCCACCCCATTCCTCCCCACACTCATCGCCCTTACCACGCTACTCCTACCTATCTCCCCTTTTATACTAATAATCTTATAGAAATTTAGGTTAAATACAGACCAAGAGCCTTCAAAGCCCTCAGTAAGTTGCAATACTTAATTTCTGTAACAGCTAAGGACTGCAAAACCCCACTCTGCATCAACTGAACGCAAATCAGCCACTTTAATTAAGCTAAGCCCTTACTAGACCAATGGGACTTAAACCCACAAACACTTAGTTAACAGCTAAGCACCCTAATCAACTGGCTTCAATCTACTTCTCCCGCCGCCGGGAAAAAAGGCGGGAGAAGCCCCGGCAGGTTTGAAGCTGCTTCTTCGAATTTGCAATTCAATATGAAAATCACCTCGGAGCTGGTAAAAAGAGGCCTAACCCCTGTCTTTAGATTTACAGTCCAATGCTTCACTCAGCCATTTTACCTCACCCCCACTGATGTTCGCCGACCGTTGACTATTCTCTACAAACCACAAAGACATTGGAACACTATACCTATTATTCGGCGCATGAGCTGGAGTCCTAGGCACAGCTCTAAGCCTCCTTATTCGAGCCGAGCTGGGCCAGCCAGGCAACCTTCTAGGTAACGACCACATCTACAACGTTATCGTCACAGCCCATGCATTTGTAATAATCTTCTTCATAGTAATACCCATCATAATCGGAGGCTTTGGCAACTGACTAGTTCCCCTAATAATCGGTGCCCCCGATATGGCGTTTCCCCGCATAAACAACATAAGCTTCTGACTCTTACCTCCCTCTCTCCTACTCCTGCTCGCATCTGCTATAGTGGAGGCCGGAGCAGGAACAGGTTGAACAGTCTACCCTCCCTTAGCAGGGAACTACTCCCACCCTGGAGCCTCCGTAGACCTAACCATCTTCTCCTTACACCTAGCAGGTGTCTCCTCTATCTTAGGGGCCATCAATTTCATCACAACAATTATCAATATAAAACCCCCTGCCATAACCCAATACCAAACGCCCCTCTTCGTCTGATCCGTCCTAATCACAGCAGTCCTACTTCTCCTATCTCTCCCAGTCCTAGCTGCTGGCATCACTATACTACTAACAGACCGCAACCTCAACACCACCTTCTTCGACCCCGCCGGAGGAGGAGACCCCATTCTATACCAACACCTATTCTGATTTTTCGGTCACCCTGAAGTTTATATTCTTATCCTACCAGGCTTCGGAATAATCTCCCATATTGTAACTTACTACTCCGGAAAAAAAGAACCATTTGGATACATAGGTATGGTCTGAGCTATGATATCAATTGGCTTCCTAGGGTTTATCGTGTGAGCACACCATATATTTACAGTAGGAATAGACGTAGACACACGAGCATATTTCACCTCCGCTACCATAATCATCGCTATCCCCACCGGCGTCAAAGTATTTAGCTGACTCGCCACACTCCACGGAAGCAATATGAAATGATCTGCTGCAGTGCTCTGAGCCCTAGGATTCATCTTTCTTTTCACCGTAGGTGGCCTGACTGGCATTGTATTAGCAAACTCATCACTAGACATCGTACTACACGACACGTACTACGTTGTAGCCCACTTCCACTATGTCCTATCAATAGGAGCTGTATTTGCCATCATAGGAGGCTTCATTCACTGATTTCCCCTATTCTCAGGCTACACCCTAGACCAAACCTACGCCAAAATCCATTTCACTATCATATTCATCGGCGTAAATCTAACTTTCTTCCCACAACACTTTCTCGGCCTATCCGGAATGCCCCGACGTTACTCGGACTACCCCGATGCATACACCACATGAAACATCCTATCATCTGTAGGCTCATTCATTTCTCTAACAGCAGTAATATTAATAATTTTCATGATTTGAGAAGCCTTCGCTTCGAAGCGAAAAGTCCTAATAGTAGAAGAACCCTCCATAAACCTGGAGTGACTATATGGATGCCCCCCACCCTACCACACATTCGAAGAACCCGTATACATAAAATCTAGACAAAAAAGGAAGGAATCGAACCCCCCAAAGCTGGTTTCAAGCCAACCCCATGGCCTCCATGACTTTTTCAAAAAGGTATTAGAAAAACCATTTCATAACTTTGTCAAAGTTAAATTATAGGCTAAATCCTATATATCTTAATGGCACATGCAGCGCAAGTAGGTCTACAAGACGCTACTTCCCCTATCATAGAAGAGCTTATCACCTTTCATGATCACGCCCTCATAATCATTTTCCTTATCTGCTTCCTAGTCCTGTATGCCCTTTTCCTAACACTCACAACAAAACTAACTAATACTAACATCTCAGACGCTCAGGAAATAGAAACCGTCTGAACTATCCTGCCCGCCATCATCCTAGTCCTCATCGCCCTCCCATCCCTACGCATCCTTTACATAACAGACGAGGTCAACGATCCCTCCCTTACCATCAAATCAATTGGCCACCAATGGTACTGAACCTACGAGTACACCGACTACGGCGGACTAATCTTCAACTCCTACATACTTCCCCCATTATTCCTAGAACCAGGCGACCTGCGACTCCTTGACGTTGACAATCGAGTAGTACTCCCGATTGAAGCCCCCATTCGTATAATAATTACATCACAAGACGTCTTGCACTCATGAGCTGTCCCCACATTAGGCTTAAAAACAGATGCAATTCCCGGACGTCTAAACCAAACCACTTTCACCGCTACACGACCGGGGGTATACTACGGTCAATGCTCTGAAATCTGTGGAGCAAACCACAGTTTCATGCCCATCGTCCTAGAATTAATTCCCCTAAAAATCTTTGAAATAGGGCCCGTATTTACCCTATAGCACCCCCTCTACCCCCTCTAGAGCCCACTGTAAAGCTAACTTAGCATTAACCTTTTAAGTTAAAGATTAAGAGAACCAACACCTCTTTACAGTGAAATGCCCCAACTAAATACTACCGTATGGCCCACCATAATTACCCCCATACTCCTTACACTATTCCTCATCACCCAACTAAAAATATTAAACACAAACTACCACCTACCTCCCTCACCAAAGCCCATAAAAATAAAAAATTATAACAAACCCTGAGAACCAAAATGAACGAAAATCTGTTCGCTTCATTCATTGCCCCCACAATCCTAGGCCTACCCGCCGCAGTACTGATCATTCTATTTCCCCCTCTATTGATCCCCACCTCCAAATATCTCATCAACAACCGACTAATCACCACCCAACAATGACTAATCAAACTAACCTCAAAACAAATGATAACCATACACAACACTAAAGGACGAACCTGATCTCTTATACTAGTATCCTTAATCATTTTTATTGCCACAACTAACCTCCTCGGACTCCTGCCTCACTCATTTACACCAACCACCCAACTATCTATAAACCTAGCCATGGCCATCCCCTTATGAGCGGGCACAGTGATTATAGGCTTTCGCTCTAAGATTAAAAATGCCCTAGCCCACTTCTTACCACAAGGCACACCTACACCCCTTATCCCCATACTAGTTATTATCGAAACCATCAGCCTACTCATTCAACCAATAGCCCTGGCCGTACGCCTAACCGCTAACATTACTGCAGGCCACCTACTCATGCACCTAATTGGAAGCGCCACCCTAGCAATATCAACCATTAACCTTCCCTCTACACTTATCATCTTCACAATTCTAATTCTACTGACTATCCTAGAAATCGCTGTCGCCTTAATCCAAGCCTACGTTTTCACACTTCTAGTAAGCCTCTACCTGCACGACAACACATAATGACCCACCAATCACATGCCTATCATATAGTAAAACCCAGCCCATGACCCCTAACAGGGGCCCTCTCAGCCCTCCTAATGACCTCCGGCCTAGCCATGTGATTTCACTTCCACTCCATAACGCTCCTCATACTAGGCCTACTAACCAACACACTAACCATATACCAATGATGGCGCGATGTAACACGAGAAAGCACATACCAAGGCCACCACACACCACCTGTCCAAAAAGGCCTTCGATACGGGATAATCCTATTTATTACCTCAGAAGTTTTTTTCTTCGCAGGATTTTTCTGAGCCTTTTACCACTCCAGCCTAGCCCCTACCCCCCAATTAGGAGGGCACTGGCCCCCAACAGGCATCACCCCGCTAAATCCCCTAGAAGTCCCACTCCTAAACACATCCGTATTACTCGCATCAGGAGTATCAATCACCTGAGCTCACCATAGTCTAATAGAAAACAACCGAAACCAAATAATTCAAGCACTGCTTATTACAATTTTACTGGGTCTCTATTTTACCCTCCTACAAGCCTCAGAGTACTTCGAGTCTCCCTTCACCATTTCCGACGGCATCTACGGCTCAACATTTTTTGTAGCCACAGGCTTCCACGGACTTCACGTCATTATTGGCTCAACTTTCCTCACTATCTGCTTCATCCGCCAACTAATATTTCACTTTACATCCAAACATCACTTTGGCTTCGAAGCCGCCGCCTGATACTGGCATTTTGTAGATGTGGTTTGACTATTTCTGTATGTCTCCATCTATTGATGAGGGTCTTACTCTTTTAGTATAAATAGTACCGTTAACTTCCAATTAACTAGTTTTGACAACATTCAAAAAAGAGTAATAAACTTCGCCTTAATTTTAATAATCAACACCCTCCTAGCCTTACTACTAATAATTATTACATTTTGACTACCACAACTCAACGGCTACATAGAAAAATCCACCCCTTACGAGTGCGGCTTCGACCCTATATCCCCCGCCCGCGTCCCTTTCTCCATAAAATTCTTCTTAGTAGCTATTACCTTCTTATTATTTGATCTAGAAATTGCCCTCCTTTTACCCCTACCATGAGCCCTACAAACAACTAACCTGCCACTAATAGTTATGTCATCCCTCTTATTAATCATCATCCTAGCCCTAAGTCTGGCCTATGAGTGACTACAAAAAGGATTAGACTGAACCGAATTGGTATATAGTTTAAACAAAACGAATGATTTCGACTCATTAAATTATGATAATCATATTTACCAAATGCCCCTCATTTACATAAATATTATACTAGCATTTACCATCTCACTTCTAGGAATACTAGTATATCGCTCACACCTCATATCCTCCCTACTATGCCTAGAAGGAATAATACTATCGCTGTTCATTATAGCTACTCTCATAACCCTCAACACCCACTCCCTCTTAGCCAATATTGTGCCTATTGCCATACTAGTCTTTGCCGCCTGCGAAGCAGCGGTGGGCCTAGCCCTACTAGTCTCAATCTCCAACACATATGGCCTAGACTACGTACATAACCTAAACCTACTCCAATGCTAAAACTAATCGTCCCAACAATTATATTACTACCACTGACATGACTTTCCAAAAAACACATAATTTGAATCAACACAACCACCCACAGCCTAATTATTAGCATCATCCCTCTACTATTTTTTAACCAAATCAACAACAACCTATTTAGCTGTTCCCCAACCTTTTCCTCCGACCCCCTAACAACCCCCCTCCTAATACTAACTACCTGACTCCTACCCCTCACAATCATGGCAAGCCAACGCCACTTATCCAGTGAACCACTATCACGAAAAAAACTCTACCTCTCTATACTAATCTCCCTACAAATCTCCTTAATTATAACATTCACAGCCACAGAACTAATCATATTTTATATCTTCTTCGAAACCACACTTATCCCCACCTTGGCTATCATCACCCGATGAGGCAACCAGCCAGAACGCCTGAACGCAGGCACATACTTCCTATTCTACACCCTAGTAGGCTCCCTTCCCCTACTCATCGCACTAATTTACACTCACAACACCCTAGGCTCACTAAACATTCTACTACTCACTCTCACTGCCCAAGAACTATCAAACTCCTGAGCCAACAACTTAATATGACTAGCTTACACAATAGCTTTTATAGTAAAGATACCTCTTTACGGACTCCACTTATGACTCCCTAAAGCCCATGTCGAAGCCCCCATCGCTGGGTCAATAGTACTTGCCGCAGTACTCTTAAAACTAGGCGGCTATGGTATAATACGCCTCACACTCATTCTCAACCCCCTGACAAAACACATAGCCTACCCCTTCCTTGTACTATCCCTATGAGGCATAATTATAACAAGCTCCATCTGCCTACGACAAACAGACCTAAAATCGCTCATTGCATACTCTTCAATCAGCCACATAGCCCTCGTAGTAACAGCCATTCTCATCCAAACCCCCTGAAGCTTCACCGGCGCAGTCATTCTCATAATCGCCCACGGGCTTACATCCTCATTACTATTCTGCCTAGCAAACTCAAACTACGAACGCACTCACAGTCGCATCATAATCCTCTCTCAAGGACTTCAAACTCTACTCCCACTAATAGCTTTTTGATGACTTCTAGCAAGCCTCGCTAACCTCGCCTTACCCCCCACTATTAACCTACTGGGAGAACTCTCTGTGCTAGTAACCACGTTCTCCTGATCAAATATCACTCTCCTACTTACAGGACTCAACATACTAGTCACAGCCCTATACTCCCTCTACATATTTACCACAACACAATGGGGCTCACTCACCCACCACATTAACAACATAAAACCCTCATTCACACGAGAAAACACCCTCATGTTCATACACCTATCCCCCATTCTCCTCCTATCCCTCAACCCCGACATCATTACCGGGTTTTCCTCTTGTAAATATAGTTTAACCAAAACATCAGATTGTGAATCTGACAACAGAGGCTTACGACCCCTTATTTACCGAGAAAGCTCACAAGAACTGCTAACTCATGCCCCCATGTCTAACAACATGGCTTTCTCAACTTTTAAAGGATAACAGCTATCCATTGGTCTTAGGCCCCAAAAATTTTGGTGCAACTCCAAATAAAAGTAATAACCATGCACACTACTATAACCACCCTAACCCTGACTTCCCTAATTCCCCCCATCCTTACCACCCTCGTTAACCCTAACAAAAAAAACTCATACCCCCATTATGTAAAATCCATTGTCGCATCCACCTTTATTATCAGTCTCTTCCCCACAACAATATTCATGTGCCTAGACCAAGAAGTTATTATCTCGAACTGACACTGAGCCACAACCCAAACAACCCAGCTCTCCCTAAGCTTCAAACTAGACTACTTCTCCATAATATTCATCCCTGTAGCATTGTTCGTTACATGGTCCATCATAGAATTCTCACTGTGATATATAAACTCAGACCCAAACATTAATCAGTTCTTCAAATATCTACTCATCTTCCTAATTACCATACTAATCTTAGTTACCGCTAACAACCTATTCCAACTGTTCATCGGCTGAGAGGGCGTAGGAATTATATCCTTCTTGCTCATCAGTTGATGATACGCCCGAGCAGATGCCAACACAGCAGCCATTCAAGCAATCCTATACAACCGTATCGGCGATATCGGTTTCATCCTCGCCTTAGCATGATTTATCCTACACTCCAACTCATGAGACCCACAACAAATAGCCCTTCTAAACGCTAATCCAAGCCTCACCCCACTACTAGGCCTCCTCCTAGCAGCAGCAGGCAAATCAGCCCAATTAGGTCTCCACCCCTGACTCCCCTCAGCCATAGAAGGCCCCACCCCAGTCTCAGCCCTACTCCACTCAAGCACTATAGTTGTAGCAGGAATCTTCTTACTCATCCGCTTCCACCCCCTAGCAGAAAATAGCCCACTAATCCAAACTCTAACACTATGCTTAGGCGCTATCACCACTCTGTTCGCAGCAGTCTGCGCCCTTACACAAAATGACATCAAAAAAATCGTAGCCTTCTCCACTTCAAGTCAACTAGGACTCATAATAGTTACAATCGGCATCAACCAACCACACCTAGCATTCCTGCACATCTGTACCCACGCCTTCTTCAAAGCCATACTATTTATGTGCTCCGGGTCCATCATCCACAACCTTAACAATGAACAAGATATTCGAAAAATAGGAGGACTACTCAAAACCATACCTCTCACTTCAACCTCCCTCACCATTGGCAGCCTAGCATTAGCAGGAATACCTTTCCTCACAGGTTTCTACTCCAAAGACCACATCATCGAAACCGCAAACATATCATACACAAACGCCTGAGCCCTATCTATTACTCTCATCGCTACCTCCCTGACAAGCGCCTATAGCACTCGAATAATTCTTCTCACCCTAACAGGTCAACCTCGCTTCCCCACCCTTACTAACATTAACGAAAATAACCCCACCCTACTAAACCCCATTAAACGCCTGGCAGCCGGAAGCCTATTCGCAGGATTTCTCATTACTAACAACATTTCCCCCGCATCCCCCTTCCAAACAACAATCCCCCTCTACCTAAAACTCACAGCCCTCGCTGTCACTTTCCTAGGACTTCTAACAGCCCTAGACCTCAACTACCTAACCAACAAACTTAAAATAAAATCCCCACTATGCACATTTTATTTCTCCAACATACTCGGATTCTACCCTAGCATCACACACCGCACAATCCCCTATCTAGGCCTTCTTACGAGCCAAAACCTGCCCCTACTCCTCCTAGACCTAACCTGACTAGAAAAGCTATTACCTAAAACAATTTCACAGCACCAAATCTCCACCTCCATCATCACCTCAACCCAAAAAGGCATAATTAAACTTTACTTCCTCTCTTTCTTCTTCCCACTCATCCTAACCCTACTCCTAATCACATAACCTATTCCCCCGAGCAATCTCAATTACAATATATACACCAACAAACAATGTTCAACCAGTAACTACTACTAATCAACGCCCATAATCATACAAAGCCCCCGCACCAATAGGATCCTCCCGAATCAACCCTGACCCCTCTCCTTCATAAATTATTCAGCTTCCTACACTATTAAAGTTTACCACAACCACCACCCCATCATACTCTTTCACCCACAGCACCAATCCTACCTCCATCGCTAACCCCACTAAAACACTCACCAAGACCTCAACCCCTGACCCCCATGCCTCAGGATACTCCTCAATAGCCATCGCTGTAGTATATCCAAAGACAACCATCATTCCCCCTAAATAAATTAAAAAAACTATTAAACCCATATAACCTCCCCCAAAATTCAGAATAATAACACACCCGACCACACCGCTAACAATCAATACTAAACCCCCATAAATAGGAGAAGGCTTAGAAGAAAACCCCACAAACCCCATTACTAAACCCACACTCAACAGAAACAAAGCATACATCATTATTCTCGCACGGACTACAACCACGACCAATGATATGAAAAACCATCGTTGTATTTCAACTACAAGAACACCAATGACCCCAATACGCAAAACTAACCCCCTAATAAAATTAATTAACCACTCATTCATCGACCTCCCCACCCCATCCAACATCTCCGCATGATGAAACTTCGGCTCACTCCTTGGCGCCTGCCTGATCCTCCAAATCACCACAGGACTATTCCTAGCCATGCACTACTCACCAGACGCCTCAACCGCCTTTTCATCAATCGCCCACATCACTCGAGACGTAAATTATGGCTGAATCATCCGCTACCTTCACGCCAATGGCGCCTCAATATTCTTTATCTGCCTCTTCCTACACATCGGGCGAGGCCTATATTACGGATCATTTCTCTACTCAGAAACCTGAAACATCGGCATTATCCTCCTGCTTGCAACTATAGCAACAGCCTTCATAGGCTATGTCCTCCCGTGAGGCCAAATATCATTCTGAGGGGCCACAGTAATTACAAACTTACTATCCGCCATCCCATACATTGGGACAGACCTAGTTCAATGAATCTGAGGAGGCTACTCAGTAGACAGTCCCACCCTCACACGATTCTTTACCTTTCACTTCATCTTGCCCTTCATTATTGCAGCCCTAGCAACACTCCACCTCCTATTCTTGCACGAAACGGGATCAAACAACCCCCTAGGAATCACCTCCCATTCCGATAAAATCACCTTCCACCCTTACTACACAATCAAAGACGCCCTCGGCTTACTTCTCTTCCTTCTCTCCTTAATGACATTAACACTATTCTCACCAGACCTCCTAGGCGACCCAGACAATTATACCCTAGCCAACCCCTTAAACACCCCTCCCCACATCAAGCCCGAATGATATTTCCTATTCGCCTACACAATTCTCCGATCCGTCCCTAACAAACTAGGAGGCGTCCTTGCCCTATTACTATCCATCCTCATCCTAGCAATAATCCCCATCCTCCATATATCCAAACAACAAAGCATAATATTTCGCCCACTAAGCCAATCACTTTATTGACTCCTAGCCGCAGACCTCCTCATTCTAACCTGAATCGGAGGACAACCAGTAAGCTACCCTTTTACCATCATTGGACAAGTAGCATCCGTACTATACTTCACAACAATCCTAATCCTAATACCAACTATCTCCCTAATTGAAAACAAAATACTCAAATGGGCCTGTCCTTGTAGTATAAACTAATACACCAGTCTTGTAAACCGGAGATGAAAACCTTTTTCCAAGGACAAATCAGAGAAAAAGTCTTTAACTCCACCATTAGCACCCAAAGCTAAGATTCTAATTTAAACTATTCTCTGTTCTTTCATGGGGAAGCAGATTTGGGTACCACCCAAGTATTGACTCACCCATCAACAACCGCTATGTATTTCGTACATTACTGCCAGCCACCATGAATATTGTACGGTACCATAAATACTTGACCACCTGTAGTACATAAAAACCCAATCCACATCAAAACCCCCTCCCCATGCTTACAAGCAAGTACAGCAATCAACCCTCAACTATCACACATCAACTGCAACTCCAAAGCCACCCCTCACCCACTAGGATACCAACAAACCTACCCACCCTTAACAGTACATAGTACATAAAGCCATTTACCGTACATAGCACATTACAGTCAAATCCCTTCTCGTCCCCATGGATGACCCCCCTCAGATAGGGGTCCCTTGACCACCATCCTCCGTGAAATCAATATCCCGCACAAGAGTGCTACTCTCCTCGCTCCGGGCCCATAACACTTGGGGGTAGCTAAAGTGAACTGTATCCGACATCTGGTTCCTACTTCAGGGTCATAAAGCCTAAATAGCCCACACGTTCCCCTTAAATAAGACATCACGATG",
+    "description": "NC_012920.1 Homo sapiens mitochondrion, complete genome"
+  }
+}

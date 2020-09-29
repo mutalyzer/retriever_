@@ -12,6 +12,21 @@ def _get_content(relative_location):
     return content
 
 
+def _retrieve_raw(
+    reference_id,
+    reference_source=None,
+    reference_type=None,
+    size_off=True,
+    configuration_path=None,
+):
+    if reference_type == "fasta":
+        return _get_content("data/" + reference_id + ".fasta"), "fasta", "ncbi"
+    elif reference_id.startswith("LRG_"):
+        return _get_content("data/" + reference_id + ".lrg"), "lrg", "lrg"
+    else:
+        return _get_content("data/" + reference_id + ".gff3"), "gff3", "ncbi"
+
+
 def ordered(obj):
     if isinstance(obj, dict):
         return sorted((k, ordered(v)) for k, v in obj.items())
@@ -50,6 +65,7 @@ def get_tests(references):
                     "NR_002196.2",
                     "L41870.1",
                     "NG_007485.1",
+                    "NC_012920.1",
                 ]
             },
             "ensembl": {"gff3": ["ENSG00000147889"]},
@@ -58,42 +74,6 @@ def get_tests(references):
     ),
 )
 def test_model(r_id, r_source, r_type, expected_model, monkeypatch):
-    def mock_fetch_gff3(reference_id):
-        return _get_content("data/" + reference_id + ".gff3")
-
-    def mock_fetch_fasta(reference_id):
-        return _get_content("data/" + reference_id + ".fasta")
-
-    def mock_fetch_lrg(reference_id):
-        return _get_content("data/" + reference_id + ".lrg")
-
-    def mock_fetch_name_error(reference_id):
-        raise NameError
-
-    if r_source == 'ncbi':
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.ncbi.fetch_gff3", mock_fetch_gff3)
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.ncbi.fetch_fasta", mock_fetch_fasta )
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.ensembl.fetch_gff3", mock_fetch_name_error)
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.lrg.fetch_lrg", mock_fetch_name_error)
-    elif r_source == 'ensembl':
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.ensembl.fetch_gff3", mock_fetch_gff3)
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.ensembl.fetch_fasta", mock_fetch_fasta)
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.ncbi.fetch_gff3", mock_fetch_name_error)
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.lrg.fetch_lrg", mock_fetch_name_error)
-    elif r_source == 'lrg':
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.lrg.fetch_lrg", mock_fetch_lrg)
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.ensembl.fetch_gff3", mock_fetch_name_error)
-        monkeypatch.setattr(
-            "mutalyzer_retriever.sources.ncbi.fetch_gff3", mock_fetch_name_error )
+    monkeypatch.setattr("mutalyzer_retriever.retriever.retrieve_raw", _retrieve_raw)
 
     assert ordered(retrieve_model(r_id, r_source)) == ordered(expected_model)

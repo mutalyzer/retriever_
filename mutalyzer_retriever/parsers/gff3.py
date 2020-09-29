@@ -46,6 +46,7 @@ QUALIFIERS = {
         "mol_type": "mol_type",
         "Is_circular": "is_circular",
         "transl_table": "transl_table",
+        "Name": "name",
     },
 }
 SO_IDS = {
@@ -258,11 +259,13 @@ def _create_record_model(record, source=None):
             record.annotations["sequence-region"][0][2],
         ),
     }
-    if mol_type:
-        model["qualifiers"] = {"mol_type": mol_type}
+
+    if region_model and region_model.get("qualifiers"):
+        model["qualifiers"] = region_model["qualifiers"]
 
     if features:
         model["features"] = features
+
     return model
 
 
