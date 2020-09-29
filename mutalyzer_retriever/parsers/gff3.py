@@ -215,6 +215,11 @@ def _get_rna_features(record, mol_type):
         rna_model["location"] = make_location(
             sorted(exon_positions)[0], sorted(exon_positions)[-1]
         )
+    else:
+        rna_model["location"] = make_location(
+            record.annotations["sequence-region"][0][1],
+            record.annotations["sequence-region"][0][2],
+        )
     rna_model["features"] = features[0]["features"]
     features[0]["features"] = [rna_model]
     return features
