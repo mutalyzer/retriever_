@@ -48,6 +48,8 @@ def main():
         default="all",
     )
 
+    parser.add_argument("--timeout", help="timeout", type=int)
+
     parser.add_argument("-c", "--configuration", help="configuration file path")
 
     subparsers = parser.add_subparsers(
@@ -57,7 +59,9 @@ def main():
     parser_from_file = subparsers.add_parser("from_file")
 
     parser_from_file.add_argument(
-        "--paths", help="either gff3 and fasta paths or just one for lrg", nargs="+",
+        "--paths",
+        help="either gff3 and fasta paths or just one for lrg",
+        nargs="+",
     )
     parser_from_file.add_argument(
         "--is_lrg",
@@ -81,6 +85,7 @@ def main():
             reference_type=args.type,
             model_type=args.model_type,
             size_off=args.sizeoff,
+            timeout=args.timeout,
         )
         print(json.dumps(output, indent=args.indent))
     else:
@@ -90,5 +95,6 @@ def main():
             reference_type=args.type,
             size_off=args.sizeoff,
             configuration_path=args.configuration,
+            timeout=args.timeout,
         )
         print(output[0])

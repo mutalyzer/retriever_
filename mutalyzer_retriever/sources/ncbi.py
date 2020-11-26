@@ -153,7 +153,7 @@ def fetch_fasta(reference_id):
         return raw_data
 
 
-def fetch_gff3(reference_id):
+def fetch_gff3(reference_id, timeout=1):
     """
     Retrieve the gff3 for the corresponding reference ID.
 
@@ -164,7 +164,7 @@ def fetch_gff3(reference_id):
     url = "https://eutils.ncbi.nlm.nih.gov/sviewer/viewer.cgi"
     params = {"db": "nuccore", "report": "gff3", "id": reference_id}
     try:
-        response = request(url, params)
+        response = request(url=url, params=params, timeout=timeout)
     except RequestErrors:
         raise ConnectionError
     except Http400 as e:
@@ -176,7 +176,7 @@ def fetch_gff3(reference_id):
         return response
 
 
-def fetch(reference_id, reference_type, size_on=True):
+def fetch(reference_id, reference_type, size_on=True, timeout=1):
     """
     Fetch the raw annotation for the corresponding reference ID.
 
@@ -187,7 +187,7 @@ def fetch(reference_id, reference_type, size_on=True):
     :returns tuple: raw annotations, type ("gff3" or "genbank")
     """
     if reference_type in [None, "gff3"]:
-        return fetch_gff3(reference_id), "gff3"
+        return fetch_gff3(reference_id, timeout), "gff3"
     elif reference_type == "fasta":
         return fetch_fasta(reference_id), "fasta"
     elif reference_type == "genbank":

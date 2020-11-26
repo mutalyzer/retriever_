@@ -18,6 +18,7 @@ def _retrieve_raw(
     reference_type=None,
     size_off=True,
     configuration_path=None,
+    timeout=1,
 ):
     if reference_type == "fasta":
         return _get_content("data/" + reference_id + ".fasta"), "fasta", "ncbi"

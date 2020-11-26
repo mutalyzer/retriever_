@@ -43,7 +43,7 @@ def raise_error(status):
     raise NoReferenceError(status)
 
 
-def fetch_unknown_source(reference_id, reference_type, size_off=True):
+def fetch_unknown_source(reference_id, reference_type, size_off=True, timeout=1):
 
     status = {"lrg": {"errors": []}, "ncbi": {"errors": []}, "ensembl": {"errors": []}}
 
@@ -65,7 +65,7 @@ def fetch_unknown_source(reference_id, reference_type, size_off=True):
     # NCBI
     try:
         reference_content, reference_type = ncbi.fetch(
-            reference_id, reference_type, size_off
+            reference_id, reference_type, size_off, timeout
         )
     except (NameError, ConnectionError, ValueError) as e:
         status["ncbi"]["errors"].append(e)
@@ -74,7 +74,9 @@ def fetch_unknown_source(reference_id, reference_type, size_off=True):
 
     # Ensembl
     try:
-        reference_content, reference_type = ensembl.fetch(reference_id, reference_type)
+        reference_content, reference_type = ensembl.fetch(
+            reference_id, reference_type, timeout
+        )
     except (NameError, ConnectionError, ValueError) as e:
         status["ensembl"]["errors"].append(e)
     else:
@@ -89,6 +91,7 @@ def retrieve_raw(
     reference_type=None,
     size_off=True,
     configuration_path=None,
+    timeout=1,
 ):
     configuration.settings = configuration.setup_settings(configuration_path)
 
@@ -96,12 +99,16 @@ def retrieve_raw(
 
     if reference_source is None:
         reference_content, reference_type, reference_source = fetch_unknown_source(
-            reference_id, reference_type, size_off
+            reference_id, reference_type, size_off, timeout
         )
     elif reference_source == "ncbi":
-        reference_content, reference_type = ncbi.fetch(reference_id, reference_type)
+        reference_content, reference_type = ncbi.fetch(
+            reference_id, reference_type, timeout
+        )
     elif reference_source == "ensembl":
-        reference_content, reference_type = ensembl.fetch(reference_id, reference_type)
+        reference_content, reference_type = ensembl.fetch(
+            reference_id, reference_type, timeout
+        )
     elif reference_source == "lrg":
         reference_content = lrg.fetch_lrg(reference_id)
         if reference_content:
@@ -117,11 +124,12 @@ def retrieve_model(
     size_off=True,
     model_type="all",
     configuration_path=None,
+    timeout=1,
 ):
     configuration.settings = configuration.setup_settings(configuration_path)
 
     reference_content, reference_type, reference_source = retrieve_raw(
-        reference_id, reference_source, reference_type, size_off
+        reference_id, reference_source, reference_type, size_off, timeout=timeout
     )
 
     if reference_type == "lrg":
@@ -134,7 +142,9 @@ def retrieve_model(
             return model["annotations"]
     elif reference_type == "gff3":
         if model_type == "all":
-            fasta = retrieve_raw(reference_id, reference_source, "fasta", size_off)
+            fasta = retrieve_raw(
+                reference_id, reference_source, "fasta", size_off, timeout=timeout
+            )
             return {
                 "annotations": parser.parse(
                     reference_content, reference_type, reference_source
@@ -142,7 +152,7 @@ def retrieve_model(
                 "sequence": parser.parse(fasta[0], "fasta"),
             }
         elif model_type == "sequence":
-            fasta = retrieve_raw(reference_id, "fasta", size_off)
+            fasta = retrieve_raw(reference_id, "fasta", size_off, timeout=timeout)
             return {"sequence": parser.parse(fasta, "fasta")}
         elif model_type == "annotations":
             return parser.parse(
