@@ -36,6 +36,7 @@ import io
 
 from BCBio.GFF import GFFParser
 from Bio.SeqFeature import SeqFeature
+from Bio.SeqUtils import seq1
 
 from ..util import make_location
 
@@ -48,6 +49,7 @@ QUALIFIERS = {
         "transl_table": "transl_table",
         "Name": "name",
     },
+    "CDS": {"transl_except": "translation_exception"},
 }
 SO_IDS = {
     "gene": "SO:0000704",
@@ -68,7 +70,8 @@ def _get_feature_id(feature):
     elif feature.type == "lnc_RNA":
         return feature.qualifiers["transcript_id"][0]
     elif feature.type == "CDS":
-        return feature.qualifiers["protein_id"][0]
+        if feature.qualifiers.get("protein_id"):
+            return feature.qualifiers["protein_id"][0]
     elif feature.type == "exon":
         if feature.qualifiers.get("exon_id"):
             return feature.qualifiers["exon_id"][0]
@@ -97,6 +100,41 @@ def _combine_cdses(mrna):
             return
 
 
+def _extract_translation_exception(translation_exception):
+    output = []
+
+    if isinstance(translation_exception, str):
+        translation_exception = [translation_exception]
+
+    for t_e in translation_exception:
+        pos, aa = t_e.strip("()").split(",")
+
+        if "complement" in pos:
+            strand = -1
+            pos_start, pos_end = pos.split("(")[1].strip(")").split("..")
+        else:
+            strand = 1
+            pos_start, pos_end = pos.split(":")[1].split("..")
+        pos_start = int(pos_start) - 1
+        pos_end = int(pos_end)
+
+        if ":" in aa:
+            aa = aa.split(":")[1]
+        elif "=" in aa:
+            aa = aa.split("=")[1]
+
+        output.append(
+            {"location": make_location(pos_start, pos_end, strand), "amino_acid": seq1(aa)}
+        )
+    return output
+
+
+def _extract_special_qualifiers(qs):
+    for q in qs:
+        if q == "translation_exception":
+            qs[q] = {"exceptions": _extract_translation_exception(qs[q])}
+
+
 def _get_qualifiers(feature):
     q = feature.qualifiers
     t = feature.type
@@ -111,6 +149,7 @@ def _get_qualifiers(feature):
                 for dbxref_entry in q["Dbxref"]:
                     if "HGNC" in dbxref_entry:
                         qs["HGNC"] = dbxref_entry.split(":")[-1]
+        _extract_special_qualifiers(qs)
         return qs
 
 

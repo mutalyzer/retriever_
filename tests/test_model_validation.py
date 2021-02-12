@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import pytest
+
 from mutalyzer_retriever import parser
 from mutalyzer_retriever.schema_validation import validate
 
@@ -37,10 +38,12 @@ def get_references_content(references):
                     "NR_002196.2",
                     "L41870.1",
                     "NG_007485.1",
+                    "NC_012920.1",
+                    "NG_009930.1",
                 ]
             },
             "ensembl": {"gff3": ["ENSG00000147889"]},
-            "lrg": {"lrg": ["LRG_11"]},
+            "lrg": {"lrg": ["LRG_11", "LRG_417", "LRG_857"]},
         }
     ),
 )

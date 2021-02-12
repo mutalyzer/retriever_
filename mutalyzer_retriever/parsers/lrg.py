@@ -23,6 +23,8 @@ from xml.dom import minidom
 
 from Bio.Seq import Seq
 
+from ..util import make_location
+
 
 def _get_content(data, refname):
     """
@@ -82,6 +84,19 @@ def _get_location(data, coord_system=None, recursive=False):
     }
 
 
+def _get_translation_exception(cds):
+    output = []
+    for t_e in cds.getElementsByTagName("translation_exception"):
+        output.append(
+            {
+                "location": make_location(t_e.getAttribute("codon")),
+                "amino_acid": _get_content(t_e, "sequence"),
+            }
+        )
+    if output:
+        return {"translation_exception": {"exceptions": output}, "coordinate_system": "p"}
+
+
 def _get_transcripts(section):
     """
     Extracts the transcripts present in the (fixed) section of the LRG file.
@@ -119,15 +134,18 @@ def _get_transcripts(section):
                 # Todo: For now, we only support one CDS per transcript and
                 #   ignore all others. This should be discussed.
                 continue
-            transcript["features"].append(
-                {
-                    "type": "CDS",
-                    "id": source_cds.getElementsByTagName("translation")[
-                        0
-                    ].getAttribute("name"),
-                    "location": _get_location(source_cds, lrg_id),
-                }
-            )
+            feature = {
+                "type": "CDS",
+                "id": source_cds.getElementsByTagName("translation")[0].getAttribute(
+                    "name"
+                ),
+                "location": _get_location(source_cds, lrg_id),
+            }
+            translation_exception = _get_translation_exception(source_cds)
+            if translation_exception:
+                feature["qualifiers"] = translation_exception
+
+            transcript["features"].append(feature)
             transcript_type = "mRNA"
 
         transcript["type"] = transcript_type
