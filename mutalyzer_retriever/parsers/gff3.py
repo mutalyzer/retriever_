@@ -124,7 +124,10 @@ def _extract_translation_exception(translation_exception):
             aa = aa.split("=")[1]
 
         output.append(
-            {"location": make_location(pos_start, pos_end, strand), "amino_acid": seq1(aa)}
+            {
+                "location": make_location(pos_start, pos_end, strand),
+                "amino_acid": seq1(aa),
+            }
         )
     return output
 
@@ -246,23 +249,24 @@ def _get_rna_features(record, mol_type):
         record=record, skip={"gene": "exon"}, considered_types=["gene", "exon", "CDS"]
     )
 
-    exon_positions = []
-    for sub_feature in features[0]["features"]:
-        if sub_feature["type"] == "exon":
-            exon_positions.append(sub_feature["location"]["start"]["position"])
-            exon_positions.append(sub_feature["location"]["end"]["position"])
-    if exon_positions:
-        rna_model["location"] = make_location(
-            sorted(exon_positions)[0], sorted(exon_positions)[-1]
-        )
-    else:
-        rna_model["location"] = make_location(
-            record.annotations["sequence-region"][0][1],
-            record.annotations["sequence-region"][0][2],
-        )
-    rna_model["features"] = features[0]["features"]
-    features[0]["features"] = [rna_model]
-    return features
+    if features:
+        exon_positions = []
+        for sub_feature in features[0]["features"]:
+            if sub_feature["type"] == "exon":
+                exon_positions.append(sub_feature["location"]["start"]["position"])
+                exon_positions.append(sub_feature["location"]["end"]["position"])
+        if exon_positions:
+            rna_model["location"] = make_location(
+                sorted(exon_positions)[0], sorted(exon_positions)[-1]
+            )
+        else:
+            rna_model["location"] = make_location(
+                record.annotations["sequence-region"][0][1],
+                record.annotations["sequence-region"][0][2],
+            )
+        rna_model["features"] = features[0]["features"]
+        features[0]["features"] = [rna_model]
+        return features
 
 
 def _create_record_model(record, source=None):

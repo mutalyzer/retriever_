@@ -19,7 +19,14 @@ def get_references_content(references):
                 with path_gb.open() as f:
                     reference_content = f.read()
                 references_content.append(
-                    (reference_source, reference_type, reference_content)
+                    pytest.param(
+                        reference_source,
+                        reference_type,
+                        reference_content,
+                        id="{}-{}-{}".format(
+                            reference_source, reference_type, reference_id
+                        ),
+                    )
                 )
     return references_content
 
@@ -34,12 +41,14 @@ def get_references_content(references):
                     "NM_152263.2",
                     "NM_152263.3",
                     "NM_000077.4",
+                    "NM_002001.2",
                     "NG_012337.1",
                     "NR_002196.2",
                     "L41870.1",
                     "NG_007485.1",
                     "NC_012920.1",
                     "NG_009930.1",
+                    "AA010203.1",
                 ]
             },
             "ensembl": {"gff3": ["ENSG00000147889"]},
