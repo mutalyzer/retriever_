@@ -74,7 +74,7 @@ def fetch_lrg(reference_id, size_on=True):
 
     info = handle.info()
 
-    if info["Content-Type"] == "application/xml":
+    if info["Content-Type"].strip().endswith("/xml"):
         if "Content-length" in info:
             if size_on:
                 length = int(info["Content-Length"])
@@ -83,7 +83,9 @@ def fetch_lrg(reference_id, size_on=True):
                     raise ReferenceToLong(
                         "Filesize '{}' is not within the allowed boundaries "
                         "(512 < filesize < {} ) for {}.".format(
-                            length, settings["MAX_FILE_SIZE"] // 1048576, reference_id,
+                            length,
+                            settings["MAX_FILE_SIZE"] // 1048576,
+                            reference_id,
                         )
                     )
         else:
