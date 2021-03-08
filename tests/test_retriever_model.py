@@ -69,6 +69,7 @@ def get_tests(references):
                     "NG_007485.1",
                     "NC_012920.1",
                     "NG_009930.1",
+                    "AA010203.1",
                 ]
             },
             "ensembl": {"gff3": ["ENSG00000147889"]},
