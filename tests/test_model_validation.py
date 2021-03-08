@@ -41,6 +41,7 @@ def get_references_content(references):
                     "NM_152263.2",
                     "NM_152263.3",
                     "NM_000077.4",
+                    "NM_002001.2",
                     "NG_012337.1",
                     "NR_002196.2",
                     "L41870.1",
