@@ -19,7 +19,14 @@ def get_references_content(references):
                 with path_gb.open() as f:
                     reference_content = f.read()
                 references_content.append(
-                    (reference_source, reference_type, reference_content)
+                    pytest.param(
+                        reference_source,
+                        reference_type,
+                        reference_content,
+                        id="{}-{}-{}".format(
+                            reference_source, reference_type, reference_id
+                        ),
+                    )
                 )
     return references_content
 

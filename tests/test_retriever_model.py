@@ -29,15 +29,6 @@ def _retrieve_raw(
         return _get_content("data/" + reference_id + ".gff3"), "gff3", "ncbi"
 
 
-def ordered(obj):
-    if isinstance(obj, dict):
-        return sorted((k, ordered(v)) for k, v in obj.items())
-    if isinstance(obj, list):
-        return sorted(ordered(x) for x in obj)
-    else:
-        return obj
-
-
 def get_tests(references):
 
     tests = []
@@ -48,7 +39,15 @@ def get_tests(references):
                 p = Path(Path(__file__).parent) / "data" / str(r_id + ".model.json")
                 with p.open() as f:
                     r_model = json.loads(f.read())
-                tests.append((r_id, r_source, r_type, r_model))
+                tests.append(
+                    pytest.param(
+                        r_id,
+                        r_source,
+                        r_type,
+                        r_model,
+                        id="{}-{}-{}".format(r_source, r_type, r_id),
+                    )
+                )
 
     return tests
 
@@ -80,4 +79,4 @@ def get_tests(references):
 def test_model(r_id, r_source, r_type, expected_model, monkeypatch):
     monkeypatch.setattr("mutalyzer_retriever.retriever.retrieve_raw", _retrieve_raw)
 
-    assert ordered(retrieve_model(r_id, r_source)) == ordered(expected_model)
+    assert retrieve_model(r_id, r_source) == expected_model
