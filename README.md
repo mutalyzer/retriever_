@@ -15,9 +15,6 @@
 
 Retrieve and parse genomic reference files.
 
-
-
-
 Please see [ReadTheDocs][RTD] for the latest documentation.
 
 [RTD]: https://mutalyzer-retriever.readthedocs.io/en/latest/
