@@ -14,6 +14,8 @@
       }
     },
     "qualifiers": {
+      "dbxref": "taxon:9606",
+      "map": "13q14.2",
       "mol_type": "mRNA"
     },
     "features": [

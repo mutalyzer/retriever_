@@ -14,7 +14,10 @@
       }
     },
     "qualifiers": {
+      "dbxref": "taxon:9606",
       "name": "6",
+      "chromosome": "6",
+      "map": "6p21.2",
       "mol_type": "mRNA"
     },
     "features": [

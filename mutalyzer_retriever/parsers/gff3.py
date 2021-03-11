@@ -44,7 +44,11 @@ CONSIDERED_TYPES = ["gene", "mRNA", "exon", "CDS", "lnc_RNA"]
 QUALIFIERS = {
     "gene": {"Name": "name", "gene_synonym": "synonym"},
     "region": {
+        "organism": "organism",
         "mol_type": "mol_type",
+        "chromosome": "chromosome",
+        "map": "map",
+        "Dbxref": "dbxref",
         "Is_circular": "is_circular",
         "transl_table": "transl_table",
         "Name": "name",

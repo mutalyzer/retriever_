@@ -14,7 +14,10 @@
       }
     },
     "qualifiers": {
+      "dbxref": "taxon:9606",
       "name": "1",
+      "chromosome": "1",
+      "map": "1q21.3",
       "mol_type": "mRNA"
     },
     "features": [

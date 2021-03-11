@@ -14,7 +14,10 @@
       }
     },
     "qualifiers": {
+      "dbxref": "taxon:9606",
       "name": "11",
+      "chromosome": "11",
+      "map": "11p15.5",
       "mol_type": "transcribed RNA"
     },
     "features": [
