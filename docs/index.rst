@@ -3,6 +3,8 @@ Mutalyzer Retriever
 
 .. image:: https://img.shields.io/github/last-commit/mutalyzer/retriever.svg
    :target: https://github.com/mutalyzer/retriever/graphs/commit-activity
+.. image:: https://github.com/mutalyzer/retriever/actions/workflows/ci.yml/badge.svg
+   :target: https://github.com/mutalyzer/retriever/actions/workflows/ci.yml
 .. image:: https://readthedocs.org/projects/mutalyzer-retriever/badge/?version=latest
    :target: https://mutalyzer-retriever.readthedocs.io/en/latest
 .. image:: https://img.shields.io/github/release-date/mutalyzer/retriever.svg

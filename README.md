@@ -1,6 +1,7 @@
 # Mutalyzer Retriever
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/mutalyzer/retriever)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/mutalyzer/retriever/Python%20package%20CI)
 ![Read the Docs](https://img.shields.io/readthedocs/mutalyzer-retriever)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/mutalyzer/retriever)
 ![GitHub Release Date](https://img.shields.io/github/release-date/mutalyzer/retriever)
