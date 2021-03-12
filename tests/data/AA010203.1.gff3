@@ -1,0 +1,5 @@
+##sequence-region AA010203.1 1 440
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
+AA010203.1	Genbank	region	1	440	.	+	.	ID=AA010203.1:1..440;Dbxref=GDB:1329979,taxon:9606;clone=IMAGE:430210;clone-lib=SAMN00155062 Soares_fetal_liver_spleen_1NFLS_S1;dev-stage=20 week-post conception fetus;gbkey=Src;lab-host=DH10B (ampicillin resistant);mol_type=mRNA;note=Organ: Liver and Spleen%3B Vector: pT7T3D (Pharmacia) with a modified polylinker%3B Site_1: Pac I%3B Site_2: Eco RI%3B This is a subtracted version of the original Soares fetal liver spleen 1NFLS library.   1st strand cDNA was primed with a Pac I - oligo(dT) primer [5' AACTGGAAGAATTAATTAAAGATCTTTTTTTTTTTTTTTTTTT 3']%2C double-stranded cDNA was ligated to Eco RI adaptors (Pharmacia)%2C digested with Pac I and cloned into the Pac I and Eco RI sites of the modified pT7T3 vector.  Library went through one round of normalization. Library constructed by Bento Soares and M.Fatima Bonaldo.;sex=male
+
+

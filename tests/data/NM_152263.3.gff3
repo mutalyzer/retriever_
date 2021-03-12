@@ -1,0 +1,22 @@
+##sequence-region NM_152263.3 1 7109
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
+NM_152263.3	RefSeq	region	1	7109	.	+	.	ID=NM_152263.3:1..7109;Dbxref=taxon:9606;Name=1;chromosome=1;gbkey=Src;genome=genomic;map=1q21.3;mol_type=mRNA
+NM_152263.3	RefSeq	gene	1	7109	.	+	.	ID=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;Name=TPM3;description=tropomyosin 3;gbkey=Gene;gene=TPM3;gene_synonym=CAPM1,CFTD,HEL-189,HEL-S-82p,hscp30,NEM1,OK/SW-cl.5,TM-5,TM3,TM30,TM30nm,TM5,TPM3nu,TPMsk3,TRK
+NM_152263.3	RefSeq	CDS	118	975	.	+	0	ID=cds-NP_689476.2;Parent=gene-TPM3;Dbxref=CCDS:CCDS41403.1,Genbank:NP_689476.2,GeneID:7170,HGNC:HGNC:12012,MIM:191030;Name=NP_689476.2;Note=isoform Tpm3.12st is encoded by transcript variant Tpm3.12;gbkey=CDS;gene=TPM3;product=tropomyosin alpha-3 chain isoform Tpm3.12st;protein_id=NP_689476.2
+NM_152263.3	RefSeq	exon	1	234	.	+	.	ID=id-TPM3;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=exon;gene=TPM3;inference=alignment:Splign:2.1.0
+NM_152263.3	RefSeq	exon	235	360	.	+	.	ID=id-TPM3-2;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=exon;gene=TPM3;inference=alignment:Splign:2.1.0
+NM_152263.3	RefSeq	exon	361	494	.	+	.	ID=id-TPM3-3;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=exon;gene=TPM3;inference=alignment:Splign:2.1.0
+NM_152263.3	RefSeq	exon	495	612	.	+	.	ID=id-TPM3-4;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=exon;gene=TPM3;inference=alignment:Splign:2.1.0
+NM_152263.3	RefSeq	exon	613	683	.	+	.	ID=id-TPM3-5;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=exon;gene=TPM3;inference=alignment:Splign:2.1.0
+NM_152263.3	RefSeq	exon	684	759	.	+	.	ID=id-TPM3-6;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=exon;gene=TPM3;inference=alignment:Splign:2.1.0
+NM_152263.3	RefSeq	exon	760	822	.	+	.	ID=id-TPM3-7;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=exon;gene=TPM3;inference=alignment:Splign:2.1.0
+NM_152263.3	RefSeq	exon	823	892	.	+	.	ID=id-TPM3-8;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=exon;gene=TPM3;inference=alignment:Splign:2.1.0
+NM_152263.3	RefSeq	exon	893	971	.	+	.	ID=id-TPM3-9;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=exon;gene=TPM3;inference=alignment:Splign:2.1.0
+NM_152263.3	RefSeq	exon	972	7099	.	+	.	ID=id-TPM3-10;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=exon;gene=TPM3;inference=alignment:Splign:2.1.0
+NM_152263.3	RefSeq	sequence_feature	94	96	.	+	.	ID=id-TPM3-11;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;Note=upstream in-frame stop codon;gbkey=misc_feature;gene=TPM3
+NM_152263.3	RefSeq	polyA_site	1170	1170	.	+	.	ID=id-TPM3-12;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=polyA_site;gene=TPM3
+NM_152263.3	RefSeq	polyA_site	7099	7099	.	+	.	ID=id-TPM3-13;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=polyA_site;gene=TPM3
+NM_152263.3	RefSeq	polyA_signal_sequence	1142	1147	.	+	.	ID=id-TPM3-14;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=regulatory;gene=TPM3;regulatory_class=polyA_signal_sequence
+NM_152263.3	RefSeq	polyA_signal_sequence	7079	7084	.	+	.	ID=id-TPM3-15;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:HGNC:12012,MIM:191030;gbkey=regulatory;gene=TPM3;regulatory_class=polyA_signal_sequence
+
+

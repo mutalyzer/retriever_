@@ -1,0 +1,14 @@
+##sequence-region NM_152263.2 1 7116
+##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606
+NM_152263.2	RefSeq	region	1	7116	.	+	.	ID=NM_152263.2:1..7116;Dbxref=taxon:9606;Name=1;chromosome=1;gbkey=Src;genome=genomic;map=1q21.2;mol_type=mRNA
+NM_152263.2	RefSeq	gene	1	7116	.	+	.	ID=gene-TPM3;Dbxref=GeneID:7170,HGNC:12012,MIM:191030;Name=TPM3;description=tropomyosin 3;gbkey=Gene;gene=TPM3;gene_synonym=CFTD,hscp30,hTM5,NEM1,OK/SW-cl.5,TM-5,TM3,TM30,TM30nm,TM5,TPMsk3,TRK
+NM_152263.2	RefSeq	CDS	116	973	.	+	0	ID=cds-NP_689476.2;Parent=gene-TPM3;Dbxref=CCDS:CCDS41403.1,Genbank:NP_689476.2,GeneID:7170,HGNC:12012,MIM:191030;Name=NP_689476.2;Note=isoform 1 is encoded by transcript variant 1;gbkey=CDS;gene=TPM3;product=tropomyosin alpha-3 chain isoform 1;protein_id=NP_689476.2
+NM_152263.2	RefSeq	sequence_feature	92	94	.	+	.	ID=id-TPM3;Dbxref=GeneID:7170,HGNC:12012,MIM:191030;Note=upstream in-frame stop codon;gbkey=misc_feature;gene=TPM3
+NM_152263.2	RefSeq	region	1140	1145	.	+	.	ID=id-TPM3-2;Dbxref=GeneID:7170,HGNC:12012,MIM:191030;gbkey=polyA_signal;gene=TPM3
+NM_152263.2	RefSeq	region	1414	1419	.	+	.	ID=id-TPM3-3;Dbxref=GeneID:7170,HGNC:12012,MIM:191030;gbkey=polyA_signal;gene=TPM3
+NM_152263.2	RefSeq	region	7077	7082	.	+	.	ID=id-TPM3-4;Dbxref=GeneID:7170,HGNC:12012,MIM:191030;gbkey=polyA_signal;gene=TPM3
+NM_152263.2	RefSeq	polyA_site	1168	1168	.	+	.	ID=id-TPM3-5;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:12012,MIM:191030;gbkey=polyA_site;gene=TPM3
+NM_152263.2	RefSeq	polyA_site	1442	1442	.	+	.	ID=id-TPM3-6;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:12012,MIM:191030;gbkey=polyA_site;gene=TPM3
+NM_152263.2	RefSeq	polyA_site	7096	7096	.	+	.	ID=id-TPM3-7;Parent=gene-TPM3;Dbxref=GeneID:7170,HGNC:12012,MIM:191030;gbkey=polyA_site;gene=TPM3
+
+
